@@ -1,0 +1,20 @@
+name: receitas
+
+services:
+  front-end:
+    container_name: front-end
+    build: .
+    ports:
+      - 5050:4173
+    depends_on:
+      - back-end
+    restart: always
+
+  back-end:
+    container_name: back-end
+    build: C:\Users\kamik\backend-plataforma-de-receitas
+    restart: always
+    ports:
+      - 9823:9823
+    volumes:
+      - C:\Users\kamik\Downloads:/courses:ro
