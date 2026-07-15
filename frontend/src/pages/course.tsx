@@ -5,6 +5,7 @@ import CoursePercentage from "@/components/course-percentage";
 import LastWatchedCard from "@/components/lesson/last-watched-card";
 import LessonViewer from "@/components/lesson/lesson-viewer";
 import ModuleList from "@/components/lesson/module-list";
+import LessonOverview from "@/components/lesson/lesson-overview";
 import { useParams, useSearchParams } from "react-router-dom";
 import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
@@ -14,7 +15,7 @@ type Props = {};
 export default function CoursePage({}: Props) {
   const { courseId } = useParams<{ courseId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentTab = searchParams.get("tab") || "overview";
+  const currentTab = searchParams.get("tab") || "videos";
 
   const handleTabChange = (value: string) => {
     setSearchParams((prev) => {
@@ -71,33 +72,55 @@ export default function CoursePage({}: Props) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:h-[calc(100vh-136px)]">
-      <div className="w-full lg:col-span-7 flex flex-col lg:h-full glass-panel rounded-2xl overflow-hidden min-w-0">
-        <div className="shrink-0 bg-black/40">
-          <LessonViewer 
-            lesson={selectedLesson} 
-            onLessonComplete={refreshCourseProgress}
-          />
-        </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col min-w-0">
+      <div className="w-full lg:col-span-7 flex flex-col lg:h-full glass-panel rounded-2xl overflow-hidden min-w-0 bg-black/40">
+        <LessonViewer 
+          lesson={selectedLesson} 
+          onLessonComplete={refreshCourseProgress}
+        />
+        <div className="p-4 border-t border-white/10 flex-1">
           <h3 className="text-left font-heading font-medium text-2xl tracking-tight text-white truncate" title={selectedLesson?.title}>{selectedLesson?.title}</h3>
-          
-          <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full mt-6">
-            <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10 rounded-lg p-1">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-[#007bff] data-[state=active]:text-white rounded-md transition-colors duration-300">Visão Geral</TabsTrigger>
-              <TabsTrigger value="attachments" className="data-[state=active]:bg-[#007bff] data-[state=active]:text-white rounded-md transition-colors duration-300">Anexos e Materiais</TabsTrigger>
-              <TabsTrigger value="notes" className="data-[state=active]:bg-[#007bff] data-[state=active]:text-white rounded-md transition-colors duration-300">Anotações</TabsTrigger>
+        </div>
+      </div>
+      <div className="lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0">
+        <div className="p-4 border-b border-white/10 space-y-2 shrink-0 bg-black/20">
+          <h2 className="text-xl font-heading font-medium text-white line-clamp-1" title={selectedLesson?.course_title}>{selectedLesson?.course_title}</h2>
+          <CoursePercentage courseId={Number(courseId)} fromGlobal />
+        </div>
+        <div className="shrink-0 bg-black/10">
+          <LastWatchedCard courseId={courseId} />
+        </div>
+        
+        <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full flex-1 flex flex-col min-h-0">
+          <div className="w-full border-b border-white/10 shrink-0">
+            <TabsList className="flex w-full bg-transparent p-0 overflow-x-auto custom-scrollbar overflow-y-hidden justify-start border-none">
+              <TabsTrigger value="videos" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Vídeos</TabsTrigger>
+              <TabsTrigger value="overview" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Visão Geral</TabsTrigger>
+              <TabsTrigger value="attachments" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Anexos e Materiais</TabsTrigger>
+              <TabsTrigger value="notes" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Anotações</TabsTrigger>
             </TabsList>
-            <TabsContent value="overview" className="mt-4 text-white/70">
-              <p>Bem-vindo(a) a esta aula! Assista ao conteúdo acima e aproveite o material.</p>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
+            <TabsContent value="videos" className="m-0 mt-0 h-full outline-none p-2">
+              <ModuleList
+                modules={modules}
+                courseId={courseId}
+                selectedLessonId={selectedLesson?.id}
+                onUpdate={refreshCourseProgress}
+                onLessonSelect={selectCourseLesson}
+              />
             </TabsContent>
-            <TabsContent value="attachments" className="mt-4">
+            <TabsContent value="overview" className="m-0 mt-0 h-full outline-none p-4">
+              <LessonOverview lesson={selectedLesson} />
+            </TabsContent>
+            <TabsContent value="attachments" className="m-0 mt-0 h-full outline-none p-4">
               <LessonAttachments
                 apiUrl={lessonResources.apiUrl}
                 attachments={lessonResources.attachments}
                 isLoading={lessonResources.isAttachmentsLoading}
               />
             </TabsContent>
-            <TabsContent value="notes" className="mt-4">
+            <TabsContent value="notes" className="m-0 mt-0 h-full outline-none p-4">
               <LessonNotes
                 notes={lessonResources.notes}
                 newNote={lessonResources.newNote}
@@ -108,26 +131,8 @@ export default function CoursePage({}: Props) {
                 onSeek={lessonResources.seekTo}
               />
             </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-      <div className="lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0">
-        <div className="p-4 border-b border-white/10 space-y-2 shrink-0 bg-black/20">
-          <h2 className="text-xl font-heading font-medium text-white">{selectedLesson?.course_title}</h2>
-          <CoursePercentage courseId={Number(courseId)} fromGlobal />
-        </div>
-        <div className="shrink-0 bg-black/10">
-          <LastWatchedCard courseId={courseId} />
-        </div>
-        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar p-2">
-          <ModuleList
-            modules={modules}
-            courseId={courseId}
-            selectedLessonId={selectedLesson?.id}
-            onUpdate={refreshCourseProgress}
-            onLessonSelect={selectCourseLesson}
-          />
-        </div>
+          </div>
+        </Tabs>
       </div>
     </div>
   );

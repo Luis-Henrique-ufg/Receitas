@@ -81,7 +81,19 @@ export default function ModuleList({
       if (el) {
         // Atrasar levemente para garantir que o acordeão expandiu
         setTimeout(() => {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const container = el.closest('.overflow-y-auto');
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const elRect = el.getBoundingClientRect();
+            const relativeTop = elRect.top - containerRect.top;
+            
+            container.scrollBy({
+              top: relativeTop - (containerRect.height / 2) + (elRect.height / 2),
+              behavior: 'smooth'
+            });
+          } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         }, 300);
       }
     }

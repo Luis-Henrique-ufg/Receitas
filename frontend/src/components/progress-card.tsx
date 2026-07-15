@@ -24,7 +24,7 @@ export default function ProgressCard({ value = 0, hideValue = false }: Props) {
   return (
     <div className="flex flex-col items-start gap-2 w-full">
       <Progress value={roundedValue} className="h-1.5 opacity-80" />
-      {!hideValue && roundedValue < 100 && (
+      {!hideValue && (
         <span className={`tabular-nums text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${getStatusColor()}`}>
           {getStatusText()}
         </span>

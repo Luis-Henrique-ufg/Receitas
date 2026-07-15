@@ -62,7 +62,7 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
   }
 
   return (
-    <div className="flex-1 ">
+    <div className="shrink-0 w-full">
       {isDocument ? (
         <iframe
           className="w-full h-full aspect-[9/16]"
