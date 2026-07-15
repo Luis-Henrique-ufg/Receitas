@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect } from "react";
 import { Clock, Trash2 } from "lucide-react";
 import { LessonNote } from "@/hooks/useLessonResources";
 
@@ -28,17 +29,34 @@ export default function LessonNotes({
   onDelete,
   onSeek,
 }: Props) {
+  const [showSavedState, setShowSavedState] = useState(false);
+
+  const handleSave = () => {
+    onSave();
+    setShowSavedState(true);
+    setTimeout(() => setShowSavedState(false), 2000);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-2">
         <Textarea 
-          placeholder="Digite sua anotação aqui... O tempo do vídeo será registrado automaticamente." 
+          placeholder="Digite sua anotação aqui… O tempo do vídeo será registrado automaticamente. Pressione ⌘/⌃+Enter para salvar." 
           className="bg-white/5 border-white/10 text-white min-h-24 focus-visible:ring-[#007bff]"
           value={newNote}
           onChange={e => onNewNoteChange(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
-        <div className="flex justify-end">
-          <Button onClick={onSave} size="sm">Salvar Anotação</Button>
+        <div className="flex justify-end items-center gap-3">
+          <span className={`text-emerald-400 text-xs font-medium transition-opacity duration-300 ${showSavedState ? 'opacity-100' : 'opacity-0'}`}>Salvo!</span>
+          <Button onClick={handleSave} size="sm">Salvar Anotação</Button>
         </div>
       </div>
 

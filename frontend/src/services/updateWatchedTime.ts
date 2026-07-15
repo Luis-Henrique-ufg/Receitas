@@ -6,9 +6,16 @@ export async function updateWatchedTime(
   currentTime: number
 ) {
   try {
-    axios.post(`${apiUrl}/api/update-lesson-progress`, {
-      time_elapsed: currentTime,
-      lessonId,
+    fetch(`${apiUrl}/api/update-lesson-progress`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        time_elapsed: currentTime,
+        lessonId,
+      }),
+      keepalive: true,
     });
   } catch {
     console.log("erro ao atualizar tempo decorrido");

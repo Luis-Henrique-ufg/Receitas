@@ -65,6 +65,7 @@ export function Player({
   const playerRef = useRef<PlayerInstance | null>(null);
   const lastElapsedTimeSavedRef = useRef(timeElapsed);
   const isEndingTriggeredRef = useRef(false);
+  const hasResumedRef = useRef(false);
   const { apiUrl } = useApiUrl();
 
   const latestProps = useRef({ lessonId, isEnding, apiUrl, onTimeUpdate });
@@ -106,9 +107,24 @@ export function Player({
 
       const player = playerRef.current;
 
+      const forceSaveProgress = () => {
+        const currentTime = player.currentTime() || 0;
+        const { onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
+        if (currentOnTimeUpdate && currentTime > 0) {
+          currentOnTimeUpdate(Math.floor(currentTime));
+          lastElapsedTimeSavedRef.current = Math.floor(currentTime);
+        }
+      };
+
       player.on("play", () => {
         if (onPlay) onPlay();
       });
+
+      player.on("pause", () => {
+        forceSaveProgress();
+      });
+
+      window.addEventListener("beforeunload", forceSaveProgress);
 
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() || 0;
@@ -153,24 +169,64 @@ export function Player({
 
     // Cleanup when component unmounts
     return () => {
-      if (playerRef.current && !playerRef.current.isDisposed()) {
-        playerRef.current.dispose();
-        playerRef.current = null;
+      const player = playerRef.current;
+      if (player) {
+        const currentTime = player.currentTime() || 0;
+        const { onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
+        if (currentOnTimeUpdate && currentTime > 0) {
+          currentOnTimeUpdate(Math.floor(currentTime));
+        }
+
+        // Remover o listener global caso o player existisse
+        const forceSaveProgress = () => {
+          if (currentOnTimeUpdate && currentTime > 0) {
+            currentOnTimeUpdate(Math.floor(currentTime));
+          }
+        };
+        window.removeEventListener("beforeunload", forceSaveProgress);
+
+        if (!player.isDisposed()) {
+          player.dispose();
+          playerRef.current = null;
+        }
       }
     };
-  }, []); // Only run once on mount
+  }, []); // Run once on mount
 
   // Watch for src changes to load new video
   useEffect(() => {
     const player = playerRef.current;
     if (player && src) {
+      hasResumedRef.current = false; // Reset resume flag for new video
       player.src({ src, type: getSourceType(src) });
-      player.currentTime(timeElapsed);
-      lastElapsedTimeSavedRef.current = timeElapsed;
+      
+      // Wait for video to load metadata before seeking
+      player.one('loadedmetadata', () => {
+        if (timeElapsed > 0 && !hasResumedRef.current) {
+          player.currentTime(timeElapsed);
+          lastElapsedTimeSavedRef.current = timeElapsed;
+          hasResumedRef.current = true;
+        }
+      });
+      
       isEndingTriggeredRef.current = false;
       player.play().catch((e) => console.log("Auto-play prevented", e));
     }
   }, [src, lessonId]);
+
+  // Update current time if fetched from API later
+  useEffect(() => {
+    const player = playerRef.current;
+    if (player && timeElapsed > 0 && !hasResumedRef.current) {
+      const duration = player.duration();
+      // If metadata is loaded and we haven't resumed yet
+      if (!isNaN(duration) && duration > 0) {
+        player.currentTime(timeElapsed);
+        lastElapsedTimeSavedRef.current = timeElapsed;
+        hasResumedRef.current = true;
+      }
+    }
+  }, [timeElapsed]);
 
   // Global Keyboard Shortcuts (J, K, L, Space, Arrows, M, F)
   useEffect(() => {
