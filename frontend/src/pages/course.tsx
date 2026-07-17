@@ -9,6 +9,7 @@ import LessonOverview from "@/components/lesson/lesson-overview";
 import { useParams, useSearchParams } from "react-router-dom";
 import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
+import { ChevronRight, Home } from "lucide-react";
 
 type Props = {};
 
@@ -77,8 +78,21 @@ export default function CoursePage({}: Props) {
           lesson={selectedLesson} 
           onLessonComplete={refreshCourseProgress}
         />
-        <div className="p-4 border-t border-white/10 flex-1">
-          <h3 className="text-left font-heading font-medium text-2xl tracking-tight text-white truncate" title={selectedLesson?.title}>{selectedLesson?.title}</h3>
+        <div className="p-6 border-t border-white/10 flex-1 flex flex-col justify-center bg-black/20">
+          <nav className="flex items-center space-x-1 text-sm font-medium text-white/50 mb-2 truncate">
+            <Home className="w-4 h-4 shrink-0" />
+            <ChevronRight className="w-4 h-4 shrink-0 mx-1 opacity-50" />
+            <span className="truncate hover:text-white transition-colors cursor-default" title={selectedLesson?.course_title}>
+              {selectedLesson?.course_title}
+            </span>
+            <ChevronRight className="w-4 h-4 shrink-0 mx-1 opacity-50" />
+            <span className="truncate hover:text-white transition-colors cursor-default" title={selectedLesson?.module}>
+              {selectedLesson?.module}
+            </span>
+          </nav>
+          <h3 className="text-left font-heading font-semibold text-3xl tracking-tight text-white truncate" title={selectedLesson?.title}>
+            {selectedLesson?.title}
+          </h3>
         </div>
       </div>
       <div className="lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0">

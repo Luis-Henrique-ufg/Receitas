@@ -1,35 +1,43 @@
-# Plataforma de Receitas
+<!-- prettier-ignore -->
+<div align="center">
 
-Frontend da plataforma de cursos em vídeo. A aplicação é feita com React, TypeScript e Vite e conversa com a API do backend para listar cursos, abrir aulas, registrar progresso, guardar anotações e baixar anexos.
+# Plataforma de Receitas (Front-end)
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![React](https://img.shields.io/badge/React-blue?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-purple?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+
+[Visão Geral](#visão-geral) • [Funcionalidades](#funcionalidades) • [Começando](#começando) • [Adicionando Cursos](#adicionando-novos-cursos)
+</div>
+
+Este é o front-end oficial da **Plataforma de Receitas**, uma aplicação robusta de cursos em vídeo construída com **React**, **TypeScript** e **Vite**. A interface consome a API do back-end para gerenciar cursos, reproduzir aulas, salvar anotações e baixar anexos.
+
+> [!NOTE]
+> Esta aplicação consome uma API externa. Para executar o projeto localmente com sucesso, certifique-se de que o back-end esteja rodando paralelamente.
+
+## Visão Geral
+
+A Plataforma de Receitas foi desenhada para oferecer uma experiência de aprendizado focada e limpa. A aplicação não só reproduz os vídeos das aulas, como também permite anotações vinculadas ao tempo do vídeo (timestamps), suporte a anexos (PDFs) e acompanhamento em tempo real do progresso de cada módulo e curso.
 
 ## Funcionalidades
 
-- Listagem de cursos com capa e progresso.
-- Reordenação por arrastar e soltar.
-- Cadastro manual de cursos com nome, caminho e capa opcional.
-- Edição e exclusão de cursos.
-- Player de aula com progresso de tempo assistido.
-- Anotações com timestamp.
-- Anexos por aula.
-- Configuração da URL da API nas preferências.
+- **Gerenciamento de Cursos**: Listagem dinâmica de cursos com acompanhamento de progresso.
+- **Player Inteligente**: Reprodutor de aulas com memória de tempo assistido e marcação de conclusão.
+- **Anotações**: Sistema de anotações com suporte a timestamps interativos.
+- **Materiais**: Suporte a downloads de anexos por aula.
+- **Customização e Edição**: Cadastro manual de cursos (nome, caminho e capa), edição, exclusão e reordenação (drag and drop).
+- **Configuração Simples**: Ajuste rápido da URL da API diretamente na aba de preferências.
 
----
+## Começando
 
-## Como rodar o projeto (Guia para Iniciantes)
+Você pode executar o projeto de duas maneiras: utilizando Docker Compose (ideal para subir todo o ecossistema rapidamente) ou executando o ambiente de desenvolvimento local (ideal para modificações).
 
-A forma mais simples de subir a plataforma (Frontend + Backend) em qualquer computador é utilizando o **Docker**. Como esse projeto é dividido em duas partes (Front e Back), vamos colocá-las juntas em uma mesma pasta para facilitar.
+### Opção 1: Execução com Docker (Recomendada)
 
-### 1. Preparando os arquivos
-Baixe o repositório principal no seu computador. 
+Caso queira executar a plataforma de forma simples:
 
-No terminal, você pode fazer assim:
-```bash
-git clone https://github.com/Luis-Henrique-ufg/Receitas.git
-cd Receitas
-```
-
-### 2. Criando o arquivo Docker Compose
-Dentro dessa pasta principal `Receitas`, crie um arquivo chamado `docker-compose.yml` e cole o seguinte conteúdo dentro dele:
+1. Certifique-se de ter o [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado.
+2. Crie um arquivo chamado `docker-compose.yml` e adicione a seguinte configuração:
 
 ```yml
 name: receitas
@@ -37,7 +45,7 @@ name: receitas
 services:
   front-end:
     container_name: front-end
-    build: ./frontend
+    image: ghcr.io/ryanrpj/frontend-plataforma-de-receitas:latest
     ports:
       - 5050:4173
     depends_on:
@@ -46,68 +54,64 @@ services:
 
   back-end:
     container_name: back-end
-    build: ./backend
+    image: ghcr.io/ryanrpj/backend-plataforma-de-receitas:latest
     restart: always
     ports:
       - 9823:9823
     volumes:
-      - ./courses:/courses:ro
+      - your-courses:/courses:ro
 ```
-> **Onde ficam os meus cursos?**
-> A linha `- ./courses:/courses:ro` significa que o sistema vai procurar os cursos numa pasta chamada `courses` junto dos seus arquivos. 
-> Se os seus vídeos estiverem na pasta de Downloads (por exemplo, de arquivos baixados via Torrent), basta mudar essa linha para apontar para lá. Exemplo no Windows:
-> `- C:\Users\SEU_NOME_DE_USUARIO\Downloads:/courses:ro`
 
-### 3. Subindo a Plataforma
-Agora é só abrir o terminal na pasta principal `Receitas` (onde está o seu `docker-compose.yml`) e rodar:
+> [!IMPORTANT]
+> Substitua `your-courses` pelo caminho absoluto no seu disco local onde os vídeos dos cursos estão armazenados.
+>
+> Exemplo correto: `- C:\Users\myuser\Downloads\courses:/courses:ro`  
+> Exemplo incorreto: `- C:\Users\myuser\Downloads\courses/courses:ro`
+
+3. Inicialize os containers:
 
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
-Aguarde alguns minutos enquanto o sistema prepara tudo. Quando terminar, acesse **`http://localhost:5050`** no seu navegador!
 
----
+4. Acesse a aplicação no navegador em `http://localhost:5050`.
 
-## Desenvolvimento Local (Sem Docker)
+### Opção 2: Desenvolvimento Local
 
-Se preferir rodar manualmente para fazer alterações no código (modo desenvolvedor):
+Caso deseje fazer modificações na interface, você pode iniciar o servidor de desenvolvimento do Vite:
 
-1. Garanta que o backend esteja rodando primeiro na porta `9823`. (Siga o README do backend).
-2. Entre na pasta do frontend:
-```bash
-cd frontend
-```
-3. Instale as dependências:
+1. Garanta que o back-end da aplicação esteja em execução, tipicamente em `http://localhost:9823`. Se necessário, acesse as **Configurações** no front-end para redefinir a URL da API.
+2. Instale as dependências:
+
 ```bash
 npm install
 ```
-4. Inicie o servidor:
+
+3. Inicie o servidor do Vite:
+
 ```bash
 npm run dev -- --host 0.0.0.0
 ```
-5. Acesse **`http://localhost:5173`** no seu navegador.
 
----
+4. O Vite iniciará o servidor, geralmente disponível em `http://localhost:5173`.
 
-## Como adicionar cursos
+## Adicionando Novos Cursos
 
-1. Acesse a tela **Meus Cursos**.
-2. Clique em **Adicionar manualmente**.
-3. Informe o nome do curso.
-4. Informe o caminho da pasta do curso.
-5. Se quiser, adicione uma capa por URL ou arquivo.
-6. Confirme para cadastrar.
+Para importar um curso local para dentro da plataforma:
 
-> **Dica:** Se você colar um caminho completo do Windows, a interface usa automaticamente a última pasta do caminho como nome da pasta do curso.
+1. Navegue até a tela **Meus Cursos**.
+2. Clique no botão **Adicionar manualmente**.
+3. Preencha os campos de nome e o caminho exato da pasta do curso.
+4. (Opcional) Forneça uma URL ou um arquivo local para a capa.
+5. Salve as alterações.
 
-## Como configurar a API
+> [!TIP]
+> Ao colar o caminho completo de uma pasta no Windows, a interface utilizará automaticamente o nome da última pasta como sugestão para o nome do curso.
 
-Se o backend não estiver em `http://localhost:9823`, abra **Configurações** no menu da interface e ajuste a URL da API para o endereço correto.
+## Scripts
 
-## Scripts Úteis para Desenvolvedores
+Você pode utilizar os seguintes comandos Node.js (disponíveis no `package.json`):
 
-```bash
-npm run dev      # Roda o servidor local
-npm run build    # Compila o projeto para produção
-npm run preview  # Pre-visualiza o build de produção
-```
+- `npm run dev`: Inicia o servidor local de desenvolvimento com Hot-Reload.
+- `npm run build`: Compila a aplicação para arquivos estáticos otimizados para produção.
+- `npm run preview`: Inicia um servidor simples para visualizar a versão compilada.
