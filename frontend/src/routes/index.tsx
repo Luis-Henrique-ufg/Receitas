@@ -27,12 +27,6 @@ export default function Router({}: Props) {
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
 
-      if (target.closest('.video-js')) {
-        cursor.style.opacity = '0';
-      } else {
-        cursor.style.opacity = '';
-      }
-
       if (
         target.tagName.toLowerCase() === 'button' || 
         target.tagName.toLowerCase() === 'a' || 

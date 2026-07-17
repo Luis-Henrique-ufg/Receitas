@@ -146,14 +146,7 @@ export default function ModuleList({
                 <div className="w-full flex items-start justify-between group/module min-w-0">
                   <div className="flex-1 space-y-2 pr-4 text-left min-w-0">
                     <div className="text-sm font-medium text-white/90 leading-relaxed font-heading truncate mt-1">
-                      {title.split("/").map((part, i, arr) => (
-                        <span key={i}>
-                          {part}
-                          {i < arr.length - 1 && (
-                            <span className="mx-2 text-white/30 text-[10px] font-sans">&gt;</span>
-                          )}
-                        </span>
-                      ))}
+                      {title.split("/").pop()?.trim()}
                     </div>
 
                     <ProgressCard

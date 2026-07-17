@@ -9,7 +9,6 @@ import LessonOverview from "@/components/lesson/lesson-overview";
 import { useParams, useSearchParams } from "react-router-dom";
 import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
-import { ChevronRight, Home } from "lucide-react";
 
 type Props = {};
 
@@ -75,22 +74,15 @@ export default function CoursePage({}: Props) {
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:h-[calc(100vh-136px)]">
       <div className="w-full lg:col-span-7 flex flex-col lg:h-full glass-panel rounded-2xl overflow-hidden min-w-0 bg-black/40">
         <LessonViewer 
+          key={selectedLesson?.id}
           lesson={selectedLesson} 
           onLessonComplete={refreshCourseProgress}
         />
-        <div className="p-6 border-t border-white/10 flex-1 flex flex-col justify-center bg-black/20">
-          <nav className="flex items-center space-x-1 text-sm font-medium text-white/50 mb-2 truncate">
-            <Home className="w-4 h-4 shrink-0" />
-            <ChevronRight className="w-4 h-4 shrink-0 mx-1 opacity-50" />
-            <span className="truncate hover:text-white transition-colors cursor-default" title={selectedLesson?.course_title}>
-              {selectedLesson?.course_title}
-            </span>
-            <ChevronRight className="w-4 h-4 shrink-0 mx-1 opacity-50" />
-            <span className="truncate hover:text-white transition-colors cursor-default" title={selectedLesson?.module}>
-              {selectedLesson?.module}
-            </span>
-          </nav>
-          <h3 className="text-left font-heading font-semibold text-3xl tracking-tight text-white truncate" title={selectedLesson?.title}>
+        <div className="p-4 border-t border-white/10 flex-1">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-white/50 mb-2 truncate">
+            {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
+          </div>
+          <h3 className="text-left font-heading font-medium text-2xl tracking-tight text-white truncate max-[1366px]:hidden" title={selectedLesson?.title}>
             {selectedLesson?.title}
           </h3>
         </div>
@@ -107,10 +99,10 @@ export default function CoursePage({}: Props) {
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full flex-1 flex flex-col min-h-0">
           <div className="w-full border-b border-white/10 shrink-0">
             <TabsList className="flex w-full bg-transparent p-0 overflow-x-auto custom-scrollbar overflow-y-hidden justify-start border-none">
-              <TabsTrigger value="videos" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Vídeos</TabsTrigger>
-              <TabsTrigger value="overview" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Visão Geral</TabsTrigger>
-              <TabsTrigger value="attachments" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Anexos e Materiais</TabsTrigger>
-              <TabsTrigger value="notes" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors">Anotações</TabsTrigger>
+              <TabsTrigger value="videos" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Vídeos</TabsTrigger>
+              <TabsTrigger value="overview" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Visão Geral</TabsTrigger>
+              <TabsTrigger value="attachments" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Anexos e Materiais</TabsTrigger>
+              <TabsTrigger value="notes" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Anotações</TabsTrigger>
             </TabsList>
           </div>
           

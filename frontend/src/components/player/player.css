@@ -6,10 +6,10 @@
 
 
 /* Fix Fullscreen Cursor */
-.video-js, .video-js * {
+.vjs-fullscreen.video-js, .vjs-fullscreen.video-js * {
   cursor: auto !important;
 }
-.video-js .vjs-button, .video-js .vjs-button * {
+.vjs-fullscreen.video-js .vjs-control {
   cursor: pointer !important;
 }
 
