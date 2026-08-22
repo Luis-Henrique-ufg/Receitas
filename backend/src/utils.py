@@ -26,6 +26,8 @@ def translate_to_container_path(host_path):
                 
     return host_path
 
+VIDEO_EXTENSIONS = ('.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.webm', '.ts', '.m4v', '.3gp')
+
 def list_and_register_lessons_in_directory(directory, course_id, hierarchy_prefix="", original_base_path=None):
     if original_base_path is None:
         original_base_path = directory
@@ -46,17 +48,16 @@ def list_and_register_lessons_in_directory(directory, course_id, hierarchy_prefi
             host_entry_path = f"{directory}{sep}{entry.name}"
             
             list_and_register_lessons_in_directory(host_entry_path, course_id, new_hierarchy_prefix, original_base_path)
-        elif entry.is_file() and entry.name.lower().endswith((".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv", ".webm", ".pdf", ".ts", ".txt", "html")):
+        elif entry.is_file() and entry.name.lower().endswith(VIDEO_EXTENSIONS):
             title = os.path.splitext(entry.name)[0]
-            is_pdf = entry.name.lower().endswith(".pdf")
 
             duration = get_video_duration_v1(entry.path)
             
             sep = "\\" if "\\" in original_base_path else "/"
             host_entry_path = f"{directory}{sep}{entry.name}"
             
-            video_url = "" if is_pdf else host_entry_path
-            pdf_url = host_entry_path if is_pdf else ""
+            video_url = host_entry_path
+            pdf_url = ""
 
             lesson = Lesson(
                 course_id=course_id,

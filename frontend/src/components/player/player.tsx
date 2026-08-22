@@ -117,6 +117,9 @@ export function Player({
       };
 
       player.on("play", () => {
+        if ((player.currentTime() || 0) > 1) {
+          hasResumedRef.current = true;
+        }
         if (onPlay) onPlay();
       });
 
@@ -126,18 +129,43 @@ export function Player({
 
       window.addEventListener("beforeunload", forceSaveProgress);
 
+      const triggerLessonCompletion = () => {
+        if (!isEndingTriggeredRef.current) {
+          isEndingTriggeredRef.current = true;
+          const { lessonId: currentLessonId, isEnding: currentIsEnding, apiUrl: currentApiUrl } = latestProps.current;
+
+          window.dispatchEvent(
+            new CustomEvent("lessonCompleted", { detail: { lessonId: currentLessonId, isCompleted: true } })
+          );
+
+          completeLesson(currentApiUrl, currentLessonId).then(() => {
+            if (currentIsEnding) {
+              currentIsEnding(currentLessonId, true);
+            }
+          });
+        }
+      };
+
+      player.on("ended", () => {
+        triggerLessonCompletion();
+      });
+
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() || 0;
         const duration = player.duration() || 0;
 
         if (duration === 0) return;
 
+        if (currentTime > 1) {
+          hasResumedRef.current = true;
+        }
+
         // Custom event for external listeners
         window.dispatchEvent(
           new CustomEvent("playerTimeUpdate", { detail: currentTime })
         );
 
-        const { lessonId: currentLessonId, isEnding: currentIsEnding, apiUrl: currentApiUrl, onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
+        const { lessonId: currentLessonId, apiUrl: currentApiUrl, onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
 
         // Progress saving (every 10 seconds)
         const currentSecondsElapsed = Math.floor(currentTime);
@@ -155,12 +183,7 @@ export function Player({
         // Completion logic at 95%
         const percent = currentTime / duration;
         if (percent >= 0.95 && !isEndingTriggeredRef.current && currentTime > 0) {
-          isEndingTriggeredRef.current = true;
-          completeLesson(currentApiUrl, currentLessonId).then(() => {
-            if (currentIsEnding) {
-              currentIsEnding(currentLessonId, true);
-            }
-          });
+          triggerLessonCompletion();
         } else if (percent < 0.95) {
           isEndingTriggeredRef.current = false;
         }
@@ -193,24 +216,29 @@ export function Player({
     };
   }, []); // Run once on mount
 
+  const currentActiveLessonIdRef = useRef(lessonId);
+
   // Watch for src changes to load new video
   useEffect(() => {
     const player = playerRef.current;
     if (player && src) {
-      hasResumedRef.current = false; // Reset resume flag for new video
-      player.src({ src, type: getSourceType(src) });
-      
-      // Wait for video to load metadata before seeking
-      player.one('loadedmetadata', () => {
-        if (timeElapsed > 0 && !hasResumedRef.current) {
-          player.currentTime(timeElapsed);
-          lastElapsedTimeSavedRef.current = timeElapsed;
-          hasResumedRef.current = true;
-        }
-      });
-      
-      isEndingTriggeredRef.current = false;
-      player.play().catch((e) => console.log("Auto-play prevented", e));
+      if (currentActiveLessonIdRef.current !== lessonId) {
+        currentActiveLessonIdRef.current = lessonId;
+        hasResumedRef.current = false; // Reset resume flag ONLY when changing to a new lesson
+        player.src({ src, type: getSourceType(src) });
+        
+        // Wait for video to load metadata before seeking
+        player.one('loadedmetadata', () => {
+          if (timeElapsed > 0 && !hasResumedRef.current) {
+            player.currentTime(timeElapsed);
+            lastElapsedTimeSavedRef.current = timeElapsed;
+            hasResumedRef.current = true;
+          }
+        });
+        
+        isEndingTriggeredRef.current = false;
+        player.play().catch((e) => console.log("Auto-play prevented", e));
+      }
     }
   }, [src, lessonId]);
 
@@ -218,11 +246,16 @@ export function Player({
   useEffect(() => {
     const player = playerRef.current;
     if (player && timeElapsed > 0 && !hasResumedRef.current) {
-      const duration = player.duration();
-      // If metadata is loaded and we haven't resumed yet
-      if (!isNaN(duration) && duration > 0) {
-        player.currentTime(timeElapsed);
-        lastElapsedTimeSavedRef.current = timeElapsed;
+      const currentPos = player.currentTime() || 0;
+      if (currentPos < 1) {
+        const duration = player.duration();
+        // If metadata is loaded and we haven't resumed yet
+        if (!isNaN(duration) && duration > 0) {
+          player.currentTime(timeElapsed);
+          lastElapsedTimeSavedRef.current = timeElapsed;
+          hasResumedRef.current = true;
+        }
+      } else {
         hasResumedRef.current = true;
       }
     }

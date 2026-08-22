@@ -53,18 +53,35 @@ function normalizeLessons(lessons: Lesson[] | Hierarchy | unknown): Lesson[] {
 export function calculateCompletionPercentage(lessons: Lesson[] | Hierarchy | unknown): number {
   const normalizedLessons = normalizeLessons(lessons);
   const totalLessons = normalizedLessons.length;
+  if (totalLessons === 0) return 0;
   const completedLessons = normalizedLessons.filter(
-    (lesson) => lesson.isCompleted === 1
+    (lesson) => Boolean(lesson.isCompleted)
   ).length;
   const percentage = (completedLessons / totalLessons) * 100;
 
-  return percentage;
+  return Math.round(percentage);
+}
+
+export function getLessonStats(lessons: Lesson[] | Hierarchy | unknown): {
+  total: number;
+  completed: number;
+  remaining: number;
+  percentage: number;
+} {
+  const normalizedLessons = normalizeLessons(lessons);
+  const total = normalizedLessons.length;
+  if (total === 0) return { total: 0, completed: 0, remaining: 0, percentage: 0 };
+  const completed = normalizedLessons.filter((l) => Boolean(l.isCompleted)).length;
+  const remaining = Math.max(0, total - completed);
+  const percentage = Math.round((completed / total) * 100);
+  return { total, completed, remaining, percentage };
 }
 
 export function calculateCourseProgress(lessons: Lesson[] | Hierarchy | unknown) {
   const normalizedLessons = normalizeLessons(lessons);
-  const completed = normalizedLessons.filter((l) => l.isCompleted);
-  return (completed.length / normalizedLessons.length) * 100;
+  if (normalizedLessons.length === 0) return 0;
+  const completed = normalizedLessons.filter((l) => Boolean(l.isCompleted));
+  return Math.round((completed.length / normalizedLessons.length) * 100);
 }
 
 export function getLastViewedLesson(courseId: string) {

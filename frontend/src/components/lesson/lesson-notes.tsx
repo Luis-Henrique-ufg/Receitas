@@ -67,7 +67,7 @@ export default function LessonNotes({
           <p className="text-white/50 text-center py-4">Nenhuma anotação para esta aula ainda.</p>
         ) : (
           notes.map(note => (
-            <div key={note.id} className="glass-panel p-3 rounded-lg group">
+            <div key={note.id} className="glass-panel glass-panel-interactive p-3 rounded-lg group">
               <div className="flex justify-between items-start mb-2">
                 <button 
                   onClick={() => onSeek(note.time)}

@@ -10,6 +10,7 @@ import useSelectedLesson from "@/hooks/useSelectedLesson";
 
 import {
   calculateCompletionPercentage,
+  getLessonStats,
 } from "@/utils/utils";
 import {
   Tooltip,
@@ -111,7 +112,7 @@ export default function ModuleList({
     e.stopPropagation();
     setCompletingModule(title);
     try {
-      const incompleteLessons = lessons.filter((l) => !l.completed);
+      const incompleteLessons = lessons.filter((l) => !l.isCompleted);
       await Promise.all(incompleteLessons.map((l) => completeLesson(apiUrl, l.id, true)));
       if (incompleteLessons.length > 0) {
         toast.success("Módulo concluído");
@@ -136,64 +137,75 @@ export default function ModuleList({
               sensitivity: "base",
             })
           )
-          .map(([title, lessons], index) => (
-            <AccordionItem
-              className="p-4 w-full min-w-0"
-              value={`${title}-${index}`}
-              key={`${title}-${index}`}
-            >
-              <AccordionTrigger className="w-full min-w-0" title={title}>
-                <div className="w-full flex items-start justify-between group/module min-w-0">
-                  <div className="flex-1 space-y-2 pr-4 text-left min-w-0">
-                    <div className="text-sm font-medium text-white/90 leading-relaxed font-heading truncate mt-1">
-                      {title.split("/").pop()?.trim()}
-                    </div>
+          .map(([title, lessons], index) => {
+            const validLessons = lessons.filter((l) => {
+              const url = (l.video_url || l.pdf_url || "").toLowerCase();
+              return !url.endsWith(".html") && !url.endsWith(".htm") && !url.endsWith(".txt");
+            });
+            const stats = getLessonStats(validLessons);
 
-                    <ProgressCard
-                      value={calculateCompletionPercentage(lessons)}
-                    />
+            return (
+              <AccordionItem
+                className="px-4 py-2 w-full min-w-0"
+                value={`${title}-${index}`}
+                key={`${title}-${index}`}
+              >
+                <AccordionTrigger className="w-full min-w-0" title={title}>
+                  <div className="w-full flex items-start justify-between group/module min-w-0">
+                    <div className="flex-1 space-y-2 pr-4 text-left min-w-0">
+                      <div className="text-sm font-medium text-white/90 leading-relaxed font-heading truncate mt-1">
+                        {title.split("/").pop()?.trim()}
+                      </div>
+
+                      <ProgressCard
+                        value={stats.percentage}
+                        totalLessons={stats.total}
+                        completedLessons={stats.completed}
+                        showTitle={false}
+                      />
+                    </div>
+                    
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div 
+                            className="p-1 flex items-center justify-center min-w-[32px] min-h-[32px] shrink-0 hover:bg-white/5 rounded-full transition-colors cursor-pointer"
+                            onClick={(e) => { e.stopPropagation(); handleCompleteModule(e, title, lessons); }}
+                          >
+                            {completingModule === title ? (
+                              <Loader2 className="w-5 h-5 animate-spin text-[#007bff]" />
+                            ) : (
+                              <Checkbox 
+                                checked={stats.percentage === 100}
+                                className="border-white/30 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-emerald-500 data-[state=checked]:to-teal-500 data-[state=checked]:border-emerald-400 data-[state=checked]:shadow-[0_0_12px_rgba(16,185,129,0.4)] w-5 h-5 pointer-events-none transition-all duration-300"
+                              />
+                            )}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Marcar módulo como concluído</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
-                  
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div 
-                          className="p-1 flex items-center justify-center min-w-[32px] min-h-[32px] shrink-0 hover:bg-white/5 rounded-full transition-colors cursor-pointer"
-                          onClick={(e) => { e.stopPropagation(); handleCompleteModule(e, title, lessons); }}
-                        >
-                          {completingModule === title ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-[#007bff]" />
-                          ) : (
-                            <Checkbox 
-                              checked={calculateCompletionPercentage(lessons) === 100}
-                              className="border-white/30 data-[state=checked]:bg-[#007bff] data-[state=checked]:border-[#007bff] w-5 h-5 pointer-events-none"
-                            />
-                          )}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Marcar módulo como concluído</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                {lessons.map((lesson, index) => (
-                  <LessonListItem
-                    key={lesson.id}
-                    lesson={lesson}
-                    index={index + 1}
-                    onSelect={() => {
-                      onLessonSelect(lesson);
-                    }}
-                    selectedLessonId={selectedLessonId}
-                    onComplete={handleCompleteLesson}
-                  />
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+                </AccordionTrigger>
+                <AccordionContent>
+                  {validLessons.map((lesson, index) => (
+                    <LessonListItem
+                      key={lesson.id}
+                      lesson={lesson}
+                      index={index + 1}
+                      onSelect={() => {
+                        onLessonSelect(lesson);
+                      }}
+                      selectedLessonId={selectedLessonId}
+                      onComplete={handleCompleteLesson}
+                    />
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
       </Accordion>
     </div>
   );

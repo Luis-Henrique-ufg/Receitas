@@ -37,6 +37,11 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
   useEffect(() => {
     if (!lesson) return;
 
+    if (currentLessonIdRef.current === lesson.id) {
+      return;
+    }
+    currentLessonIdRef.current = lesson.id;
+
     const fetchElapsedTime = async () => {
       try {
         const res = await axios.get(`${apiUrl}/api/lessons/${lesson.id}`);
@@ -47,9 +52,7 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
     };
 
     fetchElapsedTime();
-
-    currentLessonIdRef.current = lesson.id;
-  }, [lesson, apiUrl]);
+  }, [lesson?.id, apiUrl]);
 
   const handleTimeUpdate = (currentTime: number) => {
     if (!lesson) return;

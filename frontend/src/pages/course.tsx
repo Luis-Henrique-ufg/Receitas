@@ -5,7 +5,6 @@ import CoursePercentage from "@/components/course-percentage";
 import LastWatchedCard from "@/components/lesson/last-watched-card";
 import LessonViewer from "@/components/lesson/lesson-viewer";
 import ModuleList from "@/components/lesson/module-list";
-import LessonOverview from "@/components/lesson/lesson-overview";
 import { useParams, useSearchParams } from "react-router-dom";
 import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
@@ -15,7 +14,8 @@ type Props = {};
 export default function CoursePage({}: Props) {
   const { courseId } = useParams<{ courseId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentTab = searchParams.get("tab") || "videos";
+  const tabParam = searchParams.get("tab");
+  const currentTab = tabParam === "overview" || !tabParam ? "videos" : tabParam;
 
   const handleTabChange = (value: string) => {
     setSearchParams((prev) => {
@@ -97,12 +97,11 @@ export default function CoursePage({}: Props) {
         </div>
         
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full flex-1 flex flex-col min-h-0">
-          <div className="w-full border-b border-white/10 shrink-0">
-            <TabsList className="flex w-full bg-transparent p-0 overflow-x-auto custom-scrollbar overflow-y-hidden justify-start border-none">
-              <TabsTrigger value="videos" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Vídeos</TabsTrigger>
-              <TabsTrigger value="overview" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Visão Geral</TabsTrigger>
-              <TabsTrigger value="attachments" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Anexos e Materiais</TabsTrigger>
-              <TabsTrigger value="notes" className="flex-1 shrink-0 min-w-max rounded-none border-b-2 border-transparent data-[state=active]:border-[#007bff] data-[state=active]:text-[#007bff] data-[state=active]:shadow-none text-white/60 bg-transparent px-4 py-3 transition-colors max-[1366px]:px-2 max-[1366px]:text-xs">Anotações</TabsTrigger>
+          <div className="w-full border-b border-white/10 shrink-0 px-6 py-2">
+            <TabsList className="flex w-full bg-transparent p-0 justify-between items-center border-none gap-2">
+              <TabsTrigger value="videos" className="flex-1 rounded-lg py-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Vídeos</TabsTrigger>
+              <TabsTrigger value="attachments" className="flex-1 rounded-lg py-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Anexos e Materiais</TabsTrigger>
+              <TabsTrigger value="notes" className="flex-1 rounded-lg py-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Anotações</TabsTrigger>
             </TabsList>
           </div>
           
@@ -115,9 +114,6 @@ export default function CoursePage({}: Props) {
                 onUpdate={refreshCourseProgress}
                 onLessonSelect={selectCourseLesson}
               />
-            </TabsContent>
-            <TabsContent value="overview" className="m-0 mt-0 h-full outline-none p-4">
-              <LessonOverview lesson={selectedLesson} />
             </TabsContent>
             <TabsContent value="attachments" className="m-0 mt-0 h-full outline-none p-4">
               <LessonAttachments

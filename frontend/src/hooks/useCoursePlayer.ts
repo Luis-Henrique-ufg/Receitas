@@ -25,6 +25,16 @@ export default function useCoursePlayer(courseId?: string) {
       }
 
       const fetchedModules = await getLessons(apiUrl, Number(courseId));
+      const cleanModules: Modules = {};
+      for (const [mod, lessons] of Object.entries(fetchedModules)) {
+        const videoLessons = lessons.filter((l) => {
+          const path = (l.video_url || l.pdf_url || "").toLowerCase();
+          return !path.endsWith(".html") && !path.endsWith(".htm") && !path.endsWith(".txt");
+        });
+        if (videoLessons.length > 0) {
+          cleanModules[mod] = videoLessons;
+        }
+      }
 
       if (!minimal) {
         const lastWatched = getLastViewedLesson(courseId);
@@ -32,15 +42,23 @@ export default function useCoursePlayer(courseId?: string) {
         if (lastWatched) {
           selectLesson(lastWatched);
         } else {
-          const firstModule = Object.keys(fetchedModules)[0];
+          const firstModule = Object.keys(cleanModules)[0];
 
-          if (fetchedModules[firstModule]?.length > 0) {
-            selectLesson(fetchedModules[firstModule][0]);
+          if (cleanModules[firstModule]?.length > 0) {
+            selectLesson(cleanModules[firstModule][0]);
+          }
+        }
+      } else if (selectedLesson) {
+        for (const lessons of Object.values(cleanModules)) {
+          const found = lessons.find((l) => l.id === selectedLesson.id);
+          if (found) {
+            selectLesson(found);
+            break;
           }
         }
       }
 
-      setModules(fetchedModules);
+      setModules(cleanModules);
     } catch {
       console.log("Ocorreu um erro");
     } finally {

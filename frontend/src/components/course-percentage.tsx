@@ -9,12 +9,15 @@ import ProgressCard from "./progress-card";
 type Props = {
   courseId: number;
   fromGlobal?: boolean;
+  showTitle?: boolean;
 };
 
-function CoursePercentage({ courseId, fromGlobal = false }: Props) {
-  const [completionPercentage, setCompletionPercentage] = useState<
-    number | null
-  >(null);
+function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Props) {
+  const [courseStats, setCourseStats] = useState<{
+    percentage: number | null;
+    total: number | null;
+    completed: number | null;
+  }>({ percentage: null, total: null, completed: null });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { apiUrl } = useApiUrl();
@@ -22,10 +25,14 @@ function CoursePercentage({ courseId, fromGlobal = false }: Props) {
   const {
     isLoading: globalLoading,
     completionPercentage: globalPercentage,
+    totalLessons: globalTotal,
+    completedLessons: globalCompleted,
     fetchCompletion,
   } = useCourseCompletion();
 
-  const percentage = fromGlobal ? globalPercentage : completionPercentage;
+  const percentage = fromGlobal ? globalPercentage : courseStats.percentage;
+  const total = fromGlobal ? globalTotal : courseStats.total;
+  const completed = fromGlobal ? globalCompleted : courseStats.completed;
 
   useEffect(() => {
     if (fromGlobal) {
@@ -39,7 +46,11 @@ function CoursePercentage({ courseId, fromGlobal = false }: Props) {
           `${apiUrl}/api/courses/${courseId}/completed_percentage`
         );
         const data = response.data;
-        setCompletionPercentage(data.completion_percentage);
+        setCourseStats({
+          percentage: data.completion_percentage,
+          total: data.total_lessons ?? null,
+          completed: data.completed_lessons ?? null,
+        });
       } catch (error) {
         console.error(
           "Erro ao buscar a porcentagem de conclusão do curso:",
@@ -51,16 +62,21 @@ function CoursePercentage({ courseId, fromGlobal = false }: Props) {
     };
 
     fetchCompletionPercentage();
-  }, []);
+  }, [courseId, fromGlobal, apiUrl]);
 
   return (
-    <div>
+    <div className="w-full">
       {(fromGlobal ? globalLoading : isLoading) ? (
         <Loading />
       ) : (
         <div>
           {percentage !== null ? (
-            <ProgressCard value={percentage} />
+            <ProgressCard
+              value={percentage}
+              totalLessons={total}
+              completedLessons={completed}
+              showTitle={showTitle}
+            />
           ) : (
             <div className="text-xs text-red-500">
               Erro ao carregar a porcentagem de conclusão do curso

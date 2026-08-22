@@ -14,15 +14,14 @@ function Header() {
       <div className="max-w-7xl mx-auto glass-panel rounded-full px-6 py-3 flex flex-wrap items-center justify-between gap-4">
         <div
           onClick={() => handleNavigate("/")}
-          className="inline-flex flex-wrap gap-3 cursor-pointer font-medium text-xl items-center cursor-hover"
+          className="glass-panel glass-panel-hover px-4 py-2 rounded-full inline-flex items-center gap-2.5 cursor-pointer font-medium text-xl cursor-hover group border border-white/10 select-none"
         >
-          <Cookie className="w-8 h-8 text-[#007bff]" /> <span className="font-heading font-bold tracking-tighter">Receitas</span>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#007bff] to-[#00bfff] flex items-center justify-center shadow-[0_4px_10px_rgba(0,123,255,0.4)] group-hover:scale-110 transition-transform duration-300">
+            <Cookie className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-heading font-bold tracking-tighter text-white">Receitas</span>
         </div>
         <div className="flex flex-wrap gap-4 items-center">
-          <Button onClick={() => handleNavigate("/receitas")} variant="link">
-            Meus cursos
-          </Button>
-
           <Button
             onClick={() => handleNavigate("/configuracoes")}
             variant="link"

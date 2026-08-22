@@ -32,15 +32,42 @@ export default function LessonListItem({
   onComplete,
 }: Props) {
   const [isCompleted, setIsCompleted] = useState(() => {
-    const localVal = localStorage.getItem(`lesson_progress_${lesson.id}`);
-    if (localVal !== null) {
-      return localVal === "true";
+    const isPending = localStorage.getItem(`lesson_pending_${lesson.id}`) === "true";
+    if (isPending) {
+      const localVal = localStorage.getItem(`lesson_progress_${lesson.id}`);
+      if (localVal !== null) {
+        return localVal === "true";
+      }
     }
     return Boolean(lesson.isCompleted);
   });
   const [isUpdating, setIsUpdating] = useState(false);
 
   const { apiUrl } = useApiUrl();
+
+  // Sincroniza o estado quando as propriedades da aula mudarem (ex: refresh após término do vídeo)
+  useEffect(() => {
+    const isPending = localStorage.getItem(`lesson_pending_${lesson.id}`) === "true";
+    if (!isPending) {
+      const serverVal = Boolean(lesson.isCompleted);
+      setIsCompleted(serverVal);
+      localStorage.setItem(`lesson_progress_${lesson.id}`, String(serverVal));
+    }
+  }, [lesson.id, lesson.isCompleted]);
+
+  // Listener para evento em tempo real de conclusão da aula (preenchimento visual instantâneo)
+  useEffect(() => {
+    const handleLessonCompleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ lessonId: number; isCompleted?: boolean }>;
+      if (customEvent.detail && customEvent.detail.lessonId === lesson.id) {
+        const nextState = customEvent.detail.isCompleted ?? true;
+        setIsCompleted(nextState);
+        localStorage.setItem(`lesson_progress_${lesson.id}`, String(nextState));
+      }
+    };
+    window.addEventListener("lessonCompleted", handleLessonCompleted);
+    return () => window.removeEventListener("lessonCompleted", handleLessonCompleted);
+  }, [lesson.id]);
 
   // Tenta sincronizar alterações pendentes quando o componente montar
   useEffect(() => {
@@ -70,6 +97,12 @@ export default function LessonListItem({
     localStorage.setItem(`lesson_progress_${lesson.id}`, String(newState));
     localStorage.setItem(`lesson_pending_${lesson.id}`, "true");
 
+    window.dispatchEvent(
+      new CustomEvent("lessonCompleted", {
+        detail: { lessonId: lesson.id, isCompleted: newState },
+      })
+    );
+
     try {
       await axios.post(`${apiUrl}/api/update-lesson-progress`, {
         lessonId: lesson.id,
@@ -94,10 +127,12 @@ export default function LessonListItem({
       id={`lesson-item-${lesson.id}`}
       style={{ contentVisibility: "auto" }}
       className={cn(
-        `relative flex justify-between items-center w-full h-16 my-4 border shadow-sm rounded-xl transition-all duration-500 overflow-hidden group/item cursor-pointer`,
+        `relative flex justify-between items-center w-full h-16 my-2 border shadow-sm rounded-xl transition-all duration-300 overflow-hidden group/item cursor-pointer glass-panel-brighten`,
         isActive
-          ? "bg-gradient-to-r from-blue-900/40 to-purple-900/20 border-[#007bff]/50 shadow-[0_0_20px_rgba(0,123,255,0.15)]"
-          : "border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10"
+          ? "bg-gradient-to-r from-blue-900/40 to-purple-900/20 border-[#007bff]/50 shadow-[0_0_20px_rgba(0,123,255,0.15)] scale-[1.01]"
+          : isCompleted
+          ? "border-emerald-500/20 bg-emerald-950/10 hover:border-emerald-500/40 hover:bg-emerald-950/20 hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(16,185,129,0.12)]"
+          : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:scale-[1.02]"
       )}
     >
       {isActive && (
@@ -111,6 +146,10 @@ export default function LessonListItem({
           <div className="w-8 h-8 flex items-center justify-center bg-[#007bff] rounded-full shadow-[0_0_15px_rgba(0,123,255,0.6)] animate-pulse">
             <Play className="w-4 h-4 text-white fill-white ml-0.5" />
           </div>
+        ) : isCompleted ? (
+          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-heading font-semibold shadow-[0_0_10px_rgba(16,185,129,0.15)]">
+            {index.toString().padStart(2, "0")}
+          </span>
         ) : (
           <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-heading font-medium">
             {index.toString().padStart(2, "0")}
@@ -122,7 +161,11 @@ export default function LessonListItem({
             <TooltipTrigger asChild>
               <p className={cn(
                 "flex-1 line-clamp-1 text-left text-sm font-medium transition-colors",
-                isActive ? "text-white" : "text-white/70 group-hover/item:text-white"
+                isActive
+                  ? "text-white font-semibold"
+                  : isCompleted
+                  ? "text-white/90 group-hover/item:text-white"
+                  : "text-white/70 group-hover/item:text-white"
               )}>
                 {lesson.title}
               </p>
@@ -141,9 +184,15 @@ export default function LessonListItem({
           }
         </span>
         {lesson.duration != "0" && (
-          <span className="bg-[#007bff]/10 border border-[#007bff]/20 text-[#007bff] px-2 py-1 rounded text-[10px] font-bold tracking-wider">
-            {formatDuration(Number(lesson.duration))}
-          </span>
+          isCompleted ? (
+            <span className="bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border border-emerald-500/30 text-emerald-400 px-2 py-1 rounded text-[10px] font-bold tracking-wider shadow-[0_0_8px_rgba(16,185,129,0.1)]">
+              {formatDuration(Number(lesson.duration))}
+            </span>
+          ) : (
+            <span className="bg-[#007bff]/10 border border-[#007bff]/20 text-[#007bff] px-2 py-1 rounded text-[10px] font-bold tracking-wider">
+              {formatDuration(Number(lesson.duration))}
+            </span>
+          )
         )}
       </div>
       <div className="shrink-0 flex items-center justify-center relative z-10 pr-6 pl-2">
@@ -154,7 +203,12 @@ export default function LessonListItem({
             <Checkbox 
               checked={isCompleted} 
               onCheckedChange={toggleIsCompleted} 
-              className="border-white/30 data-[state=checked]:bg-[#007bff] data-[state=checked]:border-[#007bff] w-5 h-5"
+              className={cn(
+                "w-5 h-5 transition-all duration-300",
+                isCompleted
+                  ? "border-emerald-500/40 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-emerald-500 data-[state=checked]:to-teal-500 data-[state=checked]:border-emerald-400 data-[state=checked]:shadow-[0_0_12px_rgba(16,185,129,0.4)]"
+                  : "border-white/30 hover:border-white/60"
+              )}
             />
           )}
         </div>
