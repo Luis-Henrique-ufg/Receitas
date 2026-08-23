@@ -17,16 +17,29 @@ export default function ProgressCard({
 }: Props) {
   const roundedValue = Math.round(Number(value) || 0);
   
-  const getStatusText = () => {
-    if (roundedValue === 0) return "Não iniciado";
-    if (roundedValue === 100) return "Concluído";
-    return "Em andamento";
-  };
-
-  const getStatusColor = () => {
-    if (roundedValue === 0) return "text-white/40 border-white/10 bg-white/5";
-    if (roundedValue === 100) return "text-emerald-400 border-emerald-400/30 bg-emerald-400/10 shadow-[0_0_10px_rgba(16,185,129,0.15)]";
-    return "text-[#29C5F6] border-[#007bff]/30 bg-[#007bff]/10 shadow-[0_0_10px_rgba(0,123,255,0.15)]";
+  const getStatusBadge = () => {
+    if (roundedValue === 0) {
+      return (
+        <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white/50 border border-white/5 bg-white/[0.02] inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-white/30 shrink-0" />
+          Não iniciado
+        </span>
+      );
+    }
+    if (roundedValue === 100) {
+      return (
+        <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-emerald-300 border border-emerald-500/25 bg-emerald-500/10 inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-sm" />
+          Concluído
+        </span>
+      );
+    }
+    return (
+      <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10 bg-white/[0.05] inline-flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shrink-0" />
+        Em andamento
+      </span>
+    );
   };
 
   const remaining = totalLessons !== null && totalLessons !== undefined && totalLessons > 0
@@ -48,9 +61,7 @@ export default function ProgressCard({
 
       {!hideValue && (
         <div className="flex items-center gap-2.5 flex-wrap mt-0.5">
-          <span className={`tabular-nums text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border transition-all duration-300 ${getStatusColor()}`}>
-            {getStatusText()}
-          </span>
+          {getStatusBadge()}
 
           {totalLessons !== null && totalLessons !== undefined && totalLessons > 0 && (
             <span className="text-xs text-white/50 tracking-tight">
