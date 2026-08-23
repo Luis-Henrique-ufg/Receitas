@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LessonAttachments from "@/components/lesson/lesson-attachments";
 import LessonNotes from "@/components/lesson/lesson-notes";
@@ -8,6 +9,8 @@ import ModuleList from "@/components/lesson/module-list";
 import { useParams, useSearchParams } from "react-router-dom";
 import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
+import { toast } from "sonner";
+import { Lesson } from "@/models/models";
 
 type Props = {};
 
@@ -33,6 +36,59 @@ export default function CoursePage({}: Props) {
   } = useCoursePlayer(courseId);
 
   const lessonResources = useLessonResources(selectedLesson?.id);
+
+  // Flatten and sort lessons across all modules for linear navigation
+  const allLessons = useMemo(() => {
+    if (!modules) return [];
+    const sortedModuleKeys = Object.keys(modules).sort((a, b) =>
+      a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+    );
+    const list: Lesson[] = [];
+    sortedModuleKeys.forEach((key) => {
+      if (modules[key]) {
+        list.push(...modules[key]);
+      }
+    });
+    return list;
+  }, [modules]);
+
+  // Global navigation shortcuts (Shift+P, Shift+N)
+  useEffect(() => {
+    const handleNavigation = (direction: "prev" | "next") => {
+      if (!selectedLesson || allLessons.length === 0) return;
+      const currentIndex = allLessons.findIndex((l) => l.id === selectedLesson.id);
+      if (currentIndex === -1) return;
+
+      if (direction === "prev") {
+        if (currentIndex > 0) {
+          const prevLesson = allLessons[currentIndex - 1];
+          selectCourseLesson(prevLesson);
+          toast.info(`Aula anterior: ${prevLesson.title}`, { duration: 1500 });
+        } else {
+          toast.info("Você já está na primeira aula.", { duration: 1500 });
+        }
+      } else if (direction === "next") {
+        if (currentIndex < allLessons.length - 1) {
+          const nextLesson = allLessons[currentIndex + 1];
+          selectCourseLesson(nextLesson);
+          toast.info(`Próxima aula: ${nextLesson.title}`, { duration: 1500 });
+        } else {
+          toast.info("Você já está na última aula.", { duration: 1500 });
+        }
+      }
+    };
+
+    const handlePrevEvent = () => handleNavigation("prev");
+    const handleNextEvent = () => handleNavigation("next");
+
+    window.addEventListener("playerNavigatePrevious", handlePrevEvent);
+    window.addEventListener("playerNavigateNext", handleNextEvent);
+
+    return () => {
+      window.removeEventListener("playerNavigatePrevious", handlePrevEvent);
+      window.removeEventListener("playerNavigateNext", handleNextEvent);
+    };
+  }, [allLessons, selectedLesson, selectCourseLesson]);
 
   if (!courseId) {
     return "Sem id de curso";

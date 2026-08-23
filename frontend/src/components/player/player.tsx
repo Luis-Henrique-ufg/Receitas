@@ -3,7 +3,7 @@ import videojs from "video.js";
 import PlayerInstance from "video.js/dist/types/player";
 import { completeLesson } from "@/services/videoPlayer";
 import useApiUrl from "@/hooks/useApiUrl";
-
+import { toast } from "sonner";
 import "./player.css"; // Custom styling for video.js
 
 interface PlayerProps {
@@ -261,10 +261,10 @@ export function Player({
     }
   }, [timeElapsed]);
 
-  // Global Keyboard Shortcuts (J, K, L, Space, Arrows, M, F)
+  // Global Keyboard Shortcuts (J, K, L, Space, Arrows, M, F, Shift+P, Shift+N, Shift+<, Shift+>)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in an input
+      // Ignore if typing in an input, textarea or select
       if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement).tagName)) {
         return;
       }
@@ -274,6 +274,44 @@ export function Player({
 
       const skipTime = 5; // 5 seconds for arrows
       const jklTime = 10; // 10 seconds for J/L
+      const availableRates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3];
+
+      // SHIFT Shortcuts
+      if (e.shiftKey) {
+        // Diminuir a velocidade do vídeo: SHIFT + < (ou Shift + ,)
+        if (e.key === "<" || e.key === "," || (e.shiftKey && e.code === "Comma")) {
+          e.preventDefault();
+          const currentRate = Number((player.playbackRate() || 1).toFixed(2));
+          const nextRate = availableRates.filter((r) => r < currentRate).pop() ?? 0.25;
+          player.playbackRate(nextRate);
+          toast.info(`Velocidade: ${nextRate}x`, { duration: 1200 });
+          return;
+        }
+
+        // Aumentar a velocidade do vídeo: SHIFT + > (ou Shift + .)
+        if (e.key === ">" || e.key === "." || (e.shiftKey && e.code === "Period")) {
+          e.preventDefault();
+          const currentRate = Number((player.playbackRate() || 1).toFixed(2));
+          const nextRate = availableRates.find((r) => r > currentRate) ?? 3;
+          player.playbackRate(nextRate);
+          toast.info(`Velocidade: ${nextRate}x`, { duration: 1200 });
+          return;
+        }
+
+        // Vídeo anterior: SHIFT + P
+        if (e.key.toLowerCase() === "p" || e.code === "KeyP") {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent("playerNavigatePrevious"));
+          return;
+        }
+
+        // Próximo vídeo: SHIFT + N
+        if (e.key.toLowerCase() === "n" || e.code === "KeyN") {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent("playerNavigateNext"));
+          return;
+        }
+      }
 
       switch (e.key.toLowerCase()) {
         case "j":
