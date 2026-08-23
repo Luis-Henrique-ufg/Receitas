@@ -355,6 +355,21 @@ def add_lesson_note(lesson_id):
     return jsonify({'id': note.id, 'time': note.time, 'content': note.content}), 201
 
 
+@app.route('/api/notes/<int:note_id>', methods=['PUT', 'PATCH'])
+def update_lesson_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    data = request.json or {}
+    content = data.get('content')
+    if content is not None:
+        if not content.strip():
+            return jsonify({'error': 'Conteúdo vazio'}), 400
+        note.content = content.strip()
+    if 'time' in data and data['time'] is not None:
+        note.time = int(data['time'])
+    db.session.commit()
+    return jsonify({'id': note.id, 'time': note.time, 'content': note.content}), 200
+
+
 @app.route('/api/notes/<int:note_id>', methods=['DELETE'])
 def delete_lesson_note(note_id):
     note = Note.query.get_or_404(note_id)

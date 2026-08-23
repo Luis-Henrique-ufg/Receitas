@@ -177,6 +177,32 @@ export default function useLessonResources(
     }
   }
 
+  async function editNote(noteId: number, content: string, time?: number) {
+    if (!content.trim()) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/api/notes/${noteId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: content.trim(),
+          ...(time !== undefined ? { time } : {}),
+        }),
+      });
+
+      if (response.ok) {
+        await Promise.all([fetchNotes(), fetchCourseNotes()]);
+        toast.success("Anotação atualizada!");
+      } else {
+        throw new Error("Erro ao atualizar");
+      }
+    } catch {
+      toast.error("Erro ao atualizar anotação.");
+    }
+  }
+
   async function deleteNote(noteId: number) {
     try {
       const response = await fetch(`${apiUrl}/api/notes/${noteId}`, {
@@ -207,6 +233,7 @@ export default function useLessonResources(
     isCourseNotesLoading,
     isAttachmentsLoading,
     saveNote,
+    editNote,
     deleteNote,
     seekTo,
     fetchNotes,

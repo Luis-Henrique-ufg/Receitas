@@ -188,6 +188,7 @@ export default function CoursePage({}: Props) {
                 isCourseNotesLoading={lessonResources.isCourseNotesLoading}
                 onNewNoteChange={lessonResources.setNewNote}
                 onSave={lessonResources.saveNote}
+                onEdit={lessonResources.editNote}
                 onDelete={lessonResources.deleteNote}
                 onSeek={lessonResources.seekTo}
                 onSelectLessonAndSeek={(targetLessonId, targetTime) => {
