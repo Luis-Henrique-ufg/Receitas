@@ -177,7 +177,7 @@ export default function LessonNotes({
                   <div className="flex justify-between items-start mb-2">
                     <button
                       onClick={() => onSeek(note.time)}
-                      className="inline-flex items-center gap-1 text-[11px] font-mono font-medium text-white/70 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md hover:bg-white/15 hover:text-white hover:border-white/20 transition-all"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-mono font-medium text-white/70 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full hover:bg-white/15 hover:text-white hover:border-white/20 transition-all"
                       title="Ir para este momento no vídeo"
                     >
                       <Clock className="w-3 h-3" /> {formatTime(note.time)}
@@ -301,10 +301,10 @@ export default function LessonNotes({
                             }
                           }}
                           className={cn(
-                            "text-left inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md transition-colors truncate max-w-full",
+                            "text-left inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-0.5 rounded-full transition-colors truncate max-w-full",
                             isCurrent
-                              ? "bg-white/20 text-white border border-white/30"
-                              : "bg-white/5 text-white/80 border border-white/10 hover:bg-white/15 hover:text-white"
+                              ? "bg-white/15 text-white border border-white/25"
+                              : "bg-white/5 text-white/80 border border-white/10 hover:bg-white/10 hover:text-white"
                           )}
                           title={`Ir para aula: ${note.lesson_title}`}
                         >
@@ -319,7 +319,7 @@ export default function LessonNotes({
                               onSelectLessonAndSeek(note.lesson_id, note.time);
                             }
                           }}
-                          className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-white/70 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded hover:bg-white/15 hover:text-white hover:border-white/20 transition-all shrink-0"
+                          className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-white/70 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full hover:bg-white/15 hover:text-white hover:border-white/20 transition-all shrink-0"
                           title="Pular para o tempo da anotação"
                         >
                           <Clock className="w-2.5 h-2.5" />

@@ -177,7 +177,7 @@ export default function ModuleList({
                             ) : (
                               <Checkbox 
                                 checked={stats.percentage === 100}
-                                className="border-white/30 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-emerald-500 data-[state=checked]:to-teal-500 data-[state=checked]:border-emerald-400 data-[state=checked]:shadow-[0_0_12px_rgba(16,185,129,0.4)] w-5 h-5 pointer-events-none transition-all duration-300"
+                                className="border-white/30 data-[state=checked]:bg-[#007bff] data-[state=checked]:border-[#007bff] data-[state=checked]:text-white w-5 h-5 pointer-events-none transition-all duration-300"
                               />
                             )}
                           </div>

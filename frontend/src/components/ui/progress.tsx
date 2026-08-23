@@ -7,11 +7,8 @@ const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & {
     fill?: string;
-    variant?: "default" | "success";
   }
->(({ className, value, fill, variant, ...props }, ref) => {
-  const isCompleted = variant === "success" || (value !== undefined && value >= 100);
-
+>(({ className, value, fill, ...props }, ref) => {
   return (
     <ProgressPrimitive.Root
       ref={ref}
@@ -22,17 +19,10 @@ const Progress = React.forwardRef<
       {...props}
     >
       <ProgressPrimitive.Indicator
-        className="h-full w-full flex-1 transition-all duration-700 ease-out"
+        className="h-full w-full flex-1 transition-all duration-700 ease-out rounded-full"
         style={{
           transform: `translateX(-${100 - (value || 0)}%)`,
-          background: isCompleted
-            ? `linear-gradient(90deg, #10b981 0%, #14b8a6 100%)`
-            : `linear-gradient(90deg, #007bff 0%, #00bfff 60%, #29C5F6 100%)`,
-          boxShadow: value && value > 0
-            ? isCompleted
-              ? `0 0 10px rgba(16,185,129,0.6), 0 0 20px rgba(20,184,166,0.3)`
-              : `0 0 10px rgba(0,123,255,0.6), 0 0 20px rgba(0,123,255,0.3)`
-            : "none",
+          background: `linear-gradient(90deg, #007bff 0%, #00bfff 50%, #29C5F6 100%)`,
         }}
       />
     </ProgressPrimitive.Root>

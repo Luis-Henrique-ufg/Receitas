@@ -20,7 +20,7 @@ export default function ProgressCard({
   const getStatusBadge = () => {
     if (roundedValue === 0) {
       return (
-        <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white/50 border border-white/5 bg-white/[0.02] inline-flex items-center gap-1.5">
+        <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/50 border border-white/5 bg-white/[0.02] inline-flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-white/30 shrink-0" />
           Não iniciado
         </span>
@@ -28,14 +28,14 @@ export default function ProgressCard({
     }
     if (roundedValue === 100) {
       return (
-        <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-emerald-300 border border-emerald-500/25 bg-emerald-500/10 inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-sm" />
+        <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/90 border border-white/15 bg-white/[0.06] inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#29C5F6] shrink-0" />
           Concluído
         </span>
       );
     }
     return (
-      <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/10 bg-white/[0.05] inline-flex items-center gap-1.5">
+      <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/90 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
         <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shrink-0" />
         Em andamento
       </span>
