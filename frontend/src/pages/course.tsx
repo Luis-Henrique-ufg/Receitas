@@ -35,7 +35,7 @@ export default function CoursePage({}: Props) {
     refreshCourseProgress,
   } = useCoursePlayer(courseId);
 
-  const lessonResources = useLessonResources(selectedLesson?.id);
+  const lessonResources = useLessonResources(selectedLesson?.id, courseId);
 
   // Flatten and sort lessons across all modules for linear navigation
   const allLessons = useMemo(() => {
@@ -181,12 +181,26 @@ export default function CoursePage({}: Props) {
             <TabsContent value="notes" className="m-0 mt-0 h-full outline-none p-4">
               <LessonNotes
                 notes={lessonResources.notes}
+                courseNotes={lessonResources.courseNotes}
+                currentLessonId={selectedLesson?.id}
                 newNote={lessonResources.newNote}
                 isLoading={lessonResources.isNotesLoading}
+                isCourseNotesLoading={lessonResources.isCourseNotesLoading}
                 onNewNoteChange={lessonResources.setNewNote}
                 onSave={lessonResources.saveNote}
                 onDelete={lessonResources.deleteNote}
                 onSeek={lessonResources.seekTo}
+                onSelectLessonAndSeek={(targetLessonId, targetTime) => {
+                  if (targetLessonId !== selectedLesson?.id) {
+                    const targetLesson = allLessons.find((l) => l.id === targetLessonId);
+                    if (targetLesson) {
+                      selectCourseLesson(targetLesson);
+                    }
+                  }
+                  setTimeout(() => {
+                    lessonResources.seekTo(targetTime);
+                  }, 300);
+                }}
               />
             </TabsContent>
           </div>

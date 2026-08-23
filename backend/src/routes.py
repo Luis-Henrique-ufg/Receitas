@@ -313,6 +313,29 @@ def get_lesson_attachments(lesson_id):
     return jsonify(attachments)
 
 
+@app.route('/api/courses/<int:course_id>/notes', methods=['GET'])
+def get_course_notes(course_id):
+    Course.query.get_or_404(course_id)
+    notes = (
+        db.session.query(Note, Lesson)
+        .join(Lesson, Note.lesson_id == Lesson.id)
+        .filter(Lesson.course_id == course_id)
+        .order_by(Lesson.id.asc(), Note.time.asc())
+        .all()
+    )
+    return jsonify([
+        {
+            'id': n.id,
+            'lesson_id': l.id,
+            'lesson_title': l.title,
+            'module': l.module,
+            'time': n.time,
+            'content': n.content
+        }
+        for n, l in notes
+    ])
+
+
 @app.route('/api/lessons/<int:lesson_id>/notes', methods=['GET'])
 def get_lesson_notes(lesson_id):
     notes = Note.query.filter_by(lesson_id=lesson_id).order_by(Note.time.asc()).all()
