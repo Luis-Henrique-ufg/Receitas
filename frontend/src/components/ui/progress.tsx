@@ -9,6 +9,8 @@ const Progress = React.forwardRef<
     fill?: string;
   }
 >(({ className, value, fill, ...props }, ref) => {
+  const isCompleted = value !== undefined && value >= 100;
+
   return (
     <ProgressPrimitive.Root
       ref={ref}
@@ -22,7 +24,9 @@ const Progress = React.forwardRef<
         className="h-full w-full flex-1 transition-all duration-700 ease-out rounded-full"
         style={{
           transform: `translateX(-${100 - (value || 0)}%)`,
-          background: `linear-gradient(90deg, #007bff 0%, #00bfff 50%, #29C5F6 100%)`,
+          background: isCompleted
+            ? `linear-gradient(90deg, #10b981 0%, #14b8a6 100%)`
+            : `linear-gradient(90deg, #007bff 0%, #00bfff 50%, #29C5F6 100%)`,
         }}
       />
     </ProgressPrimitive.Root>

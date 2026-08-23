@@ -131,7 +131,7 @@ export default function LessonListItem({
         isActive
           ? "bg-gradient-to-r from-blue-900/40 to-purple-900/20 border-[#007bff]/50 shadow-[0_0_20px_rgba(0,123,255,0.15)] scale-[1.01]"
           : isCompleted
-          ? "border-white/15 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.07] hover:scale-[1.01]"
+          ? "border-emerald-500/20 bg-emerald-950/15 hover:border-emerald-500/30 hover:bg-emerald-950/25 hover:scale-[1.01]"
           : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:scale-[1.01]"
       )}
     >
@@ -147,7 +147,7 @@ export default function LessonListItem({
             <Play className="w-4 h-4 text-white fill-white ml-0.5" />
           </div>
         ) : isCompleted ? (
-          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/20 text-white text-xs font-heading font-medium">
+          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-heading font-medium">
             {index.toString().padStart(2, "0")}
           </span>
         ) : (
@@ -184,9 +184,15 @@ export default function LessonListItem({
           }
         </span>
         {lesson.duration != "0" && (
-          <span className="bg-white/5 border border-white/10 text-white/70 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
-            {formatDuration(Number(lesson.duration))}
-          </span>
+          isCompleted ? (
+            <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
+              {formatDuration(Number(lesson.duration))}
+            </span>
+          ) : (
+            <span className="bg-white/5 border border-white/10 text-white/70 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
+              {formatDuration(Number(lesson.duration))}
+            </span>
+          )
         )}
       </div>
       <div className="shrink-0 flex items-center justify-center relative z-10 pr-6 pl-2">
@@ -200,7 +206,7 @@ export default function LessonListItem({
               className={cn(
                 "w-5 h-5 transition-all duration-300",
                 isCompleted
-                  ? "border-white/30 data-[state=checked]:bg-[#007bff] data-[state=checked]:border-[#007bff] data-[state=checked]:text-white"
+                  ? "border-emerald-500/40 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500 data-[state=checked]:text-white"
                   : "border-white/30 hover:border-white/60"
               )}
             />

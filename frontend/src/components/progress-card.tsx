@@ -28,8 +28,8 @@ export default function ProgressCard({
     }
     if (roundedValue === 100) {
       return (
-        <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/90 border border-white/15 bg-white/[0.06] inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#29C5F6] shrink-0" />
+        <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-emerald-300 border border-emerald-500/20 bg-emerald-500/10 inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
           Concluído
         </span>
       );
