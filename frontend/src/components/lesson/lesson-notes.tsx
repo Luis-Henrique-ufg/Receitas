@@ -172,6 +172,7 @@ export default function LessonNotes({
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exportScope, setExportScope] = useState<"course" | "lesson">("course");
   const exportMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -188,6 +189,13 @@ export default function LessonNotes({
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showExportMenu]);
+
+  const handleToggleExportMenu = () => {
+    if (!showExportMenu) {
+      setExportScope(viewMode);
+    }
+    setShowExportMenu(!showExportMenu);
+  };
 
   const handleSave = () => {
     onSave();
@@ -304,88 +312,108 @@ export default function LessonNotes({
         <div className="relative" ref={exportMenuRef}>
           <button
             type="button"
-            onClick={() => setShowExportMenu(!showExportMenu)}
+            onClick={handleToggleExportMenu}
             className={cn(
               "py-2 px-3 rounded-xl border border-white/10 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300",
               showExportMenu
-                ? "bg-white/15 text-white border-white/20"
+                ? "bg-white/15 text-white border-white/20 shadow-md shadow-blue-950/40"
                 : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/20"
             )}
-            title="Baixar todas as anotações (.md ou .txt)"
+            title="Baixar anotações (.md ou .txt)"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden sm:inline text-[10px]">Baixar</span>
           </button>
 
           {showExportMenu && (
-            <div className="absolute right-0 top-full mt-2 w-60 z-50 glass-panel p-2 rounded-xl border border-white/15 shadow-2xl space-y-1 backdrop-blur-xl bg-[#08101e]/95">
-              <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/40 border-b border-white/5">
-                Todo o Curso ({courseNotes.length})
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  handleExport("course", "md");
-                  setShowExportMenu(false);
-                }}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
-              >
-                <span className="flex items-center gap-2">
-                  <FileText className="w-3.5 h-3.5 text-[#29C5F6] group-hover:scale-110 transition-transform" />
-                  Markdown (.md)
-                </span>
-                <span className="text-[10px] text-white/40 font-mono">.md</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  handleExport("course", "txt");
-                  setShowExportMenu(false);
-                }}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
-              >
-                <span className="flex items-center gap-2">
-                  <FileCode className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
-                  Texto Simples (.txt)
-                </span>
-                <span className="text-[10px] text-white/40 font-mono">.txt</span>
-              </button>
-
-              {notes.length > 0 && (
-                <>
-                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/40 border-b border-white/5 pt-2">
-                    Apenas Esta Aula ({notes.length})
+            <div className="absolute right-0 top-full mt-2 w-72 z-50 glass-panel p-3.5 rounded-2xl border border-white/15 shadow-2xl backdrop-blur-2xl bg-[#08101e]/98 space-y-3 animate-in fade-in zoom-in-95 duration-200">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-[#007bff]/20 flex items-center justify-center text-[#29C5F6]">
+                    <Download className="w-3.5 h-3.5" />
                   </div>
+                  <span className="text-xs font-heading font-semibold text-white">Baixar Anotações</span>
+                </div>
+                <span className="text-[10px] font-mono text-white/50 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                  {exportScope === "course" ? `${courseNotes.length} no total` : `${notes.length} na aula`}
+                </span>
+              </div>
+
+              {/* Scope Selector: Todo o Curso vs Esta Aula */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40 block">
+                  Origem das Anotações
+                </label>
+                <div className="grid grid-cols-2 gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/5">
+                  <button
+                    type="button"
+                    onClick={() => setExportScope("course")}
+                    className={cn(
+                      "py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5",
+                      exportScope === "course"
+                        ? "bg-[#007bff] text-white shadow-sm font-bold"
+                        : "text-white/60 hover:text-white hover:bg-white/5"
+                    )}
+                  >
+                    <BookOpen className="w-3 h-3" />
+                    Todo Curso ({courseNotes.length})
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setExportScope("lesson")}
+                    disabled={notes.length === 0}
+                    className={cn(
+                      "py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5",
+                      exportScope === "lesson"
+                        ? "bg-[#007bff] text-white shadow-sm font-bold"
+                        : "text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent"
+                    )}
+                  >
+                    <Film className="w-3 h-3" />
+                    Esta Aula ({notes.length})
+                  </button>
+                </div>
+              </div>
+
+              {/* Format Selection Cards */}
+              <div className="space-y-1.5 pt-0.5">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40 block">
+                  Formato do Arquivo
+                </label>
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => {
-                      handleExport("lesson", "md");
+                      handleExport(exportScope, "md");
                       setShowExportMenu(false);
                     }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
+                    className="flex flex-col items-center justify-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#29C5F6]/40 hover:scale-[1.02] transition-all group cursor-pointer text-center"
                   >
-                    <span className="flex items-center gap-2">
-                      <FileText className="w-3.5 h-3.5 text-[#29C5F6] group-hover:scale-110 transition-transform" />
-                      Esta Aula (.md)
-                    </span>
-                    <span className="text-[10px] text-white/40 font-mono">.md</span>
+                    <div className="w-9 h-9 rounded-xl bg-[#29C5F6]/15 border border-[#29C5F6]/30 flex items-center justify-center text-[#29C5F6] mb-1.5 group-hover:bg-[#29C5F6]/25 transition-colors">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs font-semibold text-white">Markdown</span>
+                    <span className="text-[10px] text-[#29C5F6]/80 font-mono mt-0.5">.md</span>
                   </button>
+
                   <button
                     type="button"
                     onClick={() => {
-                      handleExport("lesson", "txt");
+                      handleExport(exportScope, "txt");
                       setShowExportMenu(false);
                     }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
+                    className="flex flex-col items-center justify-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#007bff]/40 hover:scale-[1.02] transition-all group cursor-pointer text-center"
                   >
-                    <span className="flex items-center gap-2">
-                      <FileCode className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
-                      Esta Aula (.txt)
-                    </span>
-                    <span className="text-[10px] text-white/40 font-mono">.txt</span>
+                    <div className="w-9 h-9 rounded-xl bg-[#007bff]/15 border border-[#007bff]/30 flex items-center justify-center text-blue-400 mb-1.5 group-hover:bg-[#007bff]/25 transition-colors">
+                      <FileCode className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs font-semibold text-white">Texto Puro</span>
+                    <span className="text-[10px] text-blue-400/80 font-mono mt-0.5">.txt</span>
                   </button>
-                </>
-              )}
+                </div>
+              </div>
             </div>
           )}
         </div>
