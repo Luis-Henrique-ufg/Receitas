@@ -183,6 +183,8 @@ export default function CoursePage({}: Props) {
                 notes={lessonResources.notes}
                 courseNotes={lessonResources.courseNotes}
                 currentLessonId={selectedLesson?.id}
+                courseTitle={selectedLesson?.course_title}
+                lessonTitle={selectedLesson?.title}
                 newNote={lessonResources.newNote}
                 isLoading={lessonResources.isNotesLoading}
                 isCourseNotesLoading={lessonResources.isCourseNotesLoading}

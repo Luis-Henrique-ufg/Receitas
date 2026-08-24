@@ -1,15 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo } from "react";
-import { Clock, Trash2, Search, Film, BookOpen, Pencil, Check, X } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import {
+  Clock,
+  Trash2,
+  Search,
+  Film,
+  BookOpen,
+  Pencil,
+  Check,
+  X,
+  Download,
+  FileText,
+  FileCode,
+} from "lucide-react";
 import { LessonNote, CourseNote } from "@/hooks/useLessonResources";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type Props = {
   notes: LessonNote[];
   courseNotes?: CourseNote[];
   currentLessonId?: number;
+  courseTitle?: string;
+  lessonTitle?: string;
   newNote: string;
   isLoading?: boolean;
   isCourseNotesLoading?: boolean;
@@ -27,10 +42,120 @@ function formatTime(seconds: number) {
   return `${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
+function generateMarkdown(
+  title: string,
+  notesList: (LessonNote | CourseNote)[],
+  isGlobal: boolean
+): string {
+  const dateStr = new Date().toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  let md = `# Anotações: ${title}\n\n`;
+  md += `> **Data de Exportação:** ${dateStr}  \n`;
+  md += `> **Total de Anotações:** ${notesList.length}\n\n`;
+  md += `---\n\n`;
+
+  if (isGlobal) {
+    const grouped: Record<string, CourseNote[]> = {};
+    (notesList as CourseNote[]).forEach((note) => {
+      const key = `${note.module ? note.module + " > " : ""}${note.lesson_title}`;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(note);
+    });
+
+    Object.entries(grouped).forEach(([lessonName, items]) => {
+      md += `## 📚 ${lessonName}\n\n`;
+      items.forEach((item) => {
+        md += `### ⏱ \`${formatTime(item.time)}\`\n\n`;
+        md += `${item.content}\n\n`;
+      });
+      md += `---\n\n`;
+    });
+  } else {
+    notesList.forEach((note) => {
+      md += `### ⏱ \`${formatTime(note.time)}\`\n\n`;
+      md += `${note.content}\n\n`;
+      md += `---\n\n`;
+    });
+  }
+
+  return md;
+}
+
+function generatePlainText(
+  title: string,
+  notesList: (LessonNote | CourseNote)[],
+  isGlobal: boolean
+): string {
+  const dateStr = new Date().toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const separator = "=".repeat(80);
+  const subSeparator = "-".repeat(80);
+
+  let txt = `${separator}\n`;
+  txt += `ANOTAÇÕES: ${title.toUpperCase()}\n`;
+  txt += `Exportado em: ${dateStr}\n`;
+  txt += `Total de Anotações: ${notesList.length}\n`;
+  txt += `${separator}\n\n`;
+
+  if (isGlobal) {
+    const grouped: Record<string, CourseNote[]> = {};
+    (notesList as CourseNote[]).forEach((note) => {
+      const key = `${note.module ? note.module + " > " : ""}${note.lesson_title}`;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(note);
+    });
+
+    Object.entries(grouped).forEach(([lessonName, items]) => {
+      txt += `[AULA: ${lessonName}]\n`;
+      txt += `${subSeparator}\n\n`;
+      items.forEach((item) => {
+        txt += `Tempo: [${formatTime(item.time)}]\n`;
+        txt += `${item.content}\n\n`;
+      });
+      txt += `\n`;
+    });
+  } else {
+    notesList.forEach((note) => {
+      txt += `Tempo: [${formatTime(note.time)}]\n`;
+      txt += `${note.content}\n\n`;
+      txt += `${subSeparator}\n\n`;
+    });
+  }
+
+  return txt;
+}
+
+function downloadFile(content: string, filename: string, mimeType: string) {
+  const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  toast.success(`Download iniciado: ${filename}`);
+}
+
 export default function LessonNotes({
   notes,
   courseNotes = [],
   currentLessonId,
+  courseTitle = "Curso",
+  lessonTitle = "Aula",
   newNote,
   isLoading,
   isCourseNotesLoading,
@@ -46,6 +171,23 @@ export default function LessonNotes({
   const [showSavedState, setShowSavedState] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        exportMenuRef.current &&
+        !exportMenuRef.current.contains(e.target as Node)
+      ) {
+        setShowExportMenu(false);
+      }
+    };
+    if (showExportMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportMenu]);
 
   const handleSave = () => {
     onSave();
@@ -78,6 +220,33 @@ export default function LessonNotes({
     setEditingContent("");
   };
 
+  const handleExport = (scope: "course" | "lesson", format: "md" | "txt") => {
+    const isGlobal = scope === "course";
+    const targetNotes = isGlobal ? courseNotes : notes;
+    const targetTitle = isGlobal ? courseTitle : `${courseTitle} - ${lessonTitle}`;
+
+    if (targetNotes.length === 0) {
+      toast.info("Não há anotações para exportar.");
+      return;
+    }
+
+    const safeTitle = targetTitle
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
+      .toLowerCase();
+
+    const filename = `${safeTitle}_anotacoes.${format}`;
+
+    if (format === "md") {
+      const content = generateMarkdown(targetTitle, targetNotes, isGlobal);
+      downloadFile(content, filename, "text/markdown");
+    } else {
+      const content = generatePlainText(targetTitle, targetNotes, isGlobal);
+      downloadFile(content, filename, "text/plain");
+    }
+  };
+
   // Filtered course notes based on search query
   const filteredCourseNotes = useMemo(() => {
     if (!searchQuery.trim()) return courseNotes;
@@ -92,41 +261,134 @@ export default function LessonNotes({
 
   return (
     <div className="space-y-4">
-      {/* View Switcher: Esta Aula vs Todo o Curso */}
-      <div className="flex bg-white/[0.04] p-1 rounded-xl border border-white/5 gap-1">
-        <button
-          type="button"
-          onClick={() => {
-            setViewMode("lesson");
-            handleCancelEdit();
-          }}
-          className={cn(
-            "flex-1 py-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
-            viewMode === "lesson"
-              ? "bg-[#007bff] text-white shadow-md shadow-blue-900/30 font-bold"
-              : "text-white/60 hover:text-white hover:bg-white/5"
-          )}
-        >
-          <Film className="w-3.5 h-3.5" />
-          Esta Aula ({notes.length})
-        </button>
+      {/* Top Action Bar: View Switcher + Export Button */}
+      <div className="flex items-center gap-2">
+        {/* View Switcher: Esta Aula vs Todo o Curso */}
+        <div className="flex flex-1 bg-white/[0.04] p-1 rounded-xl border border-white/5 gap-1">
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode("lesson");
+              handleCancelEdit();
+            }}
+            className={cn(
+              "flex-1 py-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
+              viewMode === "lesson"
+                ? "bg-[#007bff] text-white shadow-md shadow-blue-900/30 font-bold"
+                : "text-white/60 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Film className="w-3.5 h-3.5" />
+            Esta Aula ({notes.length})
+          </button>
 
-        <button
-          type="button"
-          onClick={() => {
-            setViewMode("course");
-            handleCancelEdit();
-          }}
-          className={cn(
-            "flex-1 py-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
-            viewMode === "course"
-              ? "bg-[#007bff] text-white shadow-md shadow-blue-900/30 font-bold"
-              : "text-white/60 hover:text-white hover:bg-white/5"
+          <button
+            type="button"
+            onClick={() => {
+              setViewMode("course");
+              handleCancelEdit();
+            }}
+            className={cn(
+              "flex-1 py-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
+              viewMode === "course"
+                ? "bg-[#007bff] text-white shadow-md shadow-blue-900/30 font-bold"
+                : "text-white/60 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Todo o Curso ({courseNotes.length})
+          </button>
+        </div>
+
+        {/* Export / Download Menu */}
+        <div className="relative" ref={exportMenuRef}>
+          <button
+            type="button"
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            className={cn(
+              "py-2 px-3 rounded-xl border border-white/10 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300",
+              showExportMenu
+                ? "bg-white/15 text-white border-white/20"
+                : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/20"
+            )}
+            title="Baixar todas as anotações (.md ou .txt)"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-[10px]">Baixar</span>
+          </button>
+
+          {showExportMenu && (
+            <div className="absolute right-0 top-full mt-2 w-60 z-50 glass-panel p-2 rounded-xl border border-white/15 shadow-2xl space-y-1 backdrop-blur-xl bg-[#08101e]/95">
+              <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/40 border-b border-white/5">
+                Todo o Curso ({courseNotes.length})
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  handleExport("course", "md");
+                  setShowExportMenu(false);
+                }}
+                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
+              >
+                <span className="flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5 text-[#29C5F6] group-hover:scale-110 transition-transform" />
+                  Markdown (.md)
+                </span>
+                <span className="text-[10px] text-white/40 font-mono">.md</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleExport("course", "txt");
+                  setShowExportMenu(false);
+                }}
+                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
+              >
+                <span className="flex items-center gap-2">
+                  <FileCode className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
+                  Texto Simples (.txt)
+                </span>
+                <span className="text-[10px] text-white/40 font-mono">.txt</span>
+              </button>
+
+              {notes.length > 0 && (
+                <>
+                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/40 border-b border-white/5 pt-2">
+                    Apenas Esta Aula ({notes.length})
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExport("lesson", "md");
+                      setShowExportMenu(false);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FileText className="w-3.5 h-3.5 text-[#29C5F6] group-hover:scale-110 transition-transform" />
+                      Esta Aula (.md)
+                    </span>
+                    <span className="text-[10px] text-white/40 font-mono">.md</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExport("lesson", "txt");
+                      setShowExportMenu(false);
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-between transition-colors group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FileCode className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
+                      Esta Aula (.txt)
+                    </span>
+                    <span className="text-[10px] text-white/40 font-mono">.txt</span>
+                  </button>
+                </>
+              )}
+            </div>
           )}
-        >
-          <BookOpen className="w-3.5 h-3.5" />
-          Todo o Curso ({courseNotes.length})
-        </button>
+        </div>
       </div>
 
       {viewMode === "lesson" ? (
