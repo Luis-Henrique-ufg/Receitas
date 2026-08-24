@@ -154,7 +154,7 @@ export default function LessonNotes({
             </div>
           </div>
 
-          <div className="space-y-3 mt-4 p-1.5 max-h-[calc(100vh-420px)] overflow-y-auto custom-scrollbar">
+          <div className="space-y-3 mt-4 p-1 pb-8">
             {isLoading ? (
               <p className="text-white/50 text-center py-4 text-xs">
                 Carregando anotações da aula...
@@ -264,7 +264,7 @@ export default function LessonNotes({
             />
           </div>
 
-          <div className="space-y-3 mt-3 max-h-[calc(100vh-380px)] overflow-y-auto custom-scrollbar p-1.5">
+          <div className="space-y-3 mt-3 p-1 pb-8">
             {isCourseNotesLoading ? (
               <p className="text-white/50 text-center py-6 text-xs">
                 Carregando todas as anotações do curso...
