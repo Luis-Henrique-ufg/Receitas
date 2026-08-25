@@ -1,117 +1,231 @@
 <!-- prettier-ignore -->
 <div align="center">
 
-# Plataforma de Receitas (Front-end)
+<img src="frontend/public/favicon.ico" alt="Receitas Logo" width="80" height="80" />
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![React](https://img.shields.io/badge/React-blue?style=flat-square&logo=react&logoColor=white)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-purple?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+# Receitas
 
-[Visão Geral](#visão-geral) • [Funcionalidades](#funcionalidades) • [Começando](#começando) • [Adicionando Cursos](#adicionando-novos-cursos)
+*Plataforma moderna e completa para gerenciamento e reprodução de cursos em vídeo locais.*
+
+[![React](https://img.shields.io/badge/React-18.2-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.1-646cff?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Python](https://img.shields.io/badge/Python-3.11-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ed?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+
+[Recursos](#-principais-recursos) • [Pré-requisitos](#-pré-requisitos) • [Início Rápido](#-início-rápido) • [Atalhos de Teclado](#-atalhos-de-teclado) • [Estrutura do Projeto](#-estrutura-do-projeto)
+
 </div>
 
-Este é o front-end oficial da **Plataforma de Receitas**, uma aplicação robusta de cursos em vídeo construída com **React**, **TypeScript** e **Vite**. A interface consome a API do back-end para gerenciar cursos, reproduzir aulas, salvar anotações e baixar anexos.
+---
+
+**Receitas** é uma aplicação web auto-hospedada projetada para transformar suas pastas locais de videoaulas e cursos em uma experiência de aprendizado estruturada, intuitiva e agradável — similar a plataformas como Udemy e Netflix, rodando totalmente offline e sob o seu controle.
+
+A plataforma analisa automaticamente diretórios no seu disco ou servidor, identifica hierarquias de pastas como módulos, cataloga os vídeos com durações exatas via FFmpeg e descobre materiais de apoio anexos (PDFs, códigos-fonte, slides e arquivos compactados).
 
 > [!NOTE]
-> Esta aplicação consome uma API externa. Para executar o projeto localmente com sucesso, certifique-se de que o back-end esteja rodando paralelamente.
+> Todos os dados de progresso, anotações com marcação temporal e ordem de exibição dos cursos são persistidos localmente no banco de dados SQLite.
 
-## Visão Geral
+---
 
-A Plataforma de Receitas foi desenhada para oferecer uma experiência de aprendizado focada e limpa. A aplicação não só reproduz os vídeos das aulas, como também permite anotações vinculadas ao tempo do vídeo (timestamps), suporte a anexos (PDFs) e acompanhamento em tempo real do progresso de cada módulo e curso.
+## ✨ Principais Recursos
 
-## Funcionalidades
+- 🎬 **Player de Vídeo Avançado (Video.js)**:
+  - Retomada automática (*resume playback*) do ponto onde você parou.
+  - Salvamento periódico e inteligente de progresso a cada 10 segundos.
+  - Conclusão automática de aula ao atingir 95% do tempo de exibição.
+  - Captura instantânea de tela (*Screenshot*) em formato PNG direto dos controles do vídeo.
+  - Ajuste fino de velocidade de reprodução (de 0.25x a 3.0x).
 
-- **Gerenciamento de Cursos**: Listagem dinâmica de cursos com acompanhamento de progresso.
-- **Player Inteligente**: Reprodutor de aulas com memória de tempo assistido e marcação de conclusão.
-- **Anotações**: Sistema de anotações com suporte a timestamps interativos.
-- **Materiais**: Suporte a downloads de anexos por aula.
-- **Customização e Edição**: Cadastro manual de cursos (nome, caminho e capa), edição, exclusão e reordenação (drag and drop).
-- **Configuração Simples**: Ajuste rápido da URL da API diretamente na aba de preferências.
+- 📂 **Mapeamento Automático de Pastas**:
+  - Escaneamento recursivo preservando a árvore de módulos e submódulos.
+  - Suporte a múltiplos formatos de vídeo (`.mp4`, `.mkv`, `.avi`, `.mov`, `.webm`, `.ts`, `.flv` e outros).
+  - Extração automática de duração das aulas em segundo plano com FFmpeg.
 
-## Começando
+- 📝 **Anotações Sincronizadas com Timestamp**:
+  - Crie notas vinculadas ao segundo exato do vídeo em reprodução.
+  - Clique no timestamp da anotação para pular instantaneamente para aquele trecho.
+  - Edição, exclusão e busca em tempo real em todas as anotações do curso.
+  - Exportação completa das anotações em formato **Markdown (`.md`)** ou **Texto Puro (`.txt`)**.
 
-Você pode executar o projeto de duas maneiras: utilizando Docker Compose (ideal para subir todo o ecossistema rapidamente) ou executando o ambiente de desenvolvimento local (ideal para modificações).
+- 📎 **Descoberta Inteligente de Anexos e Materiais**:
+  - Detecção automática de materiais complementares (`.pdf`, `.zip`, `.rar`, `.html`, `.docx`, `.py`, `.js`, etc.) localizados nas pastas das aulas ou em diretórios de apoio (`materiais/`, `anexos/`, `extras/`).
+  - Download e pré-visualização direta pelo navegador.
 
-### Opção 1: Execução com Docker (Recomendada)
+- 📊 **Progresso e Produtividade**:
+  - Cálculo de porcentagem de conclusão por curso em tempo real.
+  - Card de acesso rápido para a última aula assistida.
+  - Checkboxes interativas com sincronização otimista e offline.
 
-Caso queira executar a plataforma de forma simples:
+- 🔀 **Reordenação Drag & Drop**:
+  - Organize visualmente a ordem de exibição dos cursos na tela inicial arrastando e soltando os cards (via `@dnd-kit`).
 
-1. Certifique-se de ter o [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado.
-2. Crie um arquivo chamado `docker-compose.yml` e adicione a seguinte configuração:
+- 🎨 **Interface Glassmorphism Moderna**:
+  - Tema escuro imersivo com efeitos visuais fluidos (*liquid blobs*), painéis translúcidos e cursor dinâmico interativo.
 
-```yml
-name: receitas
+---
 
-services:
-  front-end:
-    container_name: front-end
-    image: ghcr.io/ryanrpj/frontend-plataforma-de-receitas:latest
-    ports:
-      - 5050:4173
-    depends_on:
-      - back-end
-    restart: always
+## 🛠️ Tecnologias Utilizadas
 
-  back-end:
-    container_name: back-end
-    image: ghcr.io/ryanrpj/backend-plataforma-de-receitas:latest
-    restart: always
-    ports:
-      - 9823:9823
-    volumes:
-      - your-courses:/courses:ro
-```
+### Frontend
+- **Framework & Tooling**: [React 18](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/)
+- **Estilização**: [Tailwind CSS](https://tailwindcss.com/) com utilitários de animação e tipografia
+- **Componentes**: [Radix UI Primitives](https://www.radix-ui.com/), [Lucide React](https://lucide.dev/)
+- **Player & Mídia**: [Video.js](https://videojs.com/) com skins e extensões customizadas
+- **Interatividade**: [@dnd-kit](https://dndkit.com/) para drag-and-drop, [Sonner](https://sonner.emilkowal.ski/) para notificações
+- **Renderização Markdown**: [React Markdown](https://github.com/remarkjs/react-markdown) e [Remark GFM](https://github.com/remarkjs/remark-gfm)
 
-> [!IMPORTANT]
-> Substitua `your-courses` pelo caminho absoluto no seu disco local onde os vídeos dos cursos estão armazenados.
->
-> Exemplo correto: `- C:\Users\myuser\Downloads\courses:/courses:ro`  
-> Exemplo incorreto: `- C:\Users\myuser\Downloads\courses/courses:ro`
+### Backend
+- **Core**: [Python 3.11](https://www.python.org/) com [Flask](https://flask.palletsprojects.com/)
+- **ORM & Banco de Dados**: [SQLAlchemy](https://www.sqlalchemy.org/) / [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/) com SQLite
+- **Processamento de Mídia**: [FFmpeg](https://ffmpeg.org/) para inspeção de metadados e duração
+- **Contêineres**: [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/)
 
-3. Inicialize os containers:
+---
 
-```bash
-docker compose up -d
-```
+## 📋 Pré-requisitos
 
-4. Acesse a aplicação no navegador em `http://localhost:5050`.
+Para executar a aplicação com Docker (método recomendado):
+- [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/) instalados.
 
-### Opção 2: Desenvolvimento Local
+Para execução manual em desenvolvimento local:
+- [Node.js](https://nodejs.org/) (versão 18 ou superior) e [npm](https://www.npmjs.com/)
+- [Python](https://www.python.org/) (versão 3.10 ou 3.11)
+- [FFmpeg](https://ffmpeg.org/download.html) instalado e adicionado ao `PATH` do sistema
 
-Caso deseje fazer modificações na interface, você pode iniciar o servidor de desenvolvimento do Vite:
+---
 
-1. Garanta que o back-end da aplicação esteja em execução, tipicamente em `http://localhost:9823`. Se necessário, acesse as **Configurações** no front-end para redefinir a URL da API.
-2. Instale as dependências:
+## 🚀 Início Rápido
 
-```bash
-npm install
-```
+### Opção 1: Executando com Docker Compose (Recomendado)
 
-3. Inicie o servidor do Vite:
+1. Clone o repositório ou navegue até o diretório do projeto:
+   ```bash
+   cd Receitas
+   ```
 
-```bash
-npm run dev -- --host 0.0.0.0
-```
+2. Configure o caminho da sua pasta de cursos no arquivo `docker-compose.yml`:
+   ```yaml
+   services:
+     back-end:
+       volumes:
+         - C:\Caminho\Para\Seus\Cursos:/courses:ro  # Substitua pelo caminho local dos seus cursos
+   ```
 
-4. O Vite iniciará o servidor, geralmente disponível em `http://localhost:5173`.
+3. Inicie os contêineres:
+   ```bash
+   docker compose up -d --build
+   ```
 
-## Adicionando Novos Cursos
-
-Para importar um curso local para dentro da plataforma:
-
-1. Navegue até a tela **Meus Cursos**.
-2. Clique no botão **Adicionar manualmente**.
-3. Preencha os campos de nome e o caminho exato da pasta do curso.
-4. (Opcional) Forneça uma URL ou um arquivo local para a capa.
-5. Salve as alterações.
+4. Acesse a aplicação no seu navegador:
+   - **Frontend**: [http://localhost:5050](http://localhost:5050)
+   - **Backend API**: [http://localhost:9823](http://localhost:9823)
 
 > [!TIP]
-> Ao colar o caminho completo de uma pasta no Windows, a interface utilizará automaticamente o nome da última pasta como sugestão para o nome do curso.
+> No Linux ou macOS, ajuste o caminho do volume no `docker-compose.yml` para o formato Unix (ex: `/home/usuario/Cursos:/courses:ro`).
 
-## Scripts
+---
 
-Você pode utilizar os seguintes comandos Node.js (disponíveis no `package.json`):
+### Opção 2: Executando Manualmente em Desenvolvimento
 
-- `npm run dev`: Inicia o servidor local de desenvolvimento com Hot-Reload.
-- `npm run build`: Compila a aplicação para arquivos estáticos otimizados para produção.
-- `npm run preview`: Inicia um servidor simples para visualizar a versão compilada.
+<details>
+<summary><b>1. Configurar e Iniciar o Backend</b></summary>
+
+```bash
+# Entre na pasta do backend
+cd backend
+
+# Crie e ative o ambiente virtual
+python -m venv venv
+
+# No Windows:
+.\venv\Scripts\activate
+# No Linux/macOS:
+source venv/bin/activate
+
+# Instale as dependências
+pip install -r src/requirements.txt
+
+# Inicie o servidor da API (porta 9823)
+python src/app.py
+```
+</details>
+
+<details>
+<summary><b>2. Configurar e Iniciar o Frontend</b></summary>
+
+```bash
+# Em outro terminal, entre na pasta do frontend
+cd frontend
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento Vite
+npm run dev
+```
+
+Abra o endereço exibido no terminal (geralmente [http://localhost:5173](http://localhost:5173)).
+</details>
+
+---
+
+## ⌨️ Atalhos de Teclado
+
+Durante a reprodução de um vídeo, você pode utilizar os seguintes atalhos para controle ágil:
+
+| Tecla / Combinação | Ação |
+| :--- | :--- |
+| <kbd>Espaço</kbd> ou <kbd>K</kbd> | Alternar entre Reproduzir / Pausar |
+| <kbd>J</kbd> | Voltar 10 segundos |
+| <kbd>L</kbd> | Avançar 10 segundos |
+| <kbd>←</kbd> (Seta Esquerda) | Voltar 5 segundos |
+| <kbd>→</kbd> (Seta Direita) | Avançar 5 segundos |
+| <kbd>↑</kbd> (Seta Cima) | Aumentar volume em 10% |
+| <kbd>↓</kbd> (Seta Baixo) | Diminuir volume em 10% |
+| <kbd>F</kbd> | Alternar modo Tela Cheia |
+| <kbd>M</kbd> | Ativar / Desativar mudo |
+| <kbd>Shift</kbd> + <kbd>&lt;</kbd> (ou <kbd>,</kbd>) | Diminuir velocidade de reprodução |
+| <kbd>Shift</kbd> + <kbd>&gt;</kbd> (ou <kbd>.</kbd>) | Aumentar velocidade de reprodução |
+| <kbd>Shift</kbd> + <kbd>P</kbd> | Ir para a aula anterior |
+| <kbd>Shift</kbd> + <kbd>N</kbd> | Ir para a próxima aula |
+
+---
+
+## 📖 Como Cadastrar um Curso
+
+1. Acesse a página inicial e clique no botão **"Novo Curso"** no canto superior direito.
+2. Informe o **Nome do Curso**.
+3. No campo **Caminho da Pasta**, informe o caminho absoluto do diretório onde as videoaulas estão armazenadas (ex: `C:\Cursos\Curso-React` ou `/courses/Curso-React`).
+4. *(Opcional)* Selecione uma imagem de capa local ou informe a URL de uma imagem da web.
+5. Clique em **Salvar**. O backend fará a varredura recursiva de todas as subpastas, registrará as aulas e calculará as durações automaticamente.
+
+> [!IMPORTANT]
+> Ao utilizar Docker, certifique-se de que a pasta cadastrada esteja dentro do volume mapeado em `/courses` no contêiner do backend.
+
+---
+
+## 📁 Estrutura do Projeto
+
+```text
+Receitas/
+├── docker-compose.yml        # Orquestração dos serviços frontend e backend
+├── backend/
+│   ├── Dockerfile            # Configuração do contêiner Python 3.11 com FFmpeg
+│   └── src/
+│       ├── app.py            # Inicialização do Flask e modelos SQLAlchemy (Course, Lesson, Note)
+│       ├── routes.py         # Endpoints da API REST e streaming de conteúdo
+│       ├── utils.py          # Lógica de escaneamento de diretórios e módulos
+│       ├── video_utils.py    # Extração de duração via FFmpeg
+│       └── requirements.txt  # Dependências Python
+└── frontend/
+    ├── Dockerfile            # Build multi-stage com Nginx
+    ├── package.json          # Dependências React, Vite, Tailwind e Video.js
+    └── src/
+        ├── components/       # Componentes de UI, player, cards, anotações e anexos
+        ├── hooks/            # Hooks de dados, player e gerenciamento de API
+        ├── pages/            # Páginas da aplicação (Cursos, Visualizador de Curso, Configurações)
+        └── routes/           # Configuração de rotas com React Router
+```
