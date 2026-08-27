@@ -63,17 +63,17 @@ export default function CoursePage({}: Props) {
         if (currentIndex > 0) {
           const prevLesson = allLessons[currentIndex - 1];
           selectCourseLesson(prevLesson);
-          toast.info(`Aula anterior: ${prevLesson.title}`, { duration: 1500 });
+          toast.info(`Aula anterior: ${prevLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
         } else {
-          toast.info("Você já está na primeira aula.", { duration: 1500 });
+          toast.info("Você já está na primeira aula.", { id: "lesson-navigation-toast", duration: 1500 });
         }
       } else if (direction === "next") {
         if (currentIndex < allLessons.length - 1) {
           const nextLesson = allLessons[currentIndex + 1];
           selectCourseLesson(nextLesson);
-          toast.info(`Próxima aula: ${nextLesson.title}`, { duration: 1500 });
+          toast.info(`Próxima aula: ${nextLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
         } else {
-          toast.info("Você já está na última aula.", { duration: 1500 });
+          toast.info("Você já está na última aula.", { id: "lesson-navigation-toast", duration: 1500 });
         }
       }
     };

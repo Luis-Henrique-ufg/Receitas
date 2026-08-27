@@ -284,7 +284,7 @@ export function Player({
           const currentRate = Number((player.playbackRate() || 1).toFixed(2));
           const nextRate = availableRates.filter((r) => r < currentRate).pop() ?? 0.25;
           player.playbackRate(nextRate);
-          toast.info(`Velocidade: ${nextRate}x`, { duration: 1200 });
+          toast.info(`Velocidade: ${nextRate}x`, { id: "playback-rate-toast", duration: 1000 });
           return;
         }
 
@@ -294,7 +294,7 @@ export function Player({
           const currentRate = Number((player.playbackRate() || 1).toFixed(2));
           const nextRate = availableRates.find((r) => r > currentRate) ?? 3;
           player.playbackRate(nextRate);
-          toast.info(`Velocidade: ${nextRate}x`, { duration: 1200 });
+          toast.info(`Velocidade: ${nextRate}x`, { id: "playback-rate-toast", duration: 1000 });
           return;
         }
 
