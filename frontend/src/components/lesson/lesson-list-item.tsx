@@ -125,7 +125,6 @@ export default function LessonListItem({
     <div
       key={lesson.id}
       id={`lesson-item-${lesson.id}`}
-      style={{ contentVisibility: "auto" }}
       className={cn(
         `relative flex justify-between items-center w-full h-16 my-2 border shadow-sm rounded-xl transition-all duration-300 overflow-hidden group/item cursor-pointer glass-panel-brighten`,
         isActive

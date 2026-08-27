@@ -58,7 +58,7 @@ export default function ModuleList({
   };
 
   useEffect(() => {
-    if (selectedLessonId && !currentModule) {
+    if (selectedLessonId && Object.keys(modules).length > 0) {
       // Encontrar módulo que contém a aula atual
       const sortedModules = Object.entries(modules).sort((a, b) =>
         a[0].localeCompare(b[0], undefined, {
@@ -71,34 +71,58 @@ export default function ModuleList({
       );
       if (activeEntryIndex !== -1) {
         const title = sortedModules[activeEntryIndex][0];
-        handleModuleChange(`${title}-${activeEntryIndex}`);
+        const targetModuleKey = `${title}-${activeEntryIndex}`;
+        if (!currentModule || currentModule !== targetModuleKey) {
+          handleModuleChange(targetModuleKey);
+        }
       }
     }
-  }, [selectedLessonId, modules, currentModule]);
+  }, [selectedLessonId, modules]);
 
   useEffect(() => {
-    if (selectedLessonId) {
+    if (!selectedLessonId) return;
+
+    let timeoutId: NodeJS.Timeout;
+    let attempts = 0;
+    const maxAttempts = 12;
+
+    const tryScroll = () => {
       const el = document.getElementById(`lesson-item-${selectedLessonId}`);
       if (el) {
-        // Atrasar levemente para garantir que o acordeão expandiu
-        setTimeout(() => {
-          const container = el.closest('.overflow-y-auto');
+        const container = el.closest('.overflow-y-auto') || el.closest('[data-radix-scroll-area-viewport]');
+        const elRect = el.getBoundingClientRect();
+
+        // Verificar se o elemento já foi renderizado com altura válida
+        if (elRect.height > 0) {
           if (container) {
             const containerRect = container.getBoundingClientRect();
-            const elRect = el.getBoundingClientRect();
             const relativeTop = elRect.top - containerRect.top;
-            
-            container.scrollBy({
-              top: relativeTop - (containerRect.height / 2) + (elRect.height / 2),
+            const targetScrollTop = container.scrollTop + relativeTop - (containerRect.height / 2) + (elRect.height / 2);
+
+            container.scrollTo({
+              top: Math.max(0, targetScrollTop),
               behavior: 'smooth'
             });
           } else {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-        }, 300);
+          return;
+        }
       }
-    }
-  }, [selectedLessonId]);
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        timeoutId = setTimeout(tryScroll, 100);
+      }
+    };
+
+    // Iniciar tentativas de rolagem após leve atraso para permitir expansão do acordeão
+    timeoutId = setTimeout(tryScroll, 150);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [selectedLessonId, currentModule]);
 
   function handleCompleteLesson() {
     try {
