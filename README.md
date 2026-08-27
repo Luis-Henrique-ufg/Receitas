@@ -1,7 +1,7 @@
 <!-- prettier-ignore -->
 <div align="center">
 
-<img src="frontend/public/favicon.ico" alt="Receitas Logo" width="80" height="80" />
+<img src="frontend/public/logo.png" alt="Receitas Logo" width="160" />
 
 # Receitas
 
