@@ -7,7 +7,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import joinedload
 
 from app import app, db, Lesson, Course, Note
-from utils import list_and_register_lessons, scan_data_directory_and_register_courses, translate_to_container_path, VIDEO_EXTENSIONS
+from utils import list_and_register_lessons, scan_data_directory_and_register_courses, translate_to_container_path, VIDEO_EXTENSIONS, natural_sort_key
 from video_utils import open_video
 
 @app.route('/')
@@ -57,6 +57,10 @@ def list_lessons_for_course(course_id):
             'pdf_url': lesson.pdf_url,
         })
     
+    # Ordenação natural em cada módulo (ex: 2. Aula antes de 10. Aula)
+    for mod in response:
+        response[mod].sort(key=lambda l: natural_sort_key(l['title']))
+
     return jsonify(response)
 
 
@@ -273,7 +277,7 @@ def get_lesson_attachments(lesson_id):
             if not os.path.exists(curr_container_dir):
                 return
             entries = list(os.scandir(curr_container_dir))
-            entries.sort(key=lambda e: e.name.lower())
+            entries.sort(key=lambda e: natural_sort_key(e.name))
             for entry in entries:
                 if entry.name.startswith('.'):
                     continue

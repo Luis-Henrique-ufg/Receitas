@@ -1,7 +1,13 @@
 import os
-from app import  db, Lesson
+import re
+from app import db, Lesson
 from video_utils import get_video_duration_v1
 from app import db, Course
+
+def natural_sort_key(s):
+    if not s:
+        return []
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', str(s))]
 
 def list_and_register_lessons(course_path, course_id):
     Lesson.query.filter_by(course_id=course_id).delete()
@@ -37,7 +43,7 @@ def list_and_register_lessons_in_directory(directory, course_id, hierarchy_prefi
         return
 
     entries = list(os.scandir(container_dir))
-    entries.sort(key=lambda e: (e.is_file(), os.path.splitext(e.name)[0]))
+    entries.sort(key=lambda e: (e.is_file(), natural_sort_key(os.path.splitext(e.name)[0])))
 
     for entry in entries:
         if entry.is_dir():

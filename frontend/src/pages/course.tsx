@@ -46,7 +46,10 @@ export default function CoursePage({}: Props) {
     const list: Lesson[] = [];
     sortedModuleKeys.forEach((key) => {
       if (modules[key]) {
-        list.push(...modules[key]);
+        const sortedLessons = [...modules[key]].sort((a, b) =>
+          a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" })
+        );
+        list.push(...sortedLessons);
       }
     });
     return list;

@@ -162,10 +162,12 @@ export default function ModuleList({
             })
           )
           .map(([title, lessons], index) => {
-            const validLessons = lessons.filter((l) => {
-              const url = (l.video_url || l.pdf_url || "").toLowerCase();
-              return !url.endsWith(".html") && !url.endsWith(".htm") && !url.endsWith(".txt");
-            });
+            const validLessons = lessons
+              .filter((l) => {
+                const url = (l.video_url || l.pdf_url || "").toLowerCase();
+                return !url.endsWith(".html") && !url.endsWith(".htm") && !url.endsWith(".txt");
+              })
+              .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: "base" }));
             const stats = getLessonStats(validLessons);
 
             return (
