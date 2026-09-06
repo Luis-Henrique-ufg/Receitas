@@ -1,5 +1,13 @@
 import { useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import LessonAttachments from "@/components/lesson/lesson-attachments";
 import LessonNotes from "@/components/lesson/lesson-notes";
 import CoursePercentage from "@/components/course-percentage";
@@ -55,26 +63,40 @@ export default function CoursePage({}: Props) {
     return list;
   }, [modules]);
 
+  const currentIndex = useMemo(() => {
+    if (!selectedLesson || allLessons.length === 0) return -1;
+    return allLessons.findIndex((l) => l.id === selectedLesson.id);
+  }, [allLessons, selectedLesson]);
+
+  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex !== -1 && currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+
+  const handlePrevLesson = () => {
+    if (prevLesson) {
+      selectCourseLesson(prevLesson);
+      toast.info(`Aula anterior: ${prevLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
+    }
+  };
+
+  const handleNextLesson = () => {
+    if (nextLesson) {
+      selectCourseLesson(nextLesson);
+      toast.info(`Próxima aula: ${nextLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
+    }
+  };
+
   // Global navigation shortcuts (Shift+P, Shift+N)
   useEffect(() => {
     const handleNavigation = (direction: "prev" | "next") => {
-      if (!selectedLesson || allLessons.length === 0) return;
-      const currentIndex = allLessons.findIndex((l) => l.id === selectedLesson.id);
-      if (currentIndex === -1) return;
-
       if (direction === "prev") {
-        if (currentIndex > 0) {
-          const prevLesson = allLessons[currentIndex - 1];
-          selectCourseLesson(prevLesson);
-          toast.info(`Aula anterior: ${prevLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
+        if (prevLesson) {
+          handlePrevLesson();
         } else {
           toast.info("Você já está na primeira aula.", { id: "lesson-navigation-toast", duration: 1500 });
         }
       } else if (direction === "next") {
-        if (currentIndex < allLessons.length - 1) {
-          const nextLesson = allLessons[currentIndex + 1];
-          selectCourseLesson(nextLesson);
-          toast.info(`Próxima aula: ${nextLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
+        if (nextLesson) {
+          handleNextLesson();
         } else {
           toast.info("Você já está na última aula.", { id: "lesson-navigation-toast", duration: 1500 });
         }
@@ -91,7 +113,7 @@ export default function CoursePage({}: Props) {
       window.removeEventListener("playerNavigatePrevious", handlePrevEvent);
       window.removeEventListener("playerNavigateNext", handleNextEvent);
     };
-  }, [allLessons, selectedLesson, selectCourseLesson]);
+  }, [prevLesson, nextLesson]);
 
   if (!courseId) {
     return "Sem id de curso";
@@ -137,13 +159,70 @@ export default function CoursePage({}: Props) {
           lesson={selectedLesson} 
           onLessonComplete={refreshCourseProgress}
         />
-        <div className="p-4 border-t border-white/10 flex-1">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-white/50 mb-2 truncate">
-            {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
+        <div className="p-3.5 sm:p-4 border-t border-white/10 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+          <div className="flex-1 min-w-0 pr-2">
+            <div className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/50 mb-1 truncate">
+              {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
+            </div>
+            <h3 className="text-left font-heading font-medium text-base sm:text-lg lg:text-xl tracking-tight text-white truncate" title={selectedLesson?.title}>
+              {selectedLesson?.title}
+            </h3>
           </div>
-          <h3 className="text-left font-heading font-medium text-2xl tracking-tight text-white truncate max-[1366px]:hidden" title={selectedLesson?.title}>
-            {selectedLesson?.title}
-          </h3>
+
+          <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePrevLesson}
+                    disabled={!prevLesson}
+                    className="gap-1.5 h-8 sm:h-9 px-3 sm:px-3.5 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-white/80" />
+                    <span>Anterior</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {prevLesson ? (
+                    <div>
+                      <p className="font-semibold text-xs">Aula anterior (Shift+P)</p>
+                      <p className="text-[10px] opacity-75">{prevLesson.title}</p>
+                    </div>
+                  ) : (
+                    <p className="text-xs">Primeira aula do curso</p>
+                  )}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    onClick={handleNextLesson}
+                    disabled={!nextLesson}
+                    className="gap-1.5 h-8 sm:h-9 px-3.5 sm:px-4 text-xs font-medium bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white border border-[#007bff]/50 shadow-md shadow-blue-900/30 disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
+                  >
+                    <span>Próxima</span>
+                    <ChevronRight className="w-4 h-4 ml-0.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  {nextLesson ? (
+                    <div>
+                      <p className="font-semibold text-xs">Próxima aula (Shift+N)</p>
+                      <p className="text-[10px] opacity-75">{nextLesson.title}</p>
+                    </div>
+                  ) : (
+                    <p className="text-xs">Última aula do curso</p>
+                  )}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
       <div className="lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0">
