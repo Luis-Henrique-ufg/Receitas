@@ -1,8 +1,8 @@
 import os
 import re
-from app import db, Lesson
+import unicodedata
+from app import db, Lesson, Course
 from video_utils import get_video_duration_v1
-from app import db, Course
 
 def natural_sort_key(s):
     if not s:
@@ -18,17 +18,43 @@ def translate_to_container_path(host_path):
     if not host_path:
         return host_path
     
-    # Substitui barras invertidas por barras normais para facilitar busca
-    normalized_path = host_path.replace("\\", "/")
+    # Se já é um caminho acessível no container, retorna diretamente
+    if os.path.exists(host_path):
+        return host_path
+    
+    normalized_path = unicodedata.normalize('NFC', host_path.replace("\\", "/"))
     
     if os.path.exists("/courses"):
         available_courses = os.listdir("/courses")
-        parts = normalized_path.split("/")
+        courses_map = {unicodedata.normalize('NFC', c).lower(): c for c in available_courses}
         
-        # Procura a pasta raiz mapeada no volume Docker (/courses)
+        parts = normalized_path.split("/")
         for i in range(len(parts)):
-            if parts[i] in available_courses:
-                return "/courses/" + "/".join(parts[i:])
+            part_norm = unicodedata.normalize('NFC', parts[i]).lower()
+            if part_norm in courses_map:
+                actual_root = courses_map[part_norm]
+                subparts = parts[i+1:]
+                candidate = "/courses/" + actual_root + ("/" + "/".join(subparts) if subparts else "")
+                if os.path.exists(candidate):
+                    return candidate
+                
+                # Resolução tolerante a diferenças de case/normalização em subpastas
+                curr = "/courses/" + actual_root
+                for sp in subparts:
+                    sp_norm = unicodedata.normalize('NFC', sp).lower()
+                    if not os.path.exists(curr):
+                        break
+                    try:
+                        entries = os.listdir(curr)
+                        entry_map = {unicodedata.normalize('NFC', e).lower(): e for e in entries}
+                        if sp_norm in entry_map:
+                            curr = os.path.join(curr, entry_map[sp_norm]).replace("\\", "/")
+                        else:
+                            curr = os.path.join(curr, sp).replace("\\", "/")
+                    except Exception:
+                        curr = os.path.join(curr, sp).replace("\\", "/")
+                
+                return curr
                 
     return host_path
 
@@ -82,7 +108,11 @@ def list_and_register_lessons_in_directory(directory, course_id, hierarchy_prefi
     db.session.commit()
 
 def scan_data_directory_and_register_courses():
+    if not os.path.exists('/data'):
+        return
+        
     entries = list(os.scandir('/data'))
+    entries.sort(key=lambda e: natural_sort_key(e.name))
 
     for entry in entries:
         if entry.is_dir():
@@ -95,7 +125,7 @@ def scan_data_directory_and_register_courses():
             )
 
             if course_already_exists(course):
-                return
+                continue
 
             db.session.add(course)
             db.session.commit()

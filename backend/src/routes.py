@@ -8,7 +8,7 @@ from sqlalchemy.orm import joinedload
 
 from app import app, db, Lesson, Course, Note
 from utils import list_and_register_lessons, scan_data_directory_and_register_courses, translate_to_container_path, VIDEO_EXTENSIONS, natural_sort_key
-from video_utils import open_video
+from video_utils import open_video, ensure_compatible_video
 
 @app.route('/')
 def index():
@@ -67,14 +67,23 @@ def list_lessons_for_course(course_id):
 @app.route("/serve-content", methods=['GET'])
 def serve_lesson_content():
     path = request.args.get('path')
-    from utils import translate_to_container_path
+    if not path:
+        abort(400)
     
     container_path = translate_to_container_path(path)
 
     if not os.path.exists(container_path):
         abort(404)
         
-    return send_file(container_path)
+    file_ext = os.path.splitext(container_path)[1].lower()
+    if file_ext in VIDEO_EXTENSIONS:
+        serve_path, mimetype = ensure_compatible_video(container_path)
+        if not serve_path or not os.path.exists(serve_path):
+            serve_path = container_path
+            mimetype = None
+        return send_file(serve_path, conditional=True, mimetype=mimetype)
+
+    return send_file(container_path, conditional=True)
 
 @app.route('/api/update-lesson-progress', methods=['POST'])
 def update_lesson_for_end_progress():
