@@ -1,0 +1,24 @@
+# EditorConfig helps maintain consistent coding styles for multiple developers
+# across different editors and IDEs (ISO/IEC/IEEE 12207:2017 - Process 6.4.7.2.a).
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Python files (PEP 8)
+[*.py]
+indent_size = 4
+max_line_length = 88
+
+# Web / TypeScript / React / Config files
+[*.{js,jsx,ts,tsx,json,css,scss,html,yml,yaml}]
+indent_size = 2
+
+# Markdown files (allow trailing spaces for manual line breaks)
+[*.md]
+trim_trailing_whitespace = false
