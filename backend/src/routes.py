@@ -11,7 +11,9 @@ from flask import (
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 
-from app import Course, Lesson, Note, app, db
+from app import app
+from database import db
+from models import Course, Lesson, Note
 from utils import (
     VIDEO_EXTENSIONS,
     list_and_register_lessons,

@@ -1,51 +1,18 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 from config import Config
+from database import db
+from models import Course, Lesson, Note
 
 app = Flask(__name__, static_folder="../front-end/dist", static_url_path="")
 app.config.from_object(Config)
 
-db = SQLAlchemy(app)
+db.init_app(app)
 CORS(app)
 
-
-class Course(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    path = db.Column(db.String(255), nullable=False)
-    isCoverUrl = db.Column(db.Integer, default=0)
-    fileCover = db.Column(db.String(255), nullable=True)
-    urlCover = db.Column(db.String(255), nullable=True)
-    position = db.Column(db.Integer, default=0)
-
-
-class Lesson(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
-    course = db.relationship("Course", backref=db.backref("lessons", lazy=True))
-    title = db.Column(db.String(150), nullable=False)
-    module = db.Column(db.Text)
-    hierarchy_path = db.Column(db.Text, nullable=False)
-    video_url = db.Column(db.String(255))
-    pdf_url = db.Column(db.String(255))
-    progressStatus = db.Column(db.Text)
-    isCompleted = db.Column(db.Integer)
-    time_elapsed = db.Column(db.Text)
-    duration = db.Column(db.Text, nullable=True)
-
-
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    lesson_id = db.Column(db.Integer, db.ForeignKey("lesson.id"), nullable=False)
-    lesson = db.relationship(
-        "Lesson", backref=db.backref("notes", lazy=True, cascade="all, delete-orphan")
-    )
-    time = db.Column(db.Integer, nullable=False, default=0)
-    content = db.Column(db.Text, nullable=False)
-
+__all__ = ["app", "db", "Course", "Lesson", "Note"]
 
 import routes  # noqa: E402, F401
 

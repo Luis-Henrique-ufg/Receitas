@@ -2,7 +2,8 @@ import os
 import re
 import unicodedata
 
-from app import Course, Lesson, db
+from database import db
+from models import Course, Lesson
 from video_utils import get_video_duration_v1
 
 
