@@ -1,9 +1,16 @@
+import logging
+
 from flask import Flask
 from flask_cors import CORS
 
 from config import Config
 from database import db
 from models import Course, Lesson, Note
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s in %(name)s: %(message)s",
+)
 
 app = Flask(__name__, static_folder="../front-end/dist", static_url_path="")
 app.config.from_object(Config)

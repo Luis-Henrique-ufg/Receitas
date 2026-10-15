@@ -1,9 +1,12 @@
 import hashlib
 import json
+import logging
 import os
 import re
 import subprocess
 import time
+
+logger = logging.getLogger(__name__)
 
 CACHE_DIR = "/app/data/cache/videos"
 
@@ -23,19 +26,19 @@ def get_video_duration_v1(video_path):
         else:
             return 0
     except Exception as e:
-        print(f"An error occurred reading duration: {e}")
+        logger.error("An error occurred reading duration: %s", e)
         return 0
 
 
 def open_video(video_path):
     if os.path.exists(video_path):
-        print(video_path)
+        logger.info("Opening video: %s", video_path)
         try:
             os.startfile(video_path)
-        except Exception:
-            print("erro ao abrir arquivo")
+        except Exception as e:
+            logger.error("Erro ao abrir arquivo: %s", e)
         return
-    print("Caminho do vídeo não encontrado.")
+    logger.warning("Caminho do vídeo não encontrado: %s", video_path)
 
 
 def get_video_stream_info(file_path):
@@ -70,7 +73,7 @@ def get_video_stream_info(file_path):
             "audio_codec": a_codec,
         }
     except Exception as e:
-        print(f"Error probing video {file_path}: {e}")
+        logger.error("Error probing video %s: %s", file_path, e)
         return None
 
 
@@ -146,7 +149,7 @@ def ensure_compatible_video(container_path):
             + ["-f", "mp4", "-movflags", "+faststart", tmp_file]
         )
 
-        print(f"[Video Remux] Remuxing {container_path} -> {cached_file}")
+        logger.info("[Video Remux] Remuxing %s -> %s", container_path, cached_file)
         t0 = time.time()
         res = subprocess.run(cmd, capture_output=True, text=True)
 
@@ -155,8 +158,9 @@ def ensure_compatible_video(container_path):
             or not os.path.exists(tmp_file)
             or os.path.getsize(tmp_file) == 0
         ):
-            print(
-                f"[Video Remux] Fast copy failed, falling back to full transcode: {res.stderr}"
+            logger.warning(
+                "[Video Remux] Fast copy failed, falling back to full transcode: %s",
+                res.stderr,
             )
             cmd_full = [
                 "ffmpeg",
@@ -185,8 +189,11 @@ def ensure_compatible_video(container_path):
             and os.path.getsize(tmp_file) > 0
         ):
             os.replace(tmp_file, cached_file)
-            print(
-                f"[Video Remux] Completed in {time.time() - t0:.2f}s: {cached_file} ({os.path.getsize(cached_file)} bytes)"
+            logger.info(
+                "[Video Remux] Completed in %.2fs: %s (%d bytes)",
+                time.time() - t0,
+                cached_file,
+                os.path.getsize(cached_file),
             )
             return cached_file, "video/mp4"
         else:
@@ -195,8 +202,8 @@ def ensure_compatible_video(container_path):
                     os.remove(tmp_file)
                 except Exception:
                     pass
-            print(f"[Video Remux] Error: {res.stderr}")
+            logger.error("[Video Remux] Error: %s", res.stderr)
             return container_path, None
     except Exception as e:
-        print(f"[Video Remux] Exception during remuxing: {e}")
+        logger.error("[Video Remux] Exception during remuxing: %s", e)
         return container_path, None

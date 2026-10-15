@@ -1,3 +1,4 @@
+import logging
 import os
 
 from flask import (
@@ -22,6 +23,8 @@ from utils import (
     translate_to_container_path,
 )
 from video_utils import ensure_compatible_video
+
+logger = logging.getLogger(__name__)
 
 
 @app.route("/")
@@ -170,7 +173,7 @@ def add_course():
         fileCover=fileCover,
         urlCover=urlCover if isCoverUrl else None,
     )
-    print(f"Saving course with file cover: {course.fileCover}")
+    logger.info("Saving course with file cover: %s", course.fileCover)
     db.session.add(course)
     db.session.commit()
 
@@ -201,7 +204,7 @@ def rescan_course_lessons(course_id):
 @app.route("/api/lessons/<int:lesson_id>", methods=["GET"])
 def get_lesson_elapsed_time(lesson_id):
     lesson = Lesson.query.get_or_404(lesson_id)
-    print(lesson.time_elapsed)
+    logger.debug("Lesson %s elapsed time: %s", lesson_id, lesson.time_elapsed)
     return jsonify({"elapsedTime": lesson.time_elapsed})
 
 
@@ -227,7 +230,7 @@ def update_course(course_id):
             image_file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         else:
             course.fileCover = course.fileCover
-    print(f"Saving course with file cover: {course.fileCover}")
+    logger.info("Updating course with file cover: %s", course.fileCover)
     db.session.commit()
     if old_path != course.path:
         list_and_register_lessons(course.path, course_id)
@@ -252,8 +255,7 @@ def uploaded_file(filename):
 @app.route("/api/courses/<int:course_id>", methods=["DELETE"])
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
-    print(course)
-    print(course_id)
+    logger.info("Deleting course id=%s, name=%s", course_id, course.name)
 
     Lesson.query.filter_by(course_id=course_id).delete()
 
@@ -261,7 +263,7 @@ def delete_course(course_id):
         try:
             os.remove(os.path.join(app.config["UPLOAD_FOLDER"], course.fileCover))
         except FileNotFoundError:
-            print(f"Arquivo {course.fileCover} não encontrado.")
+            logger.warning("Arquivo %s não encontrado.", course.fileCover)
 
     db.session.delete(course)
     db.session.commit()
@@ -393,7 +395,7 @@ def get_lesson_attachments(lesson_id):
                         entry.path, f"{curr_host_dir}{sep}{entry.name}", new_rel
                     )
         except Exception as e:
-            print(f"Erro ao buscar anexos: {e}")
+            logger.error("Erro ao buscar anexos: %s", e)
 
     scan_dir_for_attachments(container_lesson_dir, host_lesson_dir)
 
