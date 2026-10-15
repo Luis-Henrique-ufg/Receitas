@@ -45,7 +45,7 @@ export default function AddCourse({ onCreate }: Props) {
     let createdSuccessfully = false;
     const formData = new FormData();
 
-    let finalPath = coursePath;
+    const finalPath = coursePath;
     
     if (!courseName.trim() || !finalPath.trim()) {
       toast.error("Informe o nome e o caminho do curso.");

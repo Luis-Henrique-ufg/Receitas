@@ -20,9 +20,7 @@ import useLessonResources from "@/hooks/useLessonResources";
 import { toast } from "sonner";
 import { Lesson } from "@/models/models";
 
-type Props = {};
-
-export default function CoursePage({}: Props) {
+export default function CoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");

@@ -1,6 +1,4 @@
-type Props = {};
-
-export default function Loading({}: Props) {
+export default function Loading() {
   return (
     <div className="flex items-center justify-center h-10">
       <svg

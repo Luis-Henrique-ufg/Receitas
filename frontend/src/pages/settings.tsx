@@ -1,4 +1,3 @@
-type Props = {};
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +25,7 @@ const formSchema = z.object({
     }),
 });
 
-export default function SettingsPage({}: Props) {
+export default function SettingsPage() {
   const { apiUrl, resetApiUrl, setApiUrl } = useApiUrl();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

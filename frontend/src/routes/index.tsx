@@ -1,8 +1,6 @@
 import Header from "@/components/header";
 import CoursePage from "@/pages/course";
 
-import HomeScreen from "@/pages/home";
-
 import SettingsPage from "@/pages/settings";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -12,9 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import { useEffect } from "react";
 
-type Props = {};
-
-export default function Router({}: Props) {
+export default function Router() {
   useEffect(() => {
     const cursor = document.getElementById("cursor");
     if (!cursor) return;

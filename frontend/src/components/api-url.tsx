@@ -1,9 +1,7 @@
 import useApiUrl from "@/hooks/useApiUrl";
 import { Badge } from "./ui/badge";
 
-type Props = {};
-
-export default function APIUrl({}: Props) {
+export default function APIUrl() {
   const { apiUrl } = useApiUrl();
   return (
     <div>
