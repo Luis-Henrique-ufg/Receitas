@@ -1,11 +1,11 @@
 declare module '*.md' {
-  const content: any;
+  const content: string;
   export default content;
 }
 
 declare module '*.png' {
-  const value: any;
-  export = value;
+  const value: string;
+  export default value;
 }
 
 declare module '*.module.css' {

@@ -24,7 +24,7 @@ class Course(db.Model):
             "id": self.id,
             "name": self.name,
             "path": self.path,
-            "isCoverUrl": self.is_cover_url,
+            "isCoverUrl": bool(self.is_cover_url),
             "fileCover": self.file_cover,
             "urlCover": self.url_cover,
             "position": self.position,

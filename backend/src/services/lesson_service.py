@@ -103,7 +103,7 @@ class LessonService:
         if progress_status:
             lesson.progress_status = progress_status
         if is_completed is not None:
-            lesson.is_completed = is_completed
+            lesson.is_completed = 1 if is_completed else 0
         if time_elapsed is not None:
             lesson.time_elapsed = time_elapsed
 

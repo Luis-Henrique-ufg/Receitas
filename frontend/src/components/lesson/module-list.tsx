@@ -132,7 +132,7 @@ export default function ModuleList({
     }
   }
 
-  async function handleCompleteModule(e: React.MouseEvent, title: string, lessons: any[]) {
+  async function handleCompleteModule(e: React.MouseEvent, title: string, lessons: Lesson[]) {
     e.stopPropagation();
     setCompletingModule(title);
     try {

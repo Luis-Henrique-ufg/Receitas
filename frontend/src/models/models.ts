@@ -1,10 +1,11 @@
 export type Course = {
   id: number;
   fileCover?: string;
-  isCoverUrl: number;
+  isCoverUrl: boolean;
   name: string;
   path: string;
   urlCover?: string;
+  position?: number;
 };
 
 export type Lesson = {
@@ -13,17 +14,21 @@ export type Lesson = {
   progressStatus: string;
   hierarchy_path: string;
   course_title: string;
-  isCompleted: number;
+  isCompleted: boolean;
   title: string;
   video_url: string;
   time_elapsed?: number;
   duration: string;
   pdf_url: string;
+  description?: string;
 };
 
-export type Module = Record<string, any>;
+export type Module = {
+  name: string;
+  lessons: Lesson[];
+};
 
-export type Modules = { [k: string]: Lesson[] };
+export type Modules = Record<string, Lesson[]>;
 
 export type Hierarchy = {
   [key: string]: Hierarchy | Lesson[];

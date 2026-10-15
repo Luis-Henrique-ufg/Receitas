@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Edit2, Save, X } from "lucide-react";
-import { Lesson } from "@/hooks/useCoursePlayer";
+import { Lesson } from "@/models/models";
 
 type Props = {
   lesson: Lesson;

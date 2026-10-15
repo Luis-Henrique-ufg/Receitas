@@ -30,7 +30,7 @@ class Lesson(db.Model):
             "title": self.title,
             "module": self.module,
             "progressStatus": self.progress_status,
-            "isCompleted": self.is_completed,
+            "isCompleted": bool(self.is_completed),
             "hierarchy_path": self.hierarchy_path,
             "time_elapsed": self.time_elapsed,
             "video_url": self.video_url,
