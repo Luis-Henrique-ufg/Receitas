@@ -127,6 +127,7 @@ class CourseService:
 
         if total_lessons == 0:
             return {
+                "completed_percentage": 0,
                 "completion_percentage": 0,
                 "total_lessons": 0,
                 "completed_lessons": 0,
@@ -138,6 +139,7 @@ class CourseService:
         completion_percentage = (completed_lessons / total_lessons) * 100
 
         return {
+            "completed_percentage": completion_percentage,
             "completion_percentage": completion_percentage,
             "total_lessons": total_lessons,
             "completed_lessons": completed_lessons,
