@@ -1,6 +1,6 @@
 import useSelectedLesson from "@/hooks/useSelectedLesson";
 import { Lesson } from "@/models/models";
-import { getLastViewedLesson, setLastViewedLesson } from "@/utils/utils";
+import { getLastViewedLesson } from "@/utils/utils";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 

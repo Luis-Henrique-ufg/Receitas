@@ -1,5 +1,4 @@
 import CoursesList from "@/components/courses/courses-list";
-import React from "react";
 
 export default function HomeScreen() {
   return (

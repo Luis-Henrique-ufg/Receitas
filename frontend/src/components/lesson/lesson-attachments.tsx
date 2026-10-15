@@ -1,4 +1,4 @@
-import { Download, ExternalLink, FileCode, FileText, FileArchive, File } from "lucide-react";
+import { Download, FileCode, FileText, FileArchive, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LessonAttachment } from "@/hooks/useLessonResources";
 
@@ -11,10 +11,6 @@ type Props = {
 const getFileExtension = (filename: string) => {
   const parts = filename.split(".");
   return parts.length > 1 ? parts.pop()?.toLowerCase() || "" : "";
-};
-
-const isViewableInBrowser = (ext: string) => {
-  return ["html", "htm", "pdf", "txt", "json", "md", "png", "jpg", "jpeg", "svg"].includes(ext);
 };
 
 const renderFileIcon = (ext: string) => {
@@ -56,7 +52,6 @@ export default function LessonAttachments({
     <div className="space-y-3">
       {attachments.map((file, i) => {
         const ext = getFileExtension(file.name);
-        const canPreview = isViewableInBrowser(ext);
         const fileUrl = `${apiUrl}/serve-content?path=${encodeURIComponent(file.path)}`;
 
         return (

@@ -6,10 +6,8 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import LessonListItem from "./lesson-list-item";
-import useSelectedLesson from "@/hooks/useSelectedLesson";
 
 import {
-  calculateCompletionPercentage,
   getLessonStats,
 } from "@/utils/utils";
 import {
@@ -21,8 +19,7 @@ import {
 
 import { toast } from "sonner";
 import ProgressCard from "../progress-card";
-import { Button } from "../ui/button";
-import { CheckCheck, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import useApiUrl from "@/hooks/useApiUrl";
 import { completeLesson } from "@/services/videoPlayer";
@@ -32,7 +29,7 @@ import { useSearchParams } from "react-router-dom";
 type Props = {
   modules: Modules;
   onUpdate: () => void;
-  courseId: string;
+  courseId?: string;
   selectedLessonId?: number;
   onLessonSelect: (lesson: Lesson) => void;
 };
@@ -40,7 +37,7 @@ type Props = {
 export default function ModuleList({
   modules,
   onUpdate,
-  courseId,
+  courseId: _courseId,
   selectedLessonId,
   onLessonSelect,
 }: Props) {

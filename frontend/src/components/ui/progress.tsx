@@ -8,8 +8,8 @@ const Progress = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & {
     fill?: string;
   }
->(({ className, value, fill, ...props }, ref) => {
-  const isCompleted = value !== undefined && value >= 100;
+>(({ className, value, fill: _fill, ...props }, ref) => {
+  const isCompleted = value != null && value >= 100;
 
   return (
     <ProgressPrimitive.Root
