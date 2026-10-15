@@ -1,5 +1,5 @@
-import axios from "axios";
 import { toast } from "sonner";
+import { lessonsApi } from "./lessonsApi";
 
 export async function completeLesson(apiUrl: string, lessonId: number, quiet: boolean = false) {
   if (lessonId) {
@@ -21,7 +21,7 @@ export async function completeLesson(apiUrl: string, lessonId: number, quiet: bo
     if (!quiet) toast.success("Aula concluída");
 
     try {
-      await axios.post(`${apiUrl}/api/update-lesson-progress`, requestData);
+      await lessonsApi.updateProgress(apiUrl, requestData);
     } catch {
       if (!quiet) toast.error("Erro ao atualizar o progresso da lição");
     }

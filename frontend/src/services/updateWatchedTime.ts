@@ -1,4 +1,4 @@
-import axios from "axios";
+import { lessonsApi } from "./lessonsApi";
 
 export async function updateWatchedTime(
   apiUrl: string,
@@ -6,16 +6,9 @@ export async function updateWatchedTime(
   currentTime: number
 ) {
   try {
-    fetch(`${apiUrl}/api/update-lesson-progress`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        time_elapsed: currentTime,
-        lessonId,
-      }),
-      keepalive: true,
+    await lessonsApi.updateProgress(apiUrl, {
+      lessonId,
+      time_elapsed: currentTime,
     });
   } catch {
     console.log("erro ao atualizar tempo decorrido");

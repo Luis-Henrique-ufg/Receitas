@@ -1,11 +1,9 @@
 import { Course } from "@/models/models";
-import axios from "axios";
+import { coursesApi } from "./coursesApi";
 
-export async function getAllCourses(apiUrl: string) {
+export async function getAllCourses(apiUrl: string): Promise<Course[] | null> {
   try {
-    const res = await axios.get<Course[]>(`${apiUrl}/api/courses`);
-
-    return res.data;
+    return await coursesApi.getAll(apiUrl);
   } catch {
     return null;
   }

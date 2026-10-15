@@ -1,17 +1,12 @@
-import { Lesson, Modules } from "@/models/models";
-
-import axios from "axios";
+import { Modules } from "@/models/models";
+import { lessonsApi } from "./lessonsApi";
 
 export async function getLessons(
   apiUrl: string,
   courseId: number
 ): Promise<Modules> {
   try {
-    const res = await axios.get<Modules>(
-      `${apiUrl}/api/courses/${courseId}/lessons`
-    );
-
-    return res.data;
+    return await lessonsApi.getLessons(apiUrl, courseId);
   } catch {
     return {};
   }
