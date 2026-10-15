@@ -2,7 +2,6 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "../ui/card";
 import { Course } from "@/models/models";
@@ -13,7 +12,6 @@ import useApiUrl from "@/hooks/useApiUrl";
 import CoursePercentage from "../course-percentage";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripHorizontal } from "lucide-react";
 
 type Props = {
   course: Course;

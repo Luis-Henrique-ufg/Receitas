@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import useApiUrl from "@/hooks/useApiUrl";
 import Loading from "./loading";
-
 import useCourseCompletion from "@/hooks/useCourseCompletion";
 import ProgressCard from "./progress-card";
+import { coursesApi } from "@/services/coursesApi";
 
 type Props = {
   courseId: number;
@@ -42,12 +41,9 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
 
     const fetchCompletionPercentage = async () => {
       try {
-        const response = await axios.get(
-          `${apiUrl}/api/courses/${courseId}/completed_percentage`
-        );
-        const data = response.data;
+        const data = await coursesApi.getCompletionStats(apiUrl, courseId);
         setCourseStats({
-          percentage: data.completion_percentage,
+          percentage: data.completed_percentage,
           total: data.total_lessons ?? null,
           completed: data.completed_lessons ?? null,
         });
@@ -62,7 +58,7 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
     };
 
     fetchCompletionPercentage();
-  }, [courseId, fromGlobal, apiUrl]);
+  }, [courseId, fromGlobal, apiUrl, fetchCompletion]);
 
   return (
     <div className="w-full">

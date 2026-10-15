@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import CoursesList from "@/components/courses/courses-list";
 import { Course } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
 import AddCourse from "@/components/courses/add-course";
 import { useNavigate } from "react-router-dom";
+import { coursesApi } from "@/services/coursesApi";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -13,24 +14,21 @@ export default function CoursesPage() {
 
   const { apiUrl } = useApiUrl();
 
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${apiUrl}/api/courses`);
-      if (!response.ok) throw new Error("Falha ao buscar cursos");
-
-      const data = await response.json();
+      const data = await coursesApi.getAll(apiUrl);
       setCourses(data);
-    } catch (error) {
+    } catch {
       toast.error("Erro ao carregar cursos.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchCourses();
-  }, []);
+  }, [fetchCourses]);
 
   async function handleReorderCourses(nextCourses: Course[]) {
     const reorderedData = nextCourses.map((course, index) => ({
@@ -41,18 +39,7 @@ export default function CoursesPage() {
     setCourses(nextCourses);
 
     try {
-      const response = await fetch(`${apiUrl}/api/courses/reorder`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reorderedData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Falha ao salvar a nova ordem.");
-      }
-
+      await coursesApi.reorder(apiUrl, reorderedData);
       toast.success("Ordem salva com sucesso!", { duration: 1500 });
     } catch {
       toast.error("Erro ao salvar a nova ordem dos cursos.");

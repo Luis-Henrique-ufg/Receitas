@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import axios from "axios";
 import { toast } from "sonner";
+import { coursesApi } from "@/services/coursesApi";
 
 interface CourseCompletionState {
   completionPercentage: number | null;
@@ -17,21 +17,14 @@ const useCourseCompletion = create<CourseCompletionState>((set) => ({
   isLoading: true,
   fetchCompletion: async (apiUrl, courseId) => {
     try {
-      const response = await axios.get<{
-        completion_percentage: number;
-        total_lessons?: number;
-        completed_lessons?: number;
-      }>(
-        `${apiUrl}/api/courses/${courseId}/completed_percentage`
-      );
-      const data = response.data;
+      const data = await coursesApi.getCompletionStats(apiUrl, courseId);
       set({
-        completionPercentage: data.completion_percentage,
+        completionPercentage: data.completed_percentage,
         totalLessons: data.total_lessons ?? null,
         completedLessons: data.completed_lessons ?? null,
         isLoading: false,
       });
-    } catch (error) {
+    } catch {
       toast.error("Erro ao buscar a porcentagem de conclusão do curso:");
       set({ isLoading: false });
     }

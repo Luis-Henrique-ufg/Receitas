@@ -21,6 +21,7 @@ import { useRef, useState } from "react";
 
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
+import { coursesApi } from "@/services/coursesApi";
 
 type Props = {
   course: Course;
@@ -39,45 +40,33 @@ export default function EditCourse({ course, onUpdate }: Props) {
 
   const handleEdit = async () => {
     setIsLoading(true);
-    const formData = new FormData();
-
-    formData.append("name", currentCourse.name);
-    formData.append("path", currentCourse.path);
-
-    if (
-      fileInputRefEdit.current &&
-      fileInputRefEdit.current.files &&
-      fileInputRefEdit.current.files[0]
-    ) {
-      formData.append("imageFile", fileInputRefEdit.current.files[0]);
-    } else if (currentCourse.urlCover) {
-      formData.append("imageURL", currentCourse.urlCover);
-    }
 
     try {
-      const response = await fetch(`${apiUrl}/api/courses/${course.id}`, {
-        method: "PUT",
-        body: formData,
+      const imageFile = fileInputRefEdit.current?.files?.[0] || null;
+      await coursesApi.update(apiUrl, course.id, {
+        name: currentCourse.name,
+        path: currentCourse.path,
+        imageFile,
+        imageUrl: currentCourse.urlCover || undefined,
       });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        toast.error(errorMessage);
-        return;
-      }
 
       toast.success("Curso atualizado com sucesso!", {
         duration: 2000,
       });
 
       setIsOpen(false);
-    } catch (error) {
-      toast.error("Erro ao atualizar o curso.", {
+      onUpdate();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } | string } };
+      const errorMessage =
+        (typeof err?.response?.data === "object"
+          ? err?.response?.data?.error
+          : err?.response?.data) || "Erro ao atualizar o curso.";
+      toast.error(errorMessage, {
         duration: 2000,
       });
     } finally {
       setIsLoading(false);
-      onUpdate();
     }
   };
 

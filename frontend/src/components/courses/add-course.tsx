@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +11,10 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Card, CardContent } from "../ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { Loader2 } from "lucide-react";
+import { coursesApi } from "@/services/coursesApi";
 
 type Props = {
   onCreate: () => void;
@@ -37,13 +32,9 @@ export default function AddCourse({ onCreate }: Props) {
 
   const { apiUrl } = useApiUrl();
 
-  // Removed scanPaths since user wants to paste manual path
-
-  // Removed automaticallyAddCourses
   const handleSubmit = async () => {
     setIsLoadingManualInsertion(true);
     let createdSuccessfully = false;
-    const formData = new FormData();
 
     const finalPath = coursePath;
     
@@ -53,47 +44,15 @@ export default function AddCourse({ onCreate }: Props) {
       return;
     }
 
-    formData.append("name", courseName);
-    formData.append("path", finalPath);
-
-    if (
-      fileInputRef.current &&
-      fileInputRef.current.files &&
-      fileInputRef.current.files[0]
-    ) {
-      formData.append("imageFile", fileInputRef.current.files[0]);
-    } else if (imageURL) {
-      formData.append("imageURL", imageURL);
-    }
-
     try {
-      const response = await fetch(`${apiUrl}/api/courses`, {
-        method: "POST",
-        body: formData,
+      const imageFile = fileInputRef.current?.files?.[0] || null;
+      const result = await coursesApi.create(apiUrl, {
+        name: courseName.trim(),
+        path: finalPath.trim(),
+        imageFile,
+        imageUrl: imageURL || undefined,
       });
 
-      if (!response.ok) {
-        let errorMessage = "Erro ao adicionar registro.";
-
-        try {
-          const responseBody = await response.json();
-          errorMessage = responseBody?.error ?? errorMessage;
-        } catch {
-          try {
-            const responseText = await response.text();
-            if (responseText.trim()) {
-              errorMessage = responseText;
-            }
-          } catch {
-            // Mantém a mensagem padrão.
-          }
-        }
-
-        toast.error(errorMessage);
-        return;
-      }
-
-      const result = await response.json();
       toast.success(`Curso adicionado: ${result.name}`, {
         duration: 2000,
         action: {
@@ -104,12 +63,17 @@ export default function AddCourse({ onCreate }: Props) {
       setIsOpen(false);
       createdSuccessfully = true;
       onCreate();
-    } catch (error) {
-      toast.error("Não foi possível conectar ao backend.", {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } | string } };
+      const errorMessage =
+        (typeof err?.response?.data === "object"
+          ? err?.response?.data?.error
+          : err?.response?.data) || "Erro ao adicionar registro.";
+      toast.error(errorMessage, {
         duration: 2000,
         action: {
           label: "Ok",
-          onClick: () => ``,
+          onClick: () => {},
         },
       });
     } finally {

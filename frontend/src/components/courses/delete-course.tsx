@@ -11,9 +11,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
+import { coursesApi } from "@/services/coursesApi";
 
 type Props = { course: Course; onUpdate: () => void };
 
@@ -24,23 +25,15 @@ export default function DeleteCourse({ course, onUpdate }: Props) {
 
   const onDelete = async () => {
     try {
-      await axios.delete(`${apiUrl}/api/courses/${course.id}`);
-
-      //   const updatedCourses = courses.filter((course) => course.id !== id);
-      //   setCourses(updatedCourses);
-      //   toast.success("Registro excluído com sucesso!", {
-      //     duration: 2000,
-      //     action: {
-      //       label: "Ok",
-      //       onClick: () => {},
-      //     },
-      //   });
+      await coursesApi.delete(apiUrl, course.id);
       toast.success("Excluído com sucesso!");
       onUpdate();
-    } catch (error: any) {
+    } catch (error: unknown) {
       let msg = "Erro ao excluir o registro.";
-      if (error instanceof AxiosError) {
-        msg = String(error.response?.data);
+      if (error instanceof AxiosError && error.response?.data) {
+        msg = typeof error.response.data === "string"
+          ? error.response.data
+          : (error.response.data as { error?: string })?.error || msg;
       }
       toast.error(msg, {
         duration: 2000,
