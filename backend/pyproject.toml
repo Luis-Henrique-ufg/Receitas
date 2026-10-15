@@ -16,6 +16,7 @@ exclude = [
     "__pycache__",
     "src/data",
     ".pytest_cache",
+    "migrations",
 ]
 
 [tool.ruff.lint]
@@ -44,5 +45,6 @@ exclude = '''
   | \.pytest_cache
   | __pycache__
   | src/data
+  | migrations
 )/
 '''
