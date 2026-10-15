@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "receitas-backend"
+version = "1.0.0"
+requires-python = ">=3.11"
+description = "Backend para a plataforma de gerenciamento de receitas e videoaulas"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+exclude = [
+    ".git",
+    "__pycache__",
+    "src/data",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import ordering)
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501", # line length handled by formatter
+    "B008", # function calls in default arguments
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "config", "routes", "utils", "video_utils"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+exclude = '''
+/(
+    \.git
+  | \.pytest_cache
+  | __pycache__
+  | src/data
+)/
+'''
