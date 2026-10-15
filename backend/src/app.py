@@ -3,6 +3,7 @@ import logging
 from flask import Flask
 from flask_cors import CORS
 
+from blueprints import courses_bp, lessons_bp, media_bp
 from config import Config
 from database import db
 from models import Course, Lesson, Note
@@ -18,9 +19,11 @@ app.config.from_object(Config)
 db.init_app(app)
 CORS(app)
 
-__all__ = ["app", "db", "Course", "Lesson", "Note"]
+app.register_blueprint(courses_bp)
+app.register_blueprint(lessons_bp)
+app.register_blueprint(media_bp)
 
-import routes  # noqa: E402, F401
+__all__ = ["app", "db", "Course", "Lesson", "Note"]
 
 with app.app_context():
     db.create_all()

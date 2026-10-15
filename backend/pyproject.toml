@@ -34,7 +34,16 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["app", "config", "routes", "utils", "video_utils"]
+known-first-party = [
+    "app",
+    "blueprints",
+    "config",
+    "database",
+    "models",
+    "services",
+    "utils",
+    "video_utils",
+]
 
 [tool.black]
 line-length = 88
