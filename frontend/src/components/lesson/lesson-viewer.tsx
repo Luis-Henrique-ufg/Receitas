@@ -3,7 +3,7 @@ import { Player } from "../player/player";
 import useApiUrl from "@/hooks/useApiUrl";
 import { updateWatchedTime } from "@/services/updateWatchedTime";
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import { lessonsApi } from "@/services/lessonsApi";
 
 const isDocumentFile = (url: string): boolean => {
   return (
@@ -44,15 +44,17 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
 
     const fetchElapsedTime = async () => {
       try {
-        const res = await axios.get(`${apiUrl}/api/lessons/${lesson.id}`);
-        setElapsedTime(Number(res.data.elapsedTime));
+        const time = await lessonsApi.getElapsedTime(apiUrl, lesson.id);
+        if (time !== undefined) {
+          setElapsedTime(time);
+        }
       } catch (error) {
         console.error("Erro ao buscar o tempo decorrido da aula:", error);
       }
     };
 
     fetchElapsedTime();
-  }, [lesson?.id, apiUrl]);
+  }, [lesson, apiUrl]);
 
   const handleTimeUpdate = (currentTime: number) => {
     if (!lesson) return;

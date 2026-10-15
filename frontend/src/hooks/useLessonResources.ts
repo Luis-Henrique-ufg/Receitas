@@ -1,26 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import useApiUrl from "./useApiUrl";
 import { toast } from "sonner";
+import {
+  lessonsApi,
+  LessonNote,
+  CourseNote,
+  LessonAttachment,
+} from "@/services/lessonsApi";
+import { usePlaybackStore } from "@/store/usePlaybackStore";
 
-export type LessonNote = {
-  id: number;
-  time: number;
-  content: string;
-};
-
-export type CourseNote = {
-  id: number;
-  lesson_id: number;
-  lesson_title: string;
-  module: string;
-  time: number;
-  content: string;
-};
-
-export type LessonAttachment = {
-  name: string;
-  path: string;
-};
+export type { LessonNote, CourseNote, LessonAttachment };
 
 export default function useLessonResources(
   lessonId?: number,
@@ -36,121 +25,76 @@ export default function useLessonResources(
   const { apiUrl } = useApiUrl();
   const timeRef = useRef(0);
 
+  const playbackCurrentTime = usePlaybackStore((state) => state.currentTime);
+  const storeSeekTo = usePlaybackStore((state) => state.seekTo);
+
   useEffect(() => {
-    const onTimeUpdate = (e: Event) => {
-      const ce = e as CustomEvent<number>;
-      timeRef.current = ce.detail;
-    };
+    timeRef.current = playbackCurrentTime;
+  }, [playbackCurrentTime]);
 
-    window.addEventListener("playerTimeUpdate", onTimeUpdate);
-
-    return () => window.removeEventListener("playerTimeUpdate", onTimeUpdate);
-  }, []);
-
-  async function fetchNotes() {
+  const fetchNotes = useCallback(async () => {
     if (!lessonId) {
       setNotes([]);
       return;
     }
 
     setIsNotesLoading(true);
-
     try {
-      const response = await fetch(`${apiUrl}/api/lessons/${lessonId}/notes`);
-      if (!response.ok) {
-        if (response.status === 404) {
-          setNotes([]);
-          return;
-        }
-        throw new Error("Erro na requisição");
-      }
-      const data = await response.json();
-
-      if (Array.isArray(data)) {
-        setNotes(data);
-      } else {
-        setNotes([]);
-      }
+      const data = await lessonsApi.getLessonNotes(apiUrl, lessonId);
+      setNotes(Array.isArray(data) ? data : []);
     } catch {
       toast.error("Erro ao carregar anotações da aula.");
+      setNotes([]);
     } finally {
       setIsNotesLoading(false);
     }
-  }
+  }, [apiUrl, lessonId]);
 
-  async function fetchCourseNotes() {
+  const fetchCourseNotes = useCallback(async () => {
     if (!courseId) {
       setCourseNotes([]);
       return;
     }
 
     setIsCourseNotesLoading(true);
-
     try {
-      const response = await fetch(`${apiUrl}/api/courses/${courseId}/notes`);
-      if (!response.ok) {
-        if (response.status === 404) {
-          setCourseNotes([]);
-          return;
-        }
-        throw new Error("Erro na requisição");
-      }
-      const data = await response.json();
-
-      if (Array.isArray(data)) {
-        setCourseNotes(data);
-      } else {
-        setCourseNotes([]);
-      }
+      const data = await lessonsApi.getCourseNotes(apiUrl, courseId);
+      setCourseNotes(Array.isArray(data) ? data : []);
     } catch {
       toast.error("Erro ao carregar anotações do curso.");
+      setCourseNotes([]);
     } finally {
       setIsCourseNotesLoading(false);
     }
-  }
+  }, [apiUrl, courseId]);
 
-  async function fetchAttachments() {
+  const fetchAttachments = useCallback(async () => {
     if (!lessonId) {
       setAttachments([]);
       return;
     }
 
     setIsAttachmentsLoading(true);
-
     try {
-      const response = await fetch(
-        `${apiUrl}/api/lessons/${lessonId}/attachments`
-      );
-      if (!response.ok) {
-        if (response.status === 404) {
-          setAttachments([]);
-          return;
-        }
-        throw new Error("Erro na requisição");
-      }
-      const data = await response.json();
-
-      if (Array.isArray(data)) {
-        setAttachments(data);
-      } else {
-        setAttachments([]);
-      }
+      const data = await lessonsApi.getAttachments(apiUrl, lessonId);
+      setAttachments(Array.isArray(data) ? data : []);
     } catch {
       toast.error("Erro ao carregar anexos.");
+      setAttachments([]);
     } finally {
       setIsAttachmentsLoading(false);
     }
-  }
+  }, [apiUrl, lessonId]);
 
   useEffect(() => {
     void fetchNotes();
     void fetchAttachments();
     setNewNote("");
-  }, [lessonId, apiUrl]);
+  }, [fetchNotes, fetchAttachments]);
 
   useEffect(() => {
     void fetchCourseNotes();
-  }, [courseId, apiUrl]);
+  }, [fetchCourseNotes]);
 
   async function saveNote() {
     if (!newNote.trim() || !lessonId) {
@@ -158,20 +102,13 @@ export default function useLessonResources(
     }
 
     try {
-      const response = await fetch(`${apiUrl}/api/lessons/${lessonId}/notes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          time: Math.floor(timeRef.current),
-          content: newNote,
-        }),
+      await lessonsApi.createNote(apiUrl, lessonId, {
+        time: Math.floor(timeRef.current),
+        content: newNote.trim(),
       });
-
-      if (response.ok) {
-        setNewNote("");
-        await Promise.all([fetchNotes(), fetchCourseNotes()]);
-        toast.success("Anotação salva!");
-      }
+      setNewNote("");
+      await Promise.all([fetchNotes(), fetchCourseNotes()]);
+      toast.success("Anotação salva!");
     } catch {
       toast.error("Erro ao salvar anotação.");
     }
@@ -183,21 +120,12 @@ export default function useLessonResources(
     }
 
     try {
-      const response = await fetch(`${apiUrl}/api/notes/${noteId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: content.trim(),
-          ...(time !== undefined ? { time } : {}),
-        }),
+      await lessonsApi.updateNote(apiUrl, noteId, {
+        content: content.trim(),
+        ...(time !== undefined ? { time } : {}),
       });
-
-      if (response.ok) {
-        await Promise.all([fetchNotes(), fetchCourseNotes()]);
-        toast.success("Anotação atualizada!");
-      } else {
-        throw new Error("Erro ao atualizar");
-      }
+      await Promise.all([fetchNotes(), fetchCourseNotes()]);
+      toast.success("Anotação atualizada!");
     } catch {
       toast.error("Erro ao atualizar anotação.");
     }
@@ -205,21 +133,16 @@ export default function useLessonResources(
 
   async function deleteNote(noteId: number) {
     try {
-      const response = await fetch(`${apiUrl}/api/notes/${noteId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await Promise.all([fetchNotes(), fetchCourseNotes()]);
-        toast.success("Anotação removida!");
-      }
+      await lessonsApi.deleteNote(apiUrl, noteId);
+      await Promise.all([fetchNotes(), fetchCourseNotes()]);
+      toast.success("Anotação removida!");
     } catch {
       toast.error("Erro ao remover anotação.");
     }
   }
 
   function seekTo(time: number) {
-    window.dispatchEvent(new CustomEvent("playerSeek", { detail: time }));
+    storeSeekTo(time);
   }
 
   return {

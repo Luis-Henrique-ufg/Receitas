@@ -2,8 +2,7 @@ import { Lesson } from "@/models/models";
 import { formatDuration } from "@/utils/format-duration";
 import { Checkbox } from "../ui/checkbox";
 import { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import axios from "axios";
+import { Loader2, Play } from "lucide-react";
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { Play } from "lucide-react";
+import { lessonsApi } from "@/services/lessonsApi";
+import { usePlaybackStore } from "@/store/usePlaybackStore";
 
 type Props = {
   lesson: Lesson;
@@ -44,6 +44,8 @@ export default function LessonListItem({
   const [isUpdating, setIsUpdating] = useState(false);
 
   const { apiUrl } = useApiUrl();
+  const lastCompleted = usePlaybackStore((state) => state.lastCompleted);
+  const markLessonCompleted = usePlaybackStore((state) => state.markLessonCompleted);
 
   // Sincroniza o estado quando as propriedades da aula mudarem (ex: refresh após término do vídeo)
   useEffect(() => {
@@ -55,7 +57,14 @@ export default function LessonListItem({
     }
   }, [lesson.id, lesson.isCompleted]);
 
-  // Listener para evento em tempo real de conclusão da aula (preenchimento visual instantâneo)
+  // Listener para estado do store e evento de conclusão da aula
+  useEffect(() => {
+    if (lastCompleted && lastCompleted.lessonId === lesson.id) {
+      setIsCompleted(lastCompleted.isCompleted);
+      localStorage.setItem(`lesson_progress_${lesson.id}`, String(lastCompleted.isCompleted));
+    }
+  }, [lastCompleted, lesson.id]);
+
   useEffect(() => {
     const handleLessonCompleted = (e: Event) => {
       const customEvent = e as CustomEvent<{ lessonId: number; isCompleted?: boolean }>;
@@ -75,7 +84,7 @@ export default function LessonListItem({
     if (isPending === "true") {
       const syncProgress = async () => {
         try {
-          await axios.post(`${apiUrl}/api/update-lesson-progress`, {
+          await lessonsApi.updateProgress(apiUrl, {
             lessonId: lesson.id,
             isCompleted: isCompleted,
           });
@@ -97,14 +106,10 @@ export default function LessonListItem({
     localStorage.setItem(`lesson_progress_${lesson.id}`, String(newState));
     localStorage.setItem(`lesson_pending_${lesson.id}`, "true");
 
-    window.dispatchEvent(
-      new CustomEvent("lessonCompleted", {
-        detail: { lessonId: lesson.id, isCompleted: newState },
-      })
-    );
+    markLessonCompleted(lesson.id, newState);
 
     try {
-      await axios.post(`${apiUrl}/api/update-lesson-progress`, {
+      await lessonsApi.updateProgress(apiUrl, {
         lessonId: lesson.id,
         isCompleted: newState,
       });

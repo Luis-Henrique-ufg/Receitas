@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
 import { toast } from "sonner";
 import { Lesson } from "@/models/models";
+import { usePlaybackStore } from "@/store/usePlaybackStore";
 
 export default function CoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -42,6 +43,8 @@ export default function CoursePage() {
   } = useCoursePlayer(courseId);
 
   const lessonResources = useLessonResources(selectedLesson?.id, courseId);
+  const navigationAction = usePlaybackStore((state) => state.navigationAction);
+  const clearNavigationAction = usePlaybackStore((state) => state.clearNavigationAction);
 
   // Flatten and sort lessons across all modules for linear navigation
   const allLessons = useMemo(() => {
@@ -69,40 +72,38 @@ export default function CoursePage() {
   const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex !== -1 && currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
 
-  const handlePrevLesson = () => {
+  const handlePrevLesson = useCallback(() => {
     if (prevLesson) {
       selectCourseLesson(prevLesson);
       toast.info(`Aula anterior: ${prevLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
+    } else {
+      toast.info("Você já está na primeira aula.", { id: "lesson-navigation-toast", duration: 1500 });
     }
-  };
+  }, [prevLesson, selectCourseLesson]);
 
-  const handleNextLesson = () => {
+  const handleNextLesson = useCallback(() => {
     if (nextLesson) {
       selectCourseLesson(nextLesson);
       toast.info(`Próxima aula: ${nextLesson.title}`, { id: "lesson-navigation-toast", duration: 1500 });
+    } else {
+      toast.info("Você já está na última aula.", { id: "lesson-navigation-toast", duration: 1500 });
     }
-  };
+  }, [nextLesson, selectCourseLesson]);
 
-  // Global navigation shortcuts (Shift+P, Shift+N)
+  // Handle store-based and event-based navigation
   useEffect(() => {
-    const handleNavigation = (direction: "prev" | "next") => {
-      if (direction === "prev") {
-        if (prevLesson) {
-          handlePrevLesson();
-        } else {
-          toast.info("Você já está na primeira aula.", { id: "lesson-navigation-toast", duration: 1500 });
-        }
-      } else if (direction === "next") {
-        if (nextLesson) {
-          handleNextLesson();
-        } else {
-          toast.info("Você já está na última aula.", { id: "lesson-navigation-toast", duration: 1500 });
-        }
-      }
-    };
+    if (navigationAction === "previous") {
+      handlePrevLesson();
+      clearNavigationAction();
+    } else if (navigationAction === "next") {
+      handleNextLesson();
+      clearNavigationAction();
+    }
+  }, [navigationAction, handlePrevLesson, handleNextLesson, clearNavigationAction]);
 
-    const handlePrevEvent = () => handleNavigation("prev");
-    const handleNextEvent = () => handleNavigation("next");
+  useEffect(() => {
+    const handlePrevEvent = () => handlePrevLesson();
+    const handleNextEvent = () => handleNextLesson();
 
     window.addEventListener("playerNavigatePrevious", handlePrevEvent);
     window.addEventListener("playerNavigateNext", handleNextEvent);
@@ -111,7 +112,7 @@ export default function CoursePage() {
       window.removeEventListener("playerNavigatePrevious", handlePrevEvent);
       window.removeEventListener("playerNavigateNext", handleNextEvent);
     };
-  }, [prevLesson, nextLesson]);
+  }, [handlePrevLesson, handleNextLesson]);
 
   if (!courseId) {
     return "Sem id de curso";
