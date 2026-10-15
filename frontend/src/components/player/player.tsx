@@ -1,14 +1,16 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import videojs from "video.js";
 import PlayerInstance from "video.js/dist/types/player";
-import { completeLesson } from "@/services/videoPlayer";
 import useApiUrl from "@/hooks/useApiUrl";
-import { toast } from "sonner";
-import "./player.css"; // Custom styling for video.js
+import { captureVideoScreenshot } from "@/hooks/useVideoScreenshot";
+import { useProgressTracker } from "@/hooks/useProgressTracker";
+import { usePlayerShortcuts } from "@/hooks/usePlayerShortcuts";
+import { usePlaybackStore } from "@/store/usePlaybackStore";
+import "./player.css";
 
 interface PlayerProps {
   src: string;
-  title: string;
+  title?: string;
   isEnding?: (lessonId: number, isEnding: boolean) => void;
   lessonId: number;
   onTimeUpdate?: (currentTime: number) => void;
@@ -21,33 +23,26 @@ const getSourceType = (url: string) => {
   return "video/mp4";
 };
 
-// Register custom components in video.js
-const Button = videojs.getComponent("Button");
+// Register custom screenshot button component in video.js
+const VjsButton = videojs.getComponent("Button");
 
-class ScreenshotButton extends Button {
-  constructor(player: any, options: any) {
+class ScreenshotButton extends VjsButton {
+  constructor(player: PlayerInstance, options: Record<string, unknown>) {
     super(player, options);
-    this.controlText("Screenshot");
+    (this as unknown as { controlText: (text: string) => void }).controlText("Screenshot");
   }
+
   buildCSSClass() {
-    return `vjs-screenshot-button vjs-control vjs-button`;
+    return "vjs-screenshot-button vjs-control vjs-button";
   }
+
   handleClick() {
-    const video = this.player().el().querySelector("video");
-    if (!video) return;
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataURL = canvas.toDataURL("image/png");
-    const a = document.createElement("a");
-    a.href = dataURL;
-    a.download = `screenshot_${Date.now()}.png`;
-    a.click();
+    const player = (this as unknown as { player: () => PlayerInstance }).player();
+    const video = player.el()?.querySelector("video") as HTMLVideoElement | null;
+    captureVideoScreenshot(video);
   }
 }
 
-// Only register once
 if (!videojs.getComponent("ScreenshotButton")) {
   videojs.registerComponent("ScreenshotButton", ScreenshotButton);
 }
@@ -63,18 +58,45 @@ export function Player({
 }: PlayerProps) {
   const videoNode = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<PlayerInstance | null>(null);
-  const lastElapsedTimeSavedRef = useRef(timeElapsed);
-  const isEndingTriggeredRef = useRef(false);
   const hasResumedRef = useRef(false);
+  const currentActiveLessonIdRef = useRef(lessonId);
   const { apiUrl } = useApiUrl();
 
-  const latestProps = useRef({ lessonId, isEnding, apiUrl, onTimeUpdate });
-  useEffect(() => {
-    latestProps.current = { lessonId, isEnding, apiUrl, onTimeUpdate };
-  }, [lessonId, isEnding, apiUrl, onTimeUpdate]);
+  const { handleTimeUpdate, forceSave, triggerCompletion, resetTracker } =
+    useProgressTracker({
+      lessonId,
+      apiUrl,
+      onTimeUpdate,
+      isEnding,
+    });
 
+  usePlayerShortcuts({ playerRef });
+
+  const seekTarget = usePlaybackStore((state) => state.seekTarget);
+  const clearSeekTarget = usePlaybackStore((state) => state.clearSeekTarget);
+
+  // Sync seekTarget from Zustand store
   useEffect(() => {
-    // Initialize video.js
+    if (seekTarget !== null && playerRef.current) {
+      playerRef.current.currentTime(seekTarget);
+      clearSeekTarget();
+    }
+  }, [seekTarget, clearSeekTarget]);
+
+  // Backward compatibility: Listen to legacy window playerSeek event
+  useEffect(() => {
+    const handleSeek = (e: Event) => {
+      const customEvent = e as CustomEvent<number>;
+      if (playerRef.current && typeof customEvent.detail === "number") {
+        playerRef.current.currentTime(customEvent.detail);
+      }
+    };
+    window.addEventListener("playerSeek", handleSeek);
+    return () => window.removeEventListener("playerSeek", handleSeek);
+  }, []);
+
+  // Initialize video.js instance
+  useEffect(() => {
     if (videoNode.current && !playerRef.current) {
       playerRef.current = videojs(
         videoNode.current,
@@ -85,36 +107,29 @@ export function Player({
           fluid: true,
           playbackRates: [0.5, 1, 1.25, 1.5, 2],
           userActions: {
-            hotkeys: true // native basic hotkeys (f, m)
+            hotkeys: true,
           },
           sources: [{ src, type: getSourceType(src) }],
         },
         () => {
-          // Player is ready
           const player = playerRef.current;
           if (player) {
             if (timeElapsed > 0) {
               player.currentTime(timeElapsed);
             }
-            // Add custom buttons to control bar
             const controlBar = player.getChild("controlBar");
             if (controlBar) {
-              controlBar.addChild("ScreenshotButton", {}, controlBar.children().length - 2);
+              controlBar.addChild(
+                "ScreenshotButton",
+                {},
+                controlBar.children().length - 2
+              );
             }
           }
         }
       );
 
       const player = playerRef.current;
-
-      const forceSaveProgress = () => {
-        const currentTime = player.currentTime() || 0;
-        const { onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
-        if (currentOnTimeUpdate && currentTime > 0) {
-          currentOnTimeUpdate(Math.floor(currentTime));
-          lastElapsedTimeSavedRef.current = Math.floor(currentTime);
-        }
-      };
 
       player.on("play", () => {
         if ((player.currentTime() || 0) > 1) {
@@ -124,89 +139,37 @@ export function Player({
       });
 
       player.on("pause", () => {
-        forceSaveProgress();
+        const currentTime = player.currentTime() || 0;
+        forceSave(currentTime);
       });
 
-      window.addEventListener("beforeunload", forceSaveProgress);
-
-      const triggerLessonCompletion = () => {
-        if (!isEndingTriggeredRef.current) {
-          isEndingTriggeredRef.current = true;
-          const { lessonId: currentLessonId, isEnding: currentIsEnding, apiUrl: currentApiUrl } = latestProps.current;
-
-          window.dispatchEvent(
-            new CustomEvent("lessonCompleted", { detail: { lessonId: currentLessonId, isCompleted: true } })
-          );
-
-          completeLesson(currentApiUrl, currentLessonId).then(() => {
-            if (currentIsEnding) {
-              currentIsEnding(currentLessonId, true);
-            }
-          });
-        }
+      const onBeforeUnload = () => {
+        const currentTime = player.currentTime() || 0;
+        forceSave(currentTime);
       };
+      window.addEventListener("beforeunload", onBeforeUnload);
 
       player.on("ended", () => {
-        triggerLessonCompletion();
+        triggerCompletion();
       });
 
       player.on("timeupdate", () => {
         const currentTime = player.currentTime() || 0;
         const duration = player.duration() || 0;
 
-        if (duration === 0) return;
-
         if (currentTime > 1) {
           hasResumedRef.current = true;
         }
 
-        // Custom event for external listeners
-        window.dispatchEvent(
-          new CustomEvent("playerTimeUpdate", { detail: currentTime })
-        );
-
-        const { lessonId: currentLessonId, apiUrl: currentApiUrl, onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
-
-        // Progress saving (every 10 seconds)
-        const currentSecondsElapsed = Math.floor(currentTime);
-        const lastedSavedSeconds = Math.floor(lastElapsedTimeSavedRef.current);
-        if (
-          currentOnTimeUpdate &&
-          currentSecondsElapsed % 10 === 0 &&
-          currentTime > 10 &&
-          currentSecondsElapsed !== lastedSavedSeconds
-        ) {
-          currentOnTimeUpdate(Math.floor(currentTime));
-          lastElapsedTimeSavedRef.current = Math.floor(currentTime);
-        }
-
-        // Completion logic at 95%
-        const percent = currentTime / duration;
-        if (percent >= 0.95 && !isEndingTriggeredRef.current && currentTime > 0) {
-          triggerLessonCompletion();
-        } else if (percent < 0.95) {
-          isEndingTriggeredRef.current = false;
-        }
+        handleTimeUpdate(currentTime, duration);
       });
     }
 
-    // Cleanup when component unmounts
     return () => {
       const player = playerRef.current;
       if (player) {
         const currentTime = player.currentTime() || 0;
-        const { onTimeUpdate: currentOnTimeUpdate } = latestProps.current;
-        if (currentOnTimeUpdate && currentTime > 0) {
-          currentOnTimeUpdate(Math.floor(currentTime));
-        }
-
-        // Remover o listener global caso o player existisse
-        const forceSaveProgress = () => {
-          if (currentOnTimeUpdate && currentTime > 0) {
-            currentOnTimeUpdate(Math.floor(currentTime));
-          }
-        };
-        window.removeEventListener("beforeunload", forceSaveProgress);
+        forceSave(currentTime);
 
         if (!player.isDisposed()) {
           player.dispose();
@@ -214,45 +177,40 @@ export function Player({
         }
       }
     };
-  }, []); // Run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const currentActiveLessonIdRef = useRef(lessonId);
-
-  // Watch for src changes to load new video
+  // Update src when lesson changes
   useEffect(() => {
     const player = playerRef.current;
     if (player && src) {
       if (currentActiveLessonIdRef.current !== lessonId) {
         currentActiveLessonIdRef.current = lessonId;
-        hasResumedRef.current = false; // Reset resume flag ONLY when changing to a new lesson
+        hasResumedRef.current = false;
+        resetTracker();
         player.src({ src, type: getSourceType(src) });
-        
-        // Wait for video to load metadata before seeking
-        player.one('loadedmetadata', () => {
+
+        player.one("loadedmetadata", () => {
           if (timeElapsed > 0 && !hasResumedRef.current) {
             player.currentTime(timeElapsed);
-            lastElapsedTimeSavedRef.current = timeElapsed;
             hasResumedRef.current = true;
           }
         });
-        
-        isEndingTriggeredRef.current = false;
-        player.play().catch((e) => console.log("Auto-play prevented", e));
+
+        player.play()?.catch((e) => console.log("Auto-play prevented", e));
       }
     }
-  }, [src, lessonId]);
+  }, [src, lessonId, timeElapsed, resetTracker]);
 
-  // Update current time if fetched from API later
+  // Sync elapsed time after async fetch
   useEffect(() => {
     const player = playerRef.current;
     if (player && timeElapsed > 0 && !hasResumedRef.current) {
       const currentPos = player.currentTime() || 0;
       if (currentPos < 1) {
         const duration = player.duration();
-        // If metadata is loaded and we haven't resumed yet
-        if (!isNaN(duration) && duration > 0) {
+        if (typeof duration === "number" && !isNaN(duration) && duration > 0) {
           player.currentTime(timeElapsed);
-          lastElapsedTimeSavedRef.current = timeElapsed;
           hasResumedRef.current = true;
         }
       } else {
@@ -261,115 +219,11 @@ export function Player({
     }
   }, [timeElapsed]);
 
-  // Global Keyboard Shortcuts (J, K, L, Space, Arrows, M, F, Shift+P, Shift+N, Shift+<, Shift+>)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in an input, textarea or select
-      if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement).tagName)) {
-        return;
-      }
-
-      const player = playerRef.current;
-      if (!player) return;
-
-      const skipTime = 5; // 5 seconds for arrows
-      const jklTime = 10; // 10 seconds for J/L
-      const availableRates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3];
-
-      // SHIFT Shortcuts
-      if (e.shiftKey) {
-        // Diminuir a velocidade do vídeo: SHIFT + < (ou Shift + ,)
-        if (e.key === "<" || e.key === "," || (e.shiftKey && e.code === "Comma")) {
-          e.preventDefault();
-          const currentRate = Number((player.playbackRate() || 1).toFixed(2));
-          const nextRate = availableRates.filter((r) => r < currentRate).pop() ?? 0.25;
-          player.playbackRate(nextRate);
-          toast.info(`Velocidade: ${nextRate}x`, { id: "playback-rate-toast", duration: 1000 });
-          return;
-        }
-
-        // Aumentar a velocidade do vídeo: SHIFT + > (ou Shift + .)
-        if (e.key === ">" || e.key === "." || (e.shiftKey && e.code === "Period")) {
-          e.preventDefault();
-          const currentRate = Number((player.playbackRate() || 1).toFixed(2));
-          const nextRate = availableRates.find((r) => r > currentRate) ?? 3;
-          player.playbackRate(nextRate);
-          toast.info(`Velocidade: ${nextRate}x`, { id: "playback-rate-toast", duration: 1000 });
-          return;
-        }
-
-        // Vídeo anterior: SHIFT + P
-        if (e.key.toLowerCase() === "p" || e.code === "KeyP") {
-          e.preventDefault();
-          window.dispatchEvent(new CustomEvent("playerNavigatePrevious"));
-          return;
-        }
-
-        // Próximo vídeo: SHIFT + N
-        if (e.key.toLowerCase() === "n" || e.code === "KeyN") {
-          e.preventDefault();
-          window.dispatchEvent(new CustomEvent("playerNavigateNext"));
-          return;
-        }
-      }
-
-      switch (e.key.toLowerCase()) {
-        case "j":
-          player.currentTime((player.currentTime() || 0) - jklTime);
-          break;
-        case "l":
-          player.currentTime((player.currentTime() || 0) + jklTime);
-          break;
-        case "k":
-        case " ":
-          e.preventDefault(); // prevent page scroll on spacebar
-          if (player.paused()) player.play();
-          else player.pause();
-          break;
-        case "arrowleft":
-          e.preventDefault();
-          player.currentTime((player.currentTime() || 0) - skipTime);
-          break;
-        case "arrowright":
-          e.preventDefault();
-          player.currentTime((player.currentTime() || 0) + skipTime);
-          break;
-        case "arrowup":
-          e.preventDefault();
-          player.volume(Math.min((player.volume() || 0) + 0.1, 1));
-          break;
-        case "arrowdown":
-          e.preventDefault();
-          player.volume(Math.max((player.volume() || 0) - 0.1, 0));
-          break;
-        case "f":
-          if (player.isFullscreen()) player.exitFullscreen();
-          else player.requestFullscreen();
-          break;
-        case "m":
-          player.muted(!player.muted());
-          break;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  // Custom Seek Listener from elsewhere in the app
-  useEffect(() => {
-    const handleSeek = (e: Event) => {
-      const customEvent = e as CustomEvent<number>;
-      if (playerRef.current) {
-        playerRef.current.currentTime(customEvent.detail);
-      }
-    };
-    window.addEventListener("playerSeek", handleSeek);
-    return () => window.removeEventListener("playerSeek", handleSeek);
-  }, []);
-
   return (
-    <div className="w-full h-full bg-black rounded-2xl overflow-hidden shadow-xl glass-panel relative transition-all duration-500">
+    <div
+      aria-label={title || "Video Player"}
+      className="w-full h-full bg-black rounded-2xl overflow-hidden shadow-xl glass-panel relative transition-all duration-500"
+    >
       <div data-vjs-player className="w-full h-full">
         <video
           ref={videoNode}
@@ -380,3 +234,5 @@ export function Player({
     </div>
   );
 }
+
+export default Player;
