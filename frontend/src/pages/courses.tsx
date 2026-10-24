@@ -4,6 +4,7 @@ import CoursesList from "@/components/courses/courses-list";
 import { Course } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
 import AddCourse from "@/components/courses/add-course";
+import ActivityHeatmap from "@/components/stats/activity-heatmap";
 import { useNavigate } from "react-router-dom";
 import { coursesApi } from "@/services/coursesApi";
 
@@ -49,10 +50,13 @@ export default function CoursesPage() {
 
   return (
     <>
-      <div className="w-full mb-4 space-y-8">
+      <div className="w-full mb-4 space-y-8 max-w-7xl mx-auto">
+        {/* Heatmap & Streaks Panel */}
+        <ActivityHeatmap />
+
         <div className="space-y-6">
-          <div className="flex justify-between">
-            <h1 className="text-2xl font-bold">Meus Cursos {/*({courses.length})*/}</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-heading font-bold text-white">Meus Cursos</h1>
             <AddCourse onCreate={() => fetchCourses()} />
           </div>
           <section className="mt-10 flex flex-wrap gap-4 w-full justify-center">
