@@ -112,6 +112,11 @@ class TestLessonsAPI:
             db.session.commit()
             course_id, lesson_id = course.id, lesson.id
 
+        # Listar notas da lição antes de criar (deve vir vazia)
+        res_initial = client.get(f"/api/lessons/{lesson_id}/notes")
+        assert res_initial.status_code == 200
+        assert res_initial.get_json() == []
+
         # Criar nota via API
         res_create = client.post(
             f"/api/lessons/{lesson_id}/notes",
@@ -119,6 +124,14 @@ class TestLessonsAPI:
         )
         assert res_create.status_code == 201
         note_id = res_create.get_json()["id"]
+
+        # Listar notas da lição via API
+        res_lesson_notes = client.get(f"/api/lessons/{lesson_id}/notes")
+        assert res_lesson_notes.status_code == 200
+        data_notes = res_lesson_notes.get_json()
+        assert len(data_notes) == 1
+        assert data_notes[0]["content"] == "Nota de teste"
+        assert data_notes[0]["time"] == 10
 
         # Listar notas do curso via API
         res_list = client.get(f"/api/courses/{course_id}/notes")
@@ -128,9 +141,10 @@ class TestLessonsAPI:
         # Atualizar nota
         res_update = client.put(
             f"/api/notes/{note_id}",
-            json={"content": "Nota atualizada"},
+            json={"content": "Nota atualizada", "time": 15},
         )
         assert res_update.status_code == 200
+        assert res_update.get_json()["time"] == 15
 
         # Exportar notas
         res_export = client.get(f"/api/courses/{course_id}/notes/export?format=md")
@@ -140,3 +154,8 @@ class TestLessonsAPI:
         # Excluir nota
         res_del = client.delete(f"/api/notes/{note_id}")
         assert res_del.status_code == 200
+
+        # Verificar se lista da lição voltou a ficar vazia
+        res_after_del = client.get(f"/api/lessons/{lesson_id}/notes")
+        assert res_after_del.status_code == 200
+        assert res_after_del.get_json() == []

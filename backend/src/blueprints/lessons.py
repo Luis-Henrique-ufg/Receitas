@@ -34,6 +34,11 @@ def update_lesson_progress():
     if not lesson:
         return jsonify({"error": "Lição não encontrada"}), 404
 
+    if is_completed:
+        from services.stats_service import StatsService
+
+        StatsService.record_lesson_completed()
+
     return jsonify({"message": "Progresso da lição atualizado com sucesso"})
 
 
@@ -48,6 +53,12 @@ def get_lesson_attachments(lesson_id):
 @lessons_bp.route("/api/courses/<int:course_id>/notes", methods=["GET"])
 def get_course_notes(course_id):
     notes = LessonService.list_notes_by_course(course_id)
+    return jsonify(notes)
+
+
+@lessons_bp.route("/api/lessons/<int:lesson_id>/notes", methods=["GET"])
+def get_lesson_notes(lesson_id):
+    notes = LessonService.list_notes_by_lesson(lesson_id)
     return jsonify(notes)
 
 
@@ -72,7 +83,8 @@ def update_note(note_id):
     if not content:
         return jsonify({"error": "Conteúdo da anotação não pode ser vazio"}), 400
 
-    note = LessonService.update_note(note_id=note_id, content=content)
+    time = data.get("time")
+    note = LessonService.update_note(note_id=note_id, content=content, time=time)
     return jsonify(note.to_dict())
 
 

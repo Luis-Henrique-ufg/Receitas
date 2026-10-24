@@ -213,16 +213,27 @@ class LessonService:
         ]
 
     @staticmethod
+    def list_notes_by_lesson(lesson_id):
+        Lesson.query.get_or_404(lesson_id)
+        notes = (
+            Note.query.filter_by(lesson_id=lesson_id).order_by(Note.time.asc()).all()
+        )
+        return [note.to_dict() for note in notes]
+
+    @staticmethod
     def create_note(lesson_id, time, content):
+        Lesson.query.get_or_404(lesson_id)
         note = Note(lesson_id=lesson_id, time=time, content=content)
         db.session.add(note)
         db.session.commit()
         return note
 
     @staticmethod
-    def update_note(note_id, content):
+    def update_note(note_id, content, time=None):
         note = Note.query.get_or_404(note_id)
         note.content = content
+        if time is not None:
+            note.time = time
         db.session.commit()
         return note
 

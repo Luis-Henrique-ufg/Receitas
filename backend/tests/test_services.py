@@ -164,19 +164,31 @@ class TestLessonService:
             db.session.add(lesson)
             db.session.commit()
 
+            # Listar antes de criar (deve vir vazio)
+            assert len(LessonService.list_notes_by_lesson(lesson.id)) == 0
+
             # Criar nota
             note = LessonService.create_note(lesson.id, time=42, content="Ponto chave")
             assert note.id is not None
             assert note.content == "Ponto chave"
 
-            # Listar
+            # Listar por aula
+            lesson_notes = LessonService.list_notes_by_lesson(lesson.id)
+            assert len(lesson_notes) == 1
+            assert lesson_notes[0]["content"] == "Ponto chave"
+            assert lesson_notes[0]["time"] == 42
+
+            # Listar por curso
             notes = LessonService.list_notes_by_course(course.id)
             assert len(notes) == 1
             assert notes[0]["content"] == "Ponto chave"
 
             # Atualizar
-            updated = LessonService.update_note(note.id, content="Ponto atualizado")
+            updated = LessonService.update_note(
+                note.id, content="Ponto atualizado", time=50
+            )
             assert updated.content == "Ponto atualizado"
+            assert updated.time == 50
 
             # Exportar em Markdown
             mem_md, filename_md, mime_md = LessonService.export_notes(course.id, "md")
@@ -195,3 +207,4 @@ class TestLessonService:
             # Excluir nota
             LessonService.delete_note(note.id)
             assert len(LessonService.list_notes_by_course(course.id)) == 0
+            assert len(LessonService.list_notes_by_lesson(lesson.id)) == 0
