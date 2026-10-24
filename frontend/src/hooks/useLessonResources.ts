@@ -141,6 +141,40 @@ export default function useLessonResources(
     }
   }
 
+  const addQuickMarker = useCallback(
+    async (tag: string = "📌 Marcador") => {
+      if (!lessonId) return;
+      const currentSec = Math.floor(timeRef.current);
+      const m = Math.floor(currentSec / 60);
+      const s = currentSec % 60;
+      const timeFormatted = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      const content = `${tag} (${timeFormatted})`;
+
+      try {
+        await lessonsApi.createNote(apiUrl, lessonId, {
+          time: currentSec,
+          content,
+        });
+        await Promise.all([fetchNotes(), fetchCourseNotes()]);
+        toast.success(`Marcador salvo em ${timeFormatted}!`, {
+          duration: 2000,
+          id: "quick-marker-toast",
+        });
+      } catch {
+        toast.error("Erro ao salvar marcador.");
+      }
+    },
+    [apiUrl, lessonId, fetchNotes, fetchCourseNotes]
+  );
+
+  useEffect(() => {
+    const handleBookmark = () => {
+      void addQuickMarker();
+    };
+    window.addEventListener("quickBookmarkTrigger", handleBookmark);
+    return () => window.removeEventListener("quickBookmarkTrigger", handleBookmark);
+  }, [addQuickMarker]);
+
   function seekTo(time: number) {
     storeSeekTo(time);
   }
@@ -158,6 +192,7 @@ export default function useLessonResources(
     saveNote,
     editNote,
     deleteNote,
+    addQuickMarker,
     seekTo,
     fetchNotes,
     fetchCourseNotes,

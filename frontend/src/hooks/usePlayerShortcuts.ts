@@ -123,11 +123,36 @@ export function usePlayerShortcuts({ playerRef }: UsePlayerShortcutsOptions) {
         case "m":
           player.muted(!player.muted());
           break;
+        case "b":
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent("quickBookmarkTrigger"));
+          break;
+        case "z":
+          e.preventDefault();
+          usePlaybackStore.getState().toggleZenMode();
+          break;
+        case "escape":
+          if (usePlaybackStore.getState().isZenMode) {
+            e.preventDefault();
+            usePlaybackStore.getState().toggleZenMode(false);
+          }
+          break;
+      }
+    };
+
+    const handlePomodoroPause = () => {
+      if (playerRef.current && !playerRef.current.paused()) {
+        playerRef.current.pause();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("pomodoroPauseVideo", handlePomodoroPause);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pomodoroPauseVideo", handlePomodoroPause);
+    };
   }, [playerRef, triggerNavigateNext, triggerNavigatePrevious]);
 }
 

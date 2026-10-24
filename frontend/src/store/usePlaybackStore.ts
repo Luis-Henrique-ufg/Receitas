@@ -7,6 +7,7 @@ export interface PlaybackState {
   seekTarget: number | null;
   lastCompleted: { lessonId: number; isCompleted: boolean } | null;
   navigationAction: "next" | "previous" | null;
+  isZenMode: boolean;
 
   // Actions
   setCurrentTime: (time: number) => void;
@@ -18,6 +19,7 @@ export interface PlaybackState {
   triggerNavigateNext: () => void;
   triggerNavigatePrevious: () => void;
   clearNavigationAction: () => void;
+  toggleZenMode: (val?: boolean) => void;
 }
 
 export const usePlaybackStore = create<PlaybackState>((set) => ({
@@ -27,6 +29,7 @@ export const usePlaybackStore = create<PlaybackState>((set) => ({
   seekTarget: null,
   lastCompleted: null,
   navigationAction: null,
+  isZenMode: false,
 
   setCurrentTime: (time: number) => {
     set({ currentTime: time });
@@ -62,6 +65,13 @@ export const usePlaybackStore = create<PlaybackState>((set) => ({
   },
 
   clearNavigationAction: () => set({ navigationAction: null }),
+
+  toggleZenMode: (val?: boolean) => {
+    set((state) => ({ isZenMode: val !== undefined ? val : !state.isZenMode }));
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 50);
+  },
 }));
 
 export default usePlaybackStore;
