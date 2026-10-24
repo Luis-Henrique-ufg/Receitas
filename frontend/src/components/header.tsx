@@ -1,8 +1,12 @@
-import { Cookie } from "lucide-react";
+import { Cookie, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-function Header() {
+interface HeaderProps {
+  onOpenSearch?: () => void;
+}
+
+function Header({ onOpenSearch }: HeaderProps) {
   const navigate = useNavigate();
 
   function handleNavigate(path: string) {
@@ -21,10 +25,39 @@ function Header() {
           </div>
           <span className="font-heading font-bold tracking-tighter text-white">Receitas</span>
         </div>
-        <div className="flex flex-wrap gap-4 items-center">
+
+        <div className="flex flex-wrap gap-3 items-center">
+          {onOpenSearch && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenSearch}
+              className="glass-panel glass-panel-hover rounded-full px-3.5 py-1.5 h-9 text-xs text-white/70 hover:text-white border-white/10 gap-2 font-normal hidden sm:inline-flex items-center"
+            >
+              <Search className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Buscar...</span>
+              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-zinc-400 border border-white/10 ml-1">
+                Ctrl K
+              </kbd>
+            </Button>
+          )}
+
+          {onOpenSearch && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onOpenSearch}
+              className="glass-panel glass-panel-hover rounded-full w-9 h-9 sm:hidden text-white/70 hover:text-white border-white/10"
+              title="Buscar (Ctrl+K)"
+            >
+              <Search className="w-4 h-4 text-zinc-300" />
+            </Button>
+          )}
+
           <Button
             onClick={() => handleNavigate("/configuracoes")}
             variant="link"
+            className="text-white/80 hover:text-white"
           >
             Configurações
           </Button>
