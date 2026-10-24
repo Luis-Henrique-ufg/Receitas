@@ -1,16 +1,32 @@
 import Header from "@/components/header";
 import CoursePage from "@/pages/course";
-
 import SettingsPage from "@/pages/settings";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import CoursesPage from "@/pages/courses";
 import Footer from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
-
-import { useEffect } from "react";
+import CommandPalette from "@/components/search/command-palette";
+import PomodoroWidget from "@/components/pomodoro/pomodoro-widget";
+import { useEffect, useState } from "react";
+import usePlaybackStore from "@/store/usePlaybackStore";
+import { cn } from "@/lib/utils";
 
 export default function Router() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const isZenMode = usePlaybackStore((state) => state.isZenMode);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   useEffect(() => {
     const cursor = document.getElementById("cursor");
     if (!cursor) return;
@@ -58,7 +74,9 @@ export default function Router() {
       </div>
 
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Header />
+        {!isZenMode && <Header onOpenSearch={() => setIsSearchOpen(true)} />}
+        <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+        {!isZenMode && <PomodoroWidget />}
         <Toaster
           position="bottom-right"
           richColors
@@ -66,7 +84,7 @@ export default function Router() {
           visibleToasts={1}
         />
       </ThemeProvider>
-      <main className="p-6 pt-28 relative z-10">
+      <main className={cn(isZenMode ? "p-0 relative z-10" : "p-6 pt-28 relative z-10")}>
         <Routes>
           <Route path="/" element={<Navigate to="/receitas" replace />} />
           <Route path="/receitas/:courseId" element={<CoursePage />} />
@@ -74,7 +92,7 @@ export default function Router() {
           <Route path="/receitas" element={<CoursesPage />} />
         </Routes>
       </main>
-      <Footer />
+      {!isZenMode && <Footer />}
     </BrowserRouter>
   );
 }

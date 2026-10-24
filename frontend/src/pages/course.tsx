@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Bookmark, Sparkles, Minimize2 } from "lucide-react";
 import LessonAttachments from "@/components/lesson/lesson-attachments";
 import LessonNotes from "@/components/lesson/lesson-notes";
 import CoursePercentage from "@/components/course-percentage";
@@ -20,6 +20,7 @@ import useLessonResources from "@/hooks/useLessonResources";
 import { toast } from "sonner";
 import { Lesson } from "@/models/models";
 import { usePlaybackStore } from "@/store/usePlaybackStore";
+import { cn } from "@/lib/utils";
 
 export default function CoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -45,6 +46,8 @@ export default function CoursePage() {
   const lessonResources = useLessonResources(selectedLesson?.id, courseId);
   const navigationAction = usePlaybackStore((state) => state.navigationAction);
   const clearNavigationAction = usePlaybackStore((state) => state.clearNavigationAction);
+  const isZenMode = usePlaybackStore((state) => state.isZenMode);
+  const toggleZenMode = usePlaybackStore((state) => state.toggleZenMode);
 
   // Flatten and sort lessons across all modules for linear navigation
   const allLessons = useMemo(() => {
@@ -152,79 +155,210 @@ export default function CoursePage() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:h-[calc(100vh-136px)]">
-      <div className="w-full lg:col-span-7 flex flex-col lg:h-full glass-panel rounded-2xl overflow-hidden min-w-0 bg-black/40">
-        <LessonViewer 
-          key={selectedLesson?.id}
-          lesson={selectedLesson} 
-          onLessonComplete={refreshCourseProgress}
-        />
-        <div className="p-3.5 sm:p-4 border-t border-white/10 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
-          <div className="flex-1 min-w-0 pr-2">
-            <div className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/50 mb-1 truncate">
-              {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
+      <div
+        className={cn(
+          "flex flex-col min-w-0 transition-all duration-300",
+          isZenMode
+            ? "fixed inset-0 z-[80] bg-[#050a14] p-3 sm:p-6 justify-between select-none"
+            : "w-full lg:col-span-7 lg:h-full glass-panel rounded-2xl overflow-hidden bg-black/40"
+        )}
+      >
+        {/* Minimal Zen Top Bar */}
+        {isZenMode && (
+          <div
+            key="zen-top-bar"
+            className="w-full flex items-center justify-between px-5 py-2.5 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 text-white z-20 transition-opacity opacity-75 hover:opacity-100 shrink-0"
+          >
+            <div className="flex items-center gap-3">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                Modo Zen
+              </span>
+              <span className="text-sm font-heading font-medium truncate max-w-[200px] sm:max-w-md">
+                {selectedLesson?.title}
+              </span>
             </div>
-            <h3 className="text-left font-heading font-medium text-base sm:text-lg lg:text-xl tracking-tight text-white truncate" title={selectedLesson?.title}>
-              {selectedLesson?.title}
-            </h3>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => lessonResources.addQuickMarker()}
+                className="text-xs gap-1.5 text-zinc-300 hover:text-white h-8"
+                title="Marcar Timestamp (B)"
+              >
+                <Bookmark className="w-3.5 h-3.5 fill-[#007bff] text-[#007bff]" />
+                <span className="hidden sm:inline">Marcar (B)</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handlePrevLesson}
+                disabled={!prevLesson}
+                className="h-8 text-xs px-2.5 bg-white/5 border-white/10 text-white"
+                title="Aula Anterior (Shift+P)"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleNextLesson}
+                disabled={!nextLesson}
+                className="h-8 text-xs px-2.5 bg-white/5 border-white/10 text-white"
+                title="Próxima Aula (Shift+N)"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => toggleZenMode(false)}
+                className="text-xs text-zinc-300 hover:text-white h-8 px-3 gap-1.5 bg-white/5 hover:bg-white/10"
+                title="Sair do Modo Zen (ESC ou Z)"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sair (Z)</span>
+              </Button>
+            </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePrevLesson}
-                    disabled={!prevLesson}
-                    className="gap-1.5 h-8 sm:h-9 px-3 sm:px-3.5 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
-                  >
-                    <ChevronLeft className="w-4 h-4 text-white/80" />
-                    <span>Anterior</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {prevLesson ? (
-                    <div>
-                      <p className="font-semibold text-xs">Aula anterior (Shift+P)</p>
-                      <p className="text-[10px] opacity-75">{prevLesson.title}</p>
-                    </div>
-                  ) : (
-                    <p className="text-xs">Primeira aula do curso</p>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    onClick={handleNextLesson}
-                    disabled={!nextLesson}
-                    className="gap-1.5 h-8 sm:h-9 px-3.5 sm:px-4 text-xs font-medium bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white border border-[#007bff]/50 shadow-md shadow-blue-900/30 disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
-                  >
-                    <span>Próxima</span>
-                    <ChevronRight className="w-4 h-4 ml-0.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  {nextLesson ? (
-                    <div>
-                      <p className="font-semibold text-xs">Próxima aula (Shift+N)</p>
-                      <p className="text-[10px] opacity-75">{nextLesson.title}</p>
-                    </div>
-                  ) : (
-                    <p className="text-xs">Última aula do curso</p>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        {/* Center player container */}
+        <div
+          key="player-wrapper"
+          className={cn(
+            "w-full min-w-0",
+            isZenMode ? "flex-1 flex items-center justify-center min-h-0 my-2" : ""
+          )}
+        >
+          <div
+            className={cn(
+              "w-full transition-all duration-300",
+              isZenMode
+                ? "max-w-[min(1152px,calc((100vh-130px)*16/9))] rounded-2xl overflow-hidden glass-panel border border-white/10 p-1.5 sm:p-2 shadow-2xl shadow-black/80 flex items-center justify-center"
+                : ""
+            )}
+          >
+            <LessonViewer
+              key={selectedLesson?.id}
+              lesson={selectedLesson}
+              onLessonComplete={refreshCourseProgress}
+            />
           </div>
         </div>
+
+        {/* Normal Bottom Bar */}
+        {!isZenMode && (
+          <div
+            key="normal-bottom-bar"
+            className="p-3.5 sm:p-4 border-t border-white/10 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0"
+          >
+            <div className="flex-1 min-w-0 pr-2">
+              <div className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/50 mb-1 truncate">
+                {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
+              </div>
+              <h3 className="text-left font-heading font-medium text-base sm:text-lg lg:text-xl tracking-tight text-white truncate" title={selectedLesson?.title}>
+                {selectedLesson?.title}
+              </h3>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => lessonResources.addQuickMarker()}
+                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white/80 hover:text-white transition-all duration-300"
+                    >
+                      <Bookmark className="w-3.5 h-3.5 fill-[#007bff] text-[#007bff]" />
+                      <span className="hidden sm:inline">Marcar (B)</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="font-semibold text-xs">Marcar ponto no vídeo (B)</p>
+                    <p className="text-[10px] opacity-75">Salva um marcador rápido no segundo atual</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => toggleZenMode(true)}
+                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-cyan-300 hover:text-cyan-200 transition-all duration-300"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                      <span className="hidden sm:inline">Modo Zen (Z)</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="font-semibold text-xs">Ativar Modo Zen (Z)</p>
+                    <p className="text-[10px] opacity-75">Visualização maximizada sem distrações</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePrevLesson}
+                      disabled={!prevLesson}
+                      className="gap-1.5 h-8 sm:h-9 px-3 sm:px-3.5 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
+                    >
+                      <ChevronLeft className="w-4 h-4 text-white/80" />
+                      <span>Anterior</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {prevLesson ? (
+                      <div>
+                        <p className="font-semibold text-xs">Aula anterior (Shift+P)</p>
+                        <p className="text-[10px] opacity-75">{prevLesson.title}</p>
+                      </div>
+                    ) : (
+                      <p className="text-xs">Primeira aula do curso</p>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      onClick={handleNextLesson}
+                      disabled={!nextLesson}
+                      className="gap-1.5 h-8 sm:h-9 px-3.5 sm:px-4 text-xs font-medium bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white border border-[#007bff]/50 shadow-md shadow-blue-900/30 disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
+                    >
+                      <span>Próxima</span>
+                      <ChevronRight className="w-4 h-4 ml-0.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {nextLesson ? (
+                      <div>
+                        <p className="font-semibold text-xs">Próxima aula (Shift+N)</p>
+                        <p className="text-[10px] opacity-75">{nextLesson.title}</p>
+                      </div>
+                    ) : (
+                      <p className="text-xs">Última aula do curso</p>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0">
+      <div className={cn("lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0", isZenMode && "hidden")}>
         <div className="p-4 border-b border-white/10 space-y-2 shrink-0 bg-black/20">
           <h2 className="text-xl font-heading font-medium text-white line-clamp-1" title={selectedLesson?.course_title}>{selectedLesson?.course_title}</h2>
           <CoursePercentage courseId={Number(courseId)} fromGlobal />

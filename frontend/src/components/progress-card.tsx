@@ -60,7 +60,7 @@ export default function ProgressCard({
       <Progress value={roundedValue} className="h-2" />
 
       {!hideValue && (
-        <div className="flex items-center gap-2.5 flex-wrap mt-0.5">
+        <div className="flex flex-col items-start gap-1.5 mt-0.5">
           {getStatusBadge()}
 
           {totalLessons !== null && totalLessons !== undefined && totalLessons > 0 && (
