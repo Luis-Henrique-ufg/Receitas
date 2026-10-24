@@ -3,7 +3,7 @@ import tempfile
 import pytest
 from flask import Flask
 
-from blueprints import courses_bp, lessons_bp, media_bp
+from blueprints import courses_bp, lessons_bp, media_bp, search_bp, stats_bp
 from database import db
 
 
@@ -24,6 +24,8 @@ def app():
     test_app.register_blueprint(courses_bp)
     test_app.register_blueprint(lessons_bp)
     test_app.register_blueprint(media_bp)
+    test_app.register_blueprint(search_bp)
+    test_app.register_blueprint(stats_bp)
 
     with test_app.app_context():
         db.create_all()
