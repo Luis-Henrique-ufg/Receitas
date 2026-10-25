@@ -4,7 +4,7 @@ import { Course, Lesson } from "@/models/models";
 import { Button } from "@/components/ui/button";
 import { getLastViewedLesson } from "@/utils/utils";
 import useApiUrl from "@/hooks/useApiUrl";
-import { coursesApi } from "@/services/coursesApi";
+import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
 
 interface ResumeHeroCardProps {
   courses: Course[];
@@ -54,6 +54,8 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
   const { apiUrl } = useApiUrl();
   const [totalLessons, setTotalLessons] = useState<number | null>(null);
 
+  const [stats, setStats] = useState<CourseCompletionStats | null>(null);
+
   const activeItem = useMemo(() => {
     if (!courses || courses.length === 0) return null;
 
@@ -83,9 +85,12 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
 
     coursesApi
       .getCompletionStats(apiUrl, activeItem.course.id)
-      .then((stats) => {
-        if (!isCancelled && stats?.total_lessons) {
-          setTotalLessons(stats.total_lessons);
+      .then((data) => {
+        if (!isCancelled && data) {
+          setStats(data);
+          if (data.total_lessons) {
+            setTotalLessons(data.total_lessons);
+          }
         }
       })
       .catch(() => {
@@ -122,8 +127,18 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
       : 0;
 
   const lessonIndex = lesson ? extractLessonIndex(lesson.title, lesson.hierarchy_path) : null;
+  const globalLessonNumber = stats?.current_lesson_number || (lessonIndex !== null ? lessonIndex : null);
   const cleanedTitle = lesson ? cleanLessonTitle(lesson.title) : "";
   const cleanedModule = lesson?.module ? cleanLessonTitle(lesson.module) : "";
+
+  // Avoid repeating the title if module and lesson share the same name or prefix
+  const isDuplicateName =
+    Boolean(cleanedModule) &&
+    Boolean(cleanedTitle) &&
+    (cleanedModule.trim().toLowerCase() === cleanedTitle.trim().toLowerCase() ||
+      cleanedTitle.trim().toLowerCase().startsWith(cleanedModule.trim().toLowerCase()));
+
+  const showModule = Boolean(cleanedModule) && !isDuplicateName;
 
   return (
     <div className="w-full glass-panel rounded-2xl p-5 sm:p-6 border border-white/15 shadow-2xl relative overflow-hidden backdrop-blur-2xl group bg-gradient-to-r from-blue-950/20 via-black/40 to-black/60">
@@ -177,30 +192,30 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
             {course.name}
           </h3>
 
-          {/* Cleaned Lesson Hierarchy Breadcrumb */}
-          <div className="text-sm text-zinc-300 flex items-center gap-1.5 flex-wrap">
+          {/* Cleaned Lesson Hierarchy Breadcrumb: icon and path inline with min-w-0 */}
+          <div className="text-sm text-zinc-300 flex items-center gap-2 min-w-0 max-w-full">
             <BookOpen className="w-4 h-4 text-zinc-400 shrink-0" />
             {isResume && lesson ? (
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {cleanedModule && (
+              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden text-sm">
+                {showModule && (
                   <>
-                    <span className="text-zinc-400 font-medium">
+                    <span className="text-zinc-400 font-medium truncate max-w-[180px]" title={cleanedModule}>
                       {cleanedModule}
                     </span>
-                    <span className="text-zinc-600 font-semibold select-none">›</span>
+                    <span className="text-zinc-600 font-semibold select-none shrink-0">›</span>
                   </>
                 )}
-                <strong className="text-white font-medium" title={lesson.title}>
-                  {middleTruncate(cleanedTitle, 36)}
+                <strong className="text-white font-medium truncate" title={cleanedTitle || lesson.title}>
+                  {cleanedTitle}
                 </strong>
-                {lessonIndex !== null && totalLessons !== null && totalLessons > 0 && (
-                  <span className="text-xs text-zinc-400 font-normal ml-1">
-                    (Aula {lessonIndex} de {totalLessons})
+                {globalLessonNumber !== null && totalLessons !== null && totalLessons > 0 && (
+                  <span className="text-xs text-zinc-400 font-normal shrink-0 ml-1 whitespace-nowrap">
+                    (Aula {globalLessonNumber} de {totalLessons})
                   </span>
                 )}
               </div>
             ) : (
-              <span>Explore as aulas e comece sua jornada de aprendizado</span>
+              <span className="truncate">Explore as aulas e comece sua jornada de aprendizado</span>
             )}
           </div>
         </div>

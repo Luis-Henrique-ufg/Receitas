@@ -121,3 +121,22 @@ export function formatRelativeTime(timestamp?: number): string {
   return `há ${diffDays} dias`;
 }
 
+export function formatRelativeDate(dateStr?: string | null): string {
+  if (!dateStr) return "";
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return "";
+  const targetDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffMs = today.getTime() - targetDate.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) {
+    return "hoje";
+  }
+  if (diffDays === 1) {
+    return "ontem";
+  }
+  return `há ${diffDays} dias`;
+}
+

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import CoursesList from "@/components/courses/courses-list";
 import { Course } from "@/models/models";
@@ -8,6 +8,7 @@ import ActivityHeatmap from "@/components/stats/activity-heatmap";
 import ResumeHeroCard from "@/components/courses/resume-hero-card";
 import { useNavigate } from "react-router-dom";
 import { coursesApi } from "@/services/coursesApi";
+import { getLastViewedLesson } from "@/utils/utils";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -49,6 +50,14 @@ export default function CoursesPage() {
     }
   }
 
+  const heroCourseId = useMemo(() => {
+    if (!courses || courses.length === 0) return null;
+    for (const c of courses) {
+      if (getLastViewedLesson(c.id.toString())) return c.id;
+    }
+    return courses[0].id;
+  }, [courses]);
+
   return (
     <>
       <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto">
@@ -79,6 +88,7 @@ export default function CoursesPage() {
             ) : (
               <CoursesList
                 courses={courses}
+                heroCourseId={heroCourseId}
                 isEditable
                 onRefresh={fetchCourses}
                 onReorder={handleReorderCourses}

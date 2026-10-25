@@ -19,12 +19,14 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
     completed: number | null;
     remaining_seconds: number | null;
     estimated_finish_month: string | null;
+    last_studied_date: string | null;
   }>({
     percentage: null,
     total: null,
     completed: null,
     remaining_seconds: null,
     estimated_finish_month: null,
+    last_studied_date: null,
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -57,6 +59,7 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
           completed: data.completed_lessons ?? null,
           remaining_seconds: data.remaining_seconds ?? null,
           estimated_finish_month: data.estimated_finish_month ?? null,
+          last_studied_date: data.last_studied_date ?? null,
         });
       } catch (error) {
         console.error(
@@ -87,6 +90,7 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
               remainingSeconds={courseStats.remaining_seconds}
               estimatedFinishMonth={courseStats.estimated_finish_month}
               lastViewedAt={getLastViewedLesson(courseId.toString())?.viewedAt}
+              lastStudiedDate={courseStats.last_studied_date}
             />
           ) : (
 

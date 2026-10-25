@@ -1,5 +1,5 @@
 import { Progress } from "./ui/progress";
-import { formatRelativeTime } from "@/utils/utils";
+import { formatRelativeTime, formatRelativeDate } from "@/utils/utils";
 
 type Props = {
   value?: number;
@@ -10,6 +10,7 @@ type Props = {
   remainingSeconds?: number | null;
   estimatedFinishMonth?: string | null;
   lastViewedAt?: number | null;
+  lastStudiedDate?: string | null;
 };
 
 export default function ProgressCard({
@@ -21,6 +22,7 @@ export default function ProgressCard({
   remainingSeconds,
   estimatedFinishMonth,
   lastViewedAt,
+  lastStudiedDate,
 }: Props) {
   const roundedValue = Math.round(Number(value) || 0);
   
@@ -41,12 +43,8 @@ export default function ProgressCard({
         </span>
       );
     }
-    return (
-      <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-white/90 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shrink-0" />
-        Em andamento
-      </span>
-    );
+    // "Em andamento" is the default state; do not render an uninformative badge
+    return null;
   };
 
   const remaining = totalLessons !== null && totalLessons !== undefined && totalLessons > 0
@@ -74,7 +72,11 @@ export default function ProgressCard({
       remainingText = `${remaining} ${remaining === 1 ? "aula restante" : "aulas restantes"}`;
     }
 
-    const relTime = formatRelativeTime(lastViewedAt ?? undefined);
+    // Relative date: prefer localStorage viewedAt timestamp, fallback to backend lastStudiedDate
+    let relTime = formatRelativeTime(lastViewedAt ?? undefined);
+    if (!relTime && lastStudiedDate) {
+      relTime = formatRelativeDate(lastStudiedDate);
+    }
     const lastWatchedText = relTime ? ` · última aula ${relTime}` : "";
 
     return (
@@ -91,11 +93,9 @@ export default function ProgressCard({
           <span className="text-white/60 font-medium tracking-wide">Seu progresso</span>
           <div className="flex items-center gap-1 text-white font-semibold tabular-nums tracking-tight">
             <span>{roundedValue}%</span>
-            {roundedValue > 0 && roundedValue < 100 ? (
+            {estimatedFinishMonth && estimatedFinishMonth !== "sem previsão ainda" && roundedValue > 0 && roundedValue < 100 ? (
               <span className="text-zinc-400 font-normal">
-                {estimatedFinishMonth && estimatedFinishMonth !== "sem previsão ainda"
-                  ? ` · termina em ~${estimatedFinishMonth}`
-                  : " · sem previsão ainda"}
+                · termina em ~{estimatedFinishMonth}
               </span>
             ) : null}
           </div>

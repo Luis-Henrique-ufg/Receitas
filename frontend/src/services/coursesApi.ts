@@ -22,6 +22,8 @@ export interface CourseCompletionStats {
   remaining_lessons?: number;
   remaining_seconds?: number;
   estimated_finish_month?: string | null;
+  last_studied_date?: string | null;
+  current_lesson_number?: number | null;
 }
 
 

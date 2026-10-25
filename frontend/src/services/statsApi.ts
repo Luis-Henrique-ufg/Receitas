@@ -63,11 +63,14 @@ export const statsApi = {
     courseId?: number,
     courseName?: string
   ): Promise<void> {
+    const d = new Date();
+    const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const url = resolveUrl(apiUrl, "/api/stats/pomodoro");
     await axios.post(url, {
       study_seconds: studySeconds,
       course_id: courseId,
       course_name: courseName,
+      date: localDate,
     });
   },
 
@@ -78,11 +81,14 @@ export const statsApi = {
     courseName?: string
   ): Promise<void> {
     if (seconds <= 0) return;
+    const d = new Date();
+    const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const url = resolveUrl(apiUrl, "/api/stats/heartbeat");
     await axios.post(url, {
       seconds,
       course_id: courseId,
       course_name: courseName,
+      date: localDate,
     });
   },
 };

@@ -17,6 +17,7 @@ import {
 type Props = {
   isEditable?: boolean;
   courses: Course[] | null;
+  heroCourseId?: number | null;
   onPlay?: (courseId: number) => void;
   onRefresh?: () => void;
   onReorder?: (courses: Course[]) => Promise<void>;
@@ -25,6 +26,7 @@ type Props = {
 export default function CoursesList({
   isEditable = false,
   courses,
+  heroCourseId,
   onPlay = () => {},
   onRefresh = () => {},
   onReorder,
@@ -74,6 +76,7 @@ export default function CoursesList({
                   <CourseItem
                     key={course.id}
                     course={course}
+                    isHeroCourse={course.id === heroCourseId}
                     onPlay={() => onPlay(course.id)}
                     isEditable={isEditable}
                     onUpdate={onRefresh}
