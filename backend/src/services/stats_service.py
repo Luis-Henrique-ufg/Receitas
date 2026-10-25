@@ -152,11 +152,36 @@ class StatsService:
                 if temp_streak > max_streak:
                     max_streak = temp_streak
 
+        today_record = record_map.get(ref.isoformat())
+        today_seconds = today_record.study_seconds if today_record else 0
+
+        # Current calendar week (Monday to Sunday)
+        week_start = ref - timedelta(days=ref.weekday())
+        week_records = [
+            r for r in records if r.date >= week_start.isoformat() and r.date <= end_str
+        ]
+        week_seconds = sum(r.study_seconds for r in week_records)
+        week_active_days = len(
+            {
+                r.date
+                for r in week_records
+                if (
+                    r.study_seconds > 0
+                    or r.pomodoros_completed > 0
+                    or r.lessons_completed > 0
+                )
+            }
+        )
+
         return {
             "current_streak": current_streak,
             "max_streak": max(max_streak, current_streak),
             "total_seconds": total_seconds,
             "total_pomodoros": total_pomodoros,
             "total_lessons": total_lessons,
+            "today_seconds": today_seconds,
+            "week_seconds": week_seconds,
+            "week_active_days": week_active_days,
             "days": days_data,
         }
+
