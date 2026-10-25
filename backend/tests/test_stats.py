@@ -97,3 +97,51 @@ class TestStatsAPI:
         assert "available_courses" in data
         assert "delta_week_seconds" in data
 
+
+class TestMigrations:
+    def test_migration_adds_missing_course_breakdown(self, tmp_path):
+        import sqlite3
+        from migrations import run_migrations
+        from sqlalchemy import create_engine, inspect, text
+
+        db_file = tmp_path / "legacy.sqlite"
+        conn = sqlite3.connect(str(db_file))
+        # Create legacy daily_activity table WITHOUT course_breakdown
+        conn.execute(
+            """
+            CREATE TABLE daily_activity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date VARCHAR(10) NOT NULL UNIQUE,
+                study_seconds INTEGER NOT NULL DEFAULT 0,
+                lessons_completed INTEGER NOT NULL DEFAULT 0,
+                pomodoros_completed INTEGER NOT NULL DEFAULT 0
+            )
+            """
+        )
+        conn.execute(
+            "INSERT INTO daily_activity (date, study_seconds, lessons_completed, pomodoros_completed) VALUES ('2026-10-24', 600, 2, 0)"
+        )
+        conn.commit()
+        conn.close()
+
+        engine = create_engine(f"sqlite:///{db_file}")
+        inspector_before = inspect(engine)
+        cols_before = [c["name"] for c in inspector_before.get_columns("daily_activity")]
+        assert "course_breakdown" not in cols_before
+
+        # Run migration
+        run_migrations(engine)
+
+        inspector_after = inspect(engine)
+        cols_after = [c["name"] for c in inspector_after.get_columns("daily_activity")]
+        assert "course_breakdown" in cols_after
+        tables_after = inspector_after.get_table_names()
+        assert "daily_course_activity" in tables_after
+
+        # Verify old row is intact
+        with engine.connect() as check_conn:
+            row = check_conn.execute(text("SELECT date, study_seconds, course_breakdown FROM daily_activity WHERE date='2026-10-24'")).fetchone()
+            assert row[0] == "2026-10-24"
+            assert row[1] == 600
+            assert row[2] == "{}"
+

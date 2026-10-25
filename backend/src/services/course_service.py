@@ -178,9 +178,24 @@ class CourseService:
         ]
         estimated_finish_month = None
         if remaining_seconds > 0:
-            weeks_needed = max(1, remaining_seconds / 10800)  # ~3 horas de estudo semanal
-            finish_date = date.today() + timedelta(weeks=weeks_needed)
-            estimated_finish_month = month_names_br[finish_date.month - 1]
+            # Check how many active study days exist in the system
+            from models.daily_activity import DailyActivity
+            active_days_count = DailyActivity.query.filter(
+                (DailyActivity.study_seconds > 0)
+                | (DailyActivity.pomodoros_completed > 0)
+                | (DailyActivity.lessons_completed > 0)
+            ).count()
+
+            if active_days_count < 7:
+                estimated_finish_month = "sem previsão ainda"
+            else:
+                weeks_needed = max(1, remaining_seconds / 10800)  # ~3 horas de estudo semanal
+                finish_date = date.today() + timedelta(weeks=weeks_needed)
+                # Include year if > 12 months
+                if weeks_needed > 52:
+                    estimated_finish_month = f"{month_names_br[finish_date.month - 1]}/{finish_date.year}"
+                else:
+                    estimated_finish_month = month_names_br[finish_date.month - 1]
 
         return {
             "completed_percentage": completion_percentage,

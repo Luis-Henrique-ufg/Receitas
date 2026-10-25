@@ -1,7 +1,8 @@
 from datetime import date, datetime, timedelta
 
 from database import db
-from models.daily_activity import DailyActivity
+from models.course import Course
+from models.daily_activity import DailyActivity, DailyCourseActivity
 
 
 class StatsService:
@@ -38,6 +39,7 @@ class StatsService:
         if seconds <= 0:
             return cls.get_or_create_activity(date_str)
 
+        today_str = cls._get_today_str(date_str)
         activity = cls.get_or_create_activity(date_str)
         activity.study_seconds += int(seconds)
 
@@ -55,6 +57,22 @@ class StatsService:
                 cb[cid]["name"] = course_name
             activity.set_course_breakdown(cb)
 
+            # Relational record
+            dca = DailyCourseActivity.query.filter_by(date=today_str, course_id=course_id).first()
+            if not dca:
+                dca = DailyCourseActivity(
+                    date=today_str,
+                    course_id=course_id,
+                    course_name=course_name or f"Curso #{course_id}",
+                    study_seconds=0,
+                    pomodoros=0,
+                    lessons=0,
+                )
+                db.session.add(dca)
+            dca.study_seconds += int(seconds)
+            if course_name:
+                dca.course_name = course_name
+
         db.session.commit()
         return activity
 
@@ -66,6 +84,7 @@ class StatsService:
         course_name: str | None = None,
     ) -> DailyActivity:
         activity = cls.get_or_create_activity(date_str)
+        today_str = cls._get_today_str(date_str)
         activity.lessons_completed += 1
 
         if course_id is not None:
@@ -81,6 +100,22 @@ class StatsService:
                 cb[cid]["name"] = course_name
             activity.set_course_breakdown(cb)
 
+            # Relational record
+            dca = DailyCourseActivity.query.filter_by(date=today_str, course_id=course_id).first()
+            if not dca:
+                dca = DailyCourseActivity(
+                    date=today_str,
+                    course_id=course_id,
+                    course_name=course_name or f"Curso #{course_id}",
+                    study_seconds=0,
+                    pomodoros=0,
+                    lessons=0,
+                )
+                db.session.add(dca)
+            dca.lessons += 1
+            if course_name:
+                dca.course_name = course_name
+
         db.session.commit()
         return activity
 
@@ -93,6 +128,7 @@ class StatsService:
         date_str: str | None = None,
     ) -> DailyActivity:
         activity = cls.get_or_create_activity(date_str)
+        today_str = cls._get_today_str(date_str)
         activity.pomodoros_completed += 1
         if study_seconds > 0:
             activity.study_seconds += int(study_seconds)
@@ -113,6 +149,24 @@ class StatsService:
                 cb[cid]["name"] = course_name
             activity.set_course_breakdown(cb)
 
+            # Relational record
+            dca = DailyCourseActivity.query.filter_by(date=today_str, course_id=course_id).first()
+            if not dca:
+                dca = DailyCourseActivity(
+                    date=today_str,
+                    course_id=course_id,
+                    course_name=course_name or f"Curso #{course_id}",
+                    study_seconds=0,
+                    pomodoros=0,
+                    lessons=0,
+                )
+                db.session.add(dca)
+            dca.pomodoros += 1
+            if study_seconds > 0:
+                dca.study_seconds += int(study_seconds)
+            if course_name:
+                dca.course_name = course_name
+
         db.session.commit()
         return activity
 
@@ -129,8 +183,10 @@ class StatsService:
         end_str = ref.isoformat()
 
         all_records = DailyActivity.query.order_by(DailyActivity.date.asc()).all()
+        all_dca = DailyCourseActivity.query.all()
+        dca_by_date_course = {(d.date, d.course_id): d for d in all_dca}
 
-        # Extract available courses across all activity records
+        # Extract available courses across all activity records and Course table
         course_map = {}
         for r in all_records:
             cb = r.get_course_breakdown()
@@ -142,14 +198,37 @@ class StatsService:
                 if cid_num not in course_map:
                     course_map[cid_num] = cinfo.get("name", f"Curso {cid_key}")
 
+        for d in all_dca:
+            if d.course_id not in course_map:
+                course_map[d.course_id] = d.course_name or f"Curso {d.course_id}"
+
+        try:
+            all_courses = Course.query.order_by(Course.position.asc(), Course.id.asc()).all()
+            for c in all_courses:
+                if c.id not in course_map:
+                    course_map[c.id] = c.name
+        except Exception as e:
+            pass
+
         available_courses = [
             {"id": cid, "name": name}
             for cid, name in sorted(course_map.items(), key=lambda x: str(x[1]))
         ]
 
-        def get_record_stats(r: DailyActivity):
+        def get_record_stats(r: DailyActivity | None):
+            if not r:
+                return 0, 0, 0
             if course_id is None:
                 return r.study_seconds, r.pomodoros_completed, r.lessons_completed
+            # Check relational first
+            try:
+                cid_int = int(course_id)
+            except (ValueError, TypeError):
+                cid_int = None
+            if cid_int is not None and (r.date, cid_int) in dca_by_date_course:
+                d = dca_by_date_course[(r.date, cid_int)]
+                return d.study_seconds, d.pomodoros, d.lessons
+            # Fallback to course_breakdown JSON
             cid_str = str(course_id)
             cb = r.get_course_breakdown()
             c_data = cb.get(cid_str)
@@ -179,8 +258,8 @@ class StatsService:
             if act:
                 sec, pom, les = get_record_stats(act)
                 # Parse courses breakdown for tooltip
+                day_courses_dict = {}
                 cb = act.get_course_breakdown()
-                day_courses = []
                 for cid_key, cinfo in cb.items():
                     s = cinfo.get("study_seconds", 0)
                     p = cinfo.get("pomodoros", 0)
@@ -189,12 +268,25 @@ class StatsService:
                             cid_num = int(cid_key)
                         except ValueError:
                             cid_num = cid_key
-                        day_courses.append({
+                        day_courses_dict[cid_num] = {
                             "id": cid_num,
                             "name": cinfo.get("name", f"Curso {cid_key}"),
                             "seconds": s,
                             "pomodoros": p,
-                        })
+                        }
+                for d in all_dca:
+                    if d.date == ds and (d.study_seconds > 0 or d.pomodoros > 0):
+                        if d.course_id in day_courses_dict:
+                            day_courses_dict[d.course_id]["seconds"] = max(day_courses_dict[d.course_id]["seconds"], d.study_seconds)
+                            day_courses_dict[d.course_id]["pomodoros"] = max(day_courses_dict[d.course_id]["pomodoros"], d.pomodoros)
+                        else:
+                            day_courses_dict[d.course_id] = {
+                                "id": d.course_id,
+                                "name": d.course_name or f"Curso {d.course_id}",
+                                "seconds": d.study_seconds,
+                                "pomodoros": d.pomodoros,
+                            }
+                day_courses = list(day_courses_dict.values())
                 day_courses.sort(key=lambda x: x["seconds"], reverse=True)
             else:
                 sec, pom, les = 0, 0, 0
