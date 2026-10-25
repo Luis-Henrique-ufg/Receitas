@@ -127,16 +127,33 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
       : 0;
 
   const lessonIndex = lesson ? extractLessonIndex(lesson.title, lesson.hierarchy_path) : null;
-  const globalLessonNumber = stats?.current_lesson_number || (lessonIndex !== null ? lessonIndex : null);
-  const cleanedTitle = lesson ? cleanLessonTitle(lesson.title) : "";
+  // Prefer real lesson index from resumed lesson; fallback to completion count
+  const effectiveLessonNumber = lessonIndex !== null ? lessonIndex : (stats?.current_lesson_number || null);
+  const rawCleanedTitle = lesson ? cleanLessonTitle(lesson.title) : "";
   const cleanedModule = lesson?.module ? cleanLessonTitle(lesson.module) : "";
+
+  // Check if title is generic like "Video", "Aula" or empty
+  const isGenericTitle =
+    !rawCleanedTitle ||
+    rawCleanedTitle.toLowerCase() === "video" ||
+    rawCleanedTitle.toLowerCase() === "aula" ||
+    /^parte\s*\d+$/i.test(rawCleanedTitle);
+
+  // If generic, use "Aula {N}" or meaningful title
+  const displayTitle = isGenericTitle
+    ? effectiveLessonNumber
+      ? `Aula ${effectiveLessonNumber}`
+      : "Aula"
+    : rawCleanedTitle;
+
+  const isAlreadyShowingLessonNumber = isGenericTitle && Boolean(effectiveLessonNumber);
 
   // Avoid repeating the title if module and lesson share the same name or prefix
   const isDuplicateName =
     Boolean(cleanedModule) &&
-    Boolean(cleanedTitle) &&
-    (cleanedModule.trim().toLowerCase() === cleanedTitle.trim().toLowerCase() ||
-      cleanedTitle.trim().toLowerCase().startsWith(cleanedModule.trim().toLowerCase()));
+    Boolean(displayTitle) &&
+    (cleanedModule.trim().toLowerCase() === displayTitle.trim().toLowerCase() ||
+      displayTitle.trim().toLowerCase().startsWith(cleanedModule.trim().toLowerCase()));
 
   const showModule = Boolean(cleanedModule) && !isDuplicateName;
 
@@ -171,7 +188,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              {isResume ? "Continuar de Onde Parei" : "Comece a Estudar"}
+              {isResume ? "Continuar de onde parei" : "Comece a estudar"}
             </span>
 
             {/* Position Display: only show 'Retomar em MM:SS' when time_elapsed > 0 */}
@@ -205,12 +222,14 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
                     <span className="text-zinc-600 font-semibold select-none shrink-0">›</span>
                   </>
                 )}
-                <strong className="text-white font-medium truncate" title={cleanedTitle || lesson.title}>
-                  {cleanedTitle}
+                <strong className="text-white font-medium truncate" title={lesson.title}>
+                  {isAlreadyShowingLessonNumber && totalLessons && totalLessons > 0
+                    ? `Aula ${effectiveLessonNumber} de ${totalLessons}`
+                    : displayTitle}
                 </strong>
-                {globalLessonNumber !== null && totalLessons !== null && totalLessons > 0 && (
+                {!isAlreadyShowingLessonNumber && effectiveLessonNumber !== null && totalLessons !== null && totalLessons > 0 && (
                   <span className="text-xs text-zinc-400 font-normal shrink-0 ml-1 whitespace-nowrap">
-                    (Aula {globalLessonNumber} de {totalLessons})
+                    (Aula {effectiveLessonNumber} de {totalLessons})
                   </span>
                 )}
               </div>

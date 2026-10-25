@@ -60,7 +60,7 @@ export default function CoursesPage() {
 
   return (
     <>
-      <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto">
+      <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto pb-20">
         {/* Spotlight: Resume Studies Hero */}
         {!isLoading && courses.length > 0 && (
           <ResumeHeroCard

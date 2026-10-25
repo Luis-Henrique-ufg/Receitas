@@ -366,9 +366,9 @@ export default function ActivityHeatmap() {
       </div>
 
       {/* Two Column Layout: Left = Heatmap Grid, Right = 3 Indicators */}
-      <div className="pt-3.5 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-5 items-start">
+      <div className="pt-3.5 flex flex-col lg:flex-row items-start gap-8">
         {/* Left Column: Fixed Day Labels + Heatmap Grid Scroller */}
-        <div className="flex flex-col min-w-0 w-full" ref={gridContainerRef}>
+        <div className="flex flex-col min-w-0" ref={gridContainerRef}>
           <div className="flex items-start gap-1.5 w-full">
             {/* Day of Week Labels (Seg, Qua, Sex) placed OUTSIDE scroller, strictly aligned with cells */}
             <div
@@ -518,18 +518,19 @@ export default function ActivityHeatmap() {
         </div>
 
         {/* Right Column: 3 Grouped Indicators in Single Stack */}
-        <div className="flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/10 pt-3 lg:pt-0 lg:pl-6 min-w-[210px] space-y-3.5 self-stretch">
+        <div className="flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/10 pt-3 lg:pt-0 lg:pl-8 min-w-[210px] space-y-3.5 self-stretch">
           {/* 1. Hoje */}
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-zinc-400 font-medium tracking-wide">Hoje</span>
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
               <span className="text-base sm:text-lg font-bold text-white tabular-nums tracking-tight">
                 {formatDuration(todaySeconds)}
               </span>
-              <span className="text-xs text-zinc-300 font-medium">·</span>
-              <span className="text-xs text-rose-300 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded-full inline-flex items-center gap-1 font-medium tabular-nums">
-                {todayPomodoros} 🍅
-              </span>
+              {todayPomodoros > 0 && (
+                <span className="text-xs text-zinc-400 font-normal tabular-nums">
+                  ({todayPomodoros} {todayPomodoros === 1 ? "pomodoro" : "pomodoros"})
+                </span>
+              )}
             </div>
           </div>
 

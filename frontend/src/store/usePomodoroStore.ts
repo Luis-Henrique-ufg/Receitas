@@ -95,7 +95,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           void statsApi
             .recordPomodoro(
               apiUrl,
-              durations.focus * 60,
+              0,
               currentCourseId ?? undefined,
               currentCourseName ?? undefined
             )
@@ -141,7 +141,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             void statsApi
               .recordPomodoro(
                 apiUrl,
-                durations.focus * 60,
+                0,
                 currentCourseId ?? undefined,
                 currentCourseName ?? undefined
               )

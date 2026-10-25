@@ -73,7 +73,7 @@ describe("usePomodoroStore", () => {
     expect(usePomodoroStore.getState().isRunning).toBe(false);
     expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
       "http://localhost:9823",
-      25 * 60,
+      0,
       undefined,
       undefined
     );
@@ -83,7 +83,7 @@ describe("usePomodoroStore", () => {
     usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
     usePomodoroStore.getState().tick("");
 
-    expect(statsApi.recordPomodoro).toHaveBeenCalledWith("", 25 * 60, undefined, undefined);
+    expect(statsApi.recordPomodoro).toHaveBeenCalledWith("", 0, undefined, undefined);
   });
 
   it("passes course context when currentCourse is set", () => {
@@ -93,7 +93,7 @@ describe("usePomodoroStore", () => {
 
     expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
       "http://localhost:9823",
-      25 * 60,
+      0,
       42,
       "Estatística"
     );
