@@ -92,6 +92,14 @@ export default function CourseItem({
             />
           </div>
 
+          {lastWatched && (
+            <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-600/85 text-white backdrop-blur-md shadow-md border border-blue-400/40">
+                Em foco
+              </span>
+            </div>
+          )}
+
           {/* Contextual actions menu (⋯) */}
           {isEditable && (
             <div

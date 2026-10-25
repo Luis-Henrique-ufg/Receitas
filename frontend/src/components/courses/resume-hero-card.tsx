@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Play, Sparkles, BookOpen, Clock } from "lucide-react";
 import { Course, Lesson } from "@/models/models";
 import { Button } from "@/components/ui/button";
 import { getLastViewedLesson } from "@/utils/utils";
 import useApiUrl from "@/hooks/useApiUrl";
+import { coursesApi } from "@/services/coursesApi";
 
 interface ResumeHeroCardProps {
   courses: Course[];
@@ -19,8 +20,39 @@ function formatSeconds(secs: number | string | undefined): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
+export function cleanLessonTitle(raw: string): string {
+  if (!raw) return "";
+  return raw
+    .replace(/^(\d+[\s\-_.]+)+/, "")
+    .replace(/\s*•\s*(\d+[\s\-_.]+)+/g, " • ")
+    .trim();
+}
+
+export function extractLessonIndex(title?: string, hierarchyPath?: string): number | null {
+  if (title) {
+    const match = title.match(/^(\d+)[\s\-_.]/);
+    if (match) return parseInt(match[1], 10);
+  }
+  if (hierarchyPath) {
+    const parts = hierarchyPath.split("/");
+    const lastPart = parts[parts.length - 1];
+    const match = lastPart.match(/^(\d+)[\s\-_.]/);
+    if (match) return parseInt(match[1], 10);
+  }
+  return null;
+}
+
+function middleTruncate(text: string, maxLength: number = 38): string {
+  if (!text || text.length <= maxLength) return text;
+  const charsToShow = maxLength - 3;
+  const frontChars = Math.ceil(charsToShow / 2);
+  const backChars = Math.floor(charsToShow / 2);
+  return `${text.slice(0, frontChars)}…${text.slice(-backChars)}`;
+}
+
 export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps) {
   const { apiUrl } = useApiUrl();
+  const [totalLessons, setTotalLessons] = useState<number | null>(null);
 
   const activeItem = useMemo(() => {
     if (!courses || courses.length === 0) return null;
@@ -45,6 +77,26 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
     };
   }, [courses]);
 
+  useEffect(() => {
+    if (!activeItem?.course) return;
+    let isCancelled = false;
+
+    coursesApi
+      .getCompletionStats(apiUrl, activeItem.course.id)
+      .then((stats) => {
+        if (!isCancelled && stats?.total_lessons) {
+          setTotalLessons(stats.total_lessons);
+        }
+      })
+      .catch(() => {
+        // Quiet fallback
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [apiUrl, activeItem?.course]);
+
   if (!activeItem || !activeItem.course) {
     return null;
   }
@@ -57,13 +109,29 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
     ? `${apiUrl}/uploads/${course.fileCover}`
     : "/sem-foto.png";
 
+  const lessonElapsed = lesson?.time_elapsed ? Number(lesson.time_elapsed) : 0;
+  const hasSavedPosition = lessonElapsed > 0;
+
+  // Thumbnail progress percentage
+  const durationNum = lesson?.duration ? parseFloat(lesson.duration) : 0;
+  const thumbnailProgressPct =
+    hasSavedPosition && durationNum > 0
+      ? Math.min(100, Math.max(3, Math.round((lessonElapsed / durationNum) * 100)))
+      : hasSavedPosition
+      ? 15
+      : 0;
+
+  const lessonIndex = lesson ? extractLessonIndex(lesson.title, lesson.hierarchy_path) : null;
+  const cleanedTitle = lesson ? cleanLessonTitle(lesson.title) : "";
+  const cleanedModule = lesson?.module ? cleanLessonTitle(lesson.module) : "";
+
   return (
-    <div className="w-full glass-panel rounded-2xl p-5 sm:p-7 border border-white/15 shadow-2xl relative overflow-hidden backdrop-blur-2xl group bg-gradient-to-r from-blue-950/20 via-black/40 to-black/60">
+    <div className="w-full glass-panel rounded-2xl p-5 sm:p-6 border border-white/15 shadow-2xl relative overflow-hidden backdrop-blur-2xl group bg-gradient-to-r from-blue-950/20 via-black/40 to-black/60">
       {/* Decorative background glow */}
       <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
-        {/* Cover Thumbnail */}
+      <div className="flex flex-col md:flex-row items-center gap-5 sm:gap-6 relative z-10">
+        {/* Cover Thumbnail with optional bottom progress line */}
         <div className="relative w-full md:w-56 aspect-video md:aspect-[16/10] rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-lg group-hover:border-blue-500/40 transition-colors">
           <img
             src={courseCover}
@@ -71,21 +139,36 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+          {/* Thin progress bar over thumbnail when position is saved */}
+          {hasSavedPosition && thumbnailProgressPct > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                style={{ width: `${thumbnailProgressPct}%` }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Content Info */}
         <div className="flex-1 min-w-0 space-y-2 text-left w-full">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
               {isResume ? "Continuar de Onde Parei" : "Comece a Estudar"}
             </span>
 
-            {isResume && lesson?.time_elapsed && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs text-zinc-300 bg-white/5 border border-white/10">
+            {/* Position Display: only show 'Retomar em MM:SS' when time_elapsed > 0 */}
+            {isResume && hasSavedPosition && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs text-cyan-200 bg-cyan-950/40 border border-cyan-500/30">
                 <Clock className="w-3 h-3 text-cyan-400 shrink-0" />
-                <span className="font-mono tabular-nums text-white font-medium">{formatSeconds(lesson.time_elapsed)}</span>
-                <span className="text-zinc-400">assistidos</span>
+                <span>
+                  Retomar em{" "}
+                  <span className="font-mono tabular-nums text-white font-medium">
+                    {formatSeconds(lessonElapsed)}
+                  </span>
+                </span>
               </span>
             )}
           </div>
@@ -94,30 +177,44 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
             {course.name}
           </h3>
 
-          <p className="text-sm text-zinc-300 flex items-center gap-1.5 line-clamp-1">
+          {/* Cleaned Lesson Hierarchy Breadcrumb */}
+          <div className="text-sm text-zinc-300 flex items-center gap-1.5 flex-wrap">
             <BookOpen className="w-4 h-4 text-zinc-400 shrink-0" />
             {isResume && lesson ? (
-              <span>
-                {lesson.module ? `${lesson.module} • ` : ""}
-                <strong className="text-white font-medium">{lesson.title}</strong>
-              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {cleanedModule && (
+                  <>
+                    <span className="text-zinc-400 font-medium">
+                      {cleanedModule}
+                    </span>
+                    <span className="text-zinc-600 font-semibold select-none">›</span>
+                  </>
+                )}
+                <strong className="text-white font-medium" title={lesson.title}>
+                  {middleTruncate(cleanedTitle, 36)}
+                </strong>
+                {lessonIndex !== null && totalLessons !== null && totalLessons > 0 && (
+                  <span className="text-xs text-zinc-400 font-normal ml-1">
+                    (Aula {lessonIndex} de {totalLessons})
+                  </span>
+                )}
+              </div>
             ) : (
               <span>Explore as aulas e comece sua jornada de aprendizado</span>
             )}
-          </p>
+          </div>
         </div>
 
-        {/* Action Button */}
+        {/* Action Button: Hover keeps text legible, clean 'Continuar' */}
         <div className="shrink-0 w-full md:w-auto">
           <Button
             onClick={() => onPlay(course.id, lesson || undefined)}
-            className="w-full md:w-auto h-12 px-7 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white hover:text-white font-semibold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 text-sm sm:text-base transition-transform hover:scale-105 active:scale-95"
+            className="w-full md:w-auto h-11 px-7 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white hover:text-white font-semibold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 text-sm sm:text-base transition-transform hover:scale-105 active:scale-95 cursor-pointer"
           >
-            <Play className="w-5 h-5 fill-white shrink-0" />
+            <Play className="w-4 h-4 fill-white shrink-0" />
             <span>{isResume ? "Continuar" : "Iniciar Curso"}</span>
           </Button>
         </div>
-
       </div>
     </div>
   );

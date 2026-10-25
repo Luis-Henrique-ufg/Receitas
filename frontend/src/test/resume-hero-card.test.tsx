@@ -1,10 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ResumeHeroCard from "@/components/courses/resume-hero-card";
 import { Course } from "@/models/models";
 
 vi.mock("@/hooks/useApiUrl", () => ({
   default: () => ({ apiUrl: "http://localhost:9823" }),
+}));
+
+vi.mock("@/services/coursesApi", () => ({
+  coursesApi: {
+    getCompletionStats: vi.fn().mockResolvedValue({
+      total_lessons: 40,
+      completed_lessons: 5,
+    }),
+  },
 }));
 
 const mockCourses: Course[] = [
@@ -41,13 +50,13 @@ describe("ResumeHeroCard Component", () => {
     expect(onPlay).toHaveBeenCalledWith(1, undefined);
   });
 
-  it("renders resume state when lastViewedLesson exists in localStorage", () => {
+  it("renders resume state with clean lesson hierarchy and 'Retomar em' when elapsed > 0", async () => {
     localStorage.setItem(
       "1",
       JSON.stringify({
         id: 101,
-        title: "01 - Introdução aos Modelos",
-        module: "Módulo 1",
+        title: "001 - Introdução aos Modelos",
+        module: "002 - Módulo 1",
         time_elapsed: 150,
       })
     );
@@ -57,16 +66,41 @@ describe("ResumeHeroCard Component", () => {
 
     expect(screen.getByText("Continuar de Onde Parei")).toBeInTheDocument();
     expect(screen.getByText("Claude Impressionador")).toBeInTheDocument();
-    expect(screen.getByText("01 - Introdução aos Modelos")).toBeInTheDocument();
+    // Cleaned titles without numeric prefixes
+    expect(screen.getByText("Módulo 1")).toBeInTheDocument();
+    expect(screen.getByText("Introdução aos Modelos")).toBeInTheDocument();
+    // New 'Retomar em' badge
+    expect(screen.getByText(/Retomar em/i)).toBeInTheDocument();
     expect(screen.getByText("02:30")).toBeInTheDocument();
-    expect(screen.getByText("assistidos")).toBeInTheDocument();
+    // 'assistidos' is no longer displayed
+    expect(screen.queryByText("assistidos")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Continuar$/i })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /^Continuar$/i }));
+    // Check lesson number formatting
+    await waitFor(() => {
+      expect(screen.getByText("(Aula 1 de 40)")).toBeInTheDocument();
+    });
 
-    expect(onPlay).toHaveBeenCalledWith(
-      1,
-      expect.objectContaining({ id: 101, title: "01 - Introdução aos Modelos" })
+    fireEvent.click(screen.getByRole("button", { name: /^Continuar$/i }));
+    expect(onPlay).toHaveBeenCalled();
+  });
+
+  it("hides elapsed position badge when time_elapsed is zero", () => {
+    localStorage.setItem(
+      "1",
+      JSON.stringify({
+        id: 101,
+        title: "001 - Introdução aos Modelos",
+        module: "002 - Módulo 1",
+        time_elapsed: 0,
+      })
     );
+
+    const onPlay = vi.fn();
+    render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
+
+    expect(screen.getByText("Continuar de Onde Parei")).toBeInTheDocument();
+    expect(screen.queryByText(/Retomar em/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/assistidos/i)).not.toBeInTheDocument();
   });
 });

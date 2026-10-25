@@ -91,9 +91,11 @@ export default function ProgressCard({
           <span className="text-white/60 font-medium tracking-wide">Seu progresso</span>
           <div className="flex items-center gap-1 text-white font-semibold tabular-nums tracking-tight">
             <span>{roundedValue}%</span>
-            {estimatedFinishMonth && roundedValue > 0 && roundedValue < 100 ? (
+            {roundedValue > 0 && roundedValue < 100 ? (
               <span className="text-zinc-400 font-normal">
-                · termina em ~{estimatedFinishMonth}
+                {estimatedFinishMonth && estimatedFinishMonth !== "sem previsão ainda"
+                  ? ` · termina em ~${estimatedFinishMonth}`
+                  : " · sem previsão ainda"}
               </span>
             ) : null}
           </div>
