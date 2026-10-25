@@ -69,9 +69,7 @@ export default function CourseItem({
     : "/sem-foto.png";
 
   const lastWatched = getLastViewedLesson(course.id.toString());
-  const ctaLabel = lastWatched
-    ? `Continuar: ${lastWatched.title}`
-    : "Iniciar Curso";
+  const ctaLabel = lastWatched ? "Continuar" : "Iniciar";
 
   return (
     <Card 
@@ -170,14 +168,15 @@ export default function CourseItem({
         <Button
           size="sm"
           onClick={onPlay}
-          className="w-full h-10 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white font-medium text-xs sm:text-sm shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95"
+          className="w-full h-10 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white hover:text-white font-medium text-xs sm:text-sm shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95"
           title={ctaLabel}
         >
           <Play className="w-3.5 h-3.5 fill-white shrink-0" />
-          <span className="truncate max-w-[210px]">{ctaLabel}</span>
+          <span>{ctaLabel}</span>
         </Button>
       </CardFooter>
     </Card>
   );
 }
+
 

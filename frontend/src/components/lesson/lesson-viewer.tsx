@@ -22,10 +22,17 @@ const getResourcePath = (lesson: Lesson): string => {
 
 type Props = {
   lesson: Lesson | null;
+  courseId?: number;
+  courseName?: string;
   onLessonComplete?: (lessonId: number) => void;
 };
 
-export default function LessonViewer({ lesson, onLessonComplete }: Props) {
+export default function LessonViewer({
+  lesson,
+  courseId,
+  courseName,
+  onLessonComplete,
+}: Props) {
   const [elapsedTime, setElapsedTime] = useState<number>(
     lesson?.time_elapsed || 0
   );
@@ -64,7 +71,7 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
     const interval = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "visible") {
         void statsApi
-          .recordHeartbeat(apiUrl, 15)
+          .recordHeartbeat(apiUrl, 15, courseId, courseName)
           .then(() => {
             window.dispatchEvent(new CustomEvent("statsUpdated"));
           })
@@ -73,7 +80,7 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [isDocument, lesson, apiUrl]);
+  }, [isDocument, lesson, apiUrl, courseId, courseName]);
 
   const handleTimeUpdate = (currentTime: number) => {
     if (!lesson) return;
@@ -97,6 +104,8 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
           title={lesson.title}
           src={`${apiUrl}${getResourcePath(lesson)}`}
           lessonId={currentLessonIdRef.current ?? lesson.id}
+          courseId={courseId}
+          courseName={courseName}
           onTimeUpdate={handleTimeUpdate}
           timeElapsed={elapsedTime}
           isEnding={onLessonComplete}
@@ -105,3 +114,4 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
     </div>
   );
 }
+

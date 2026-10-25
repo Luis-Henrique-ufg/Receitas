@@ -62,8 +62,14 @@ describe("useProgressTracker", () => {
       result.current.handleTimeUpdate(6, 100);
     });
 
-    expect(statsApi.recordHeartbeat).toHaveBeenCalledWith("http://localhost:9823", 5);
+    expect(statsApi.recordHeartbeat).toHaveBeenCalledWith(
+      "http://localhost:9823",
+      5,
+      undefined,
+      undefined
+    );
   });
+
 
   it("triggers completion when progress reaches 95%", () => {
     const onTimeUpdate = vi.fn();

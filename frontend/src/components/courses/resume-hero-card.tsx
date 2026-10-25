@@ -82,9 +82,10 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
             </span>
 
             {isResume && lesson?.time_elapsed && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono text-zinc-300 bg-white/5 border border-white/10">
-                <Clock className="w-3 h-3 text-cyan-400" />
-                {formatSeconds(lesson.time_elapsed)} assistidos
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs text-zinc-300 bg-white/5 border border-white/10">
+                <Clock className="w-3 h-3 text-cyan-400 shrink-0" />
+                <span className="font-mono tabular-nums text-white font-medium">{formatSeconds(lesson.time_elapsed)}</span>
+                <span className="text-zinc-400">assistidos</span>
               </span>
             )}
           </div>
@@ -110,12 +111,13 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
         <div className="shrink-0 w-full md:w-auto">
           <Button
             onClick={() => onPlay(course.id, lesson || undefined)}
-            className="w-full md:w-auto h-12 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white font-semibold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 text-sm sm:text-base transition-transform hover:scale-105 active:scale-95"
+            className="w-full md:w-auto h-12 px-7 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white hover:text-white font-semibold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 text-sm sm:text-base transition-transform hover:scale-105 active:scale-95"
           >
             <Play className="w-5 h-5 fill-white shrink-0" />
-            <span>{isResume ? "Continuar Aula" : "Iniciar Curso"}</span>
+            <span>{isResume ? "Continuar" : "Iniciar Curso"}</span>
           </Button>
         </div>
+
       </div>
     </div>
   );

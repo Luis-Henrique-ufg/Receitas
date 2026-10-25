@@ -84,12 +84,12 @@ export function calculateCourseProgress(lessons: Lesson[] | Hierarchy | unknown)
   return Math.round((completed.length / normalizedLessons.length) * 100);
 }
 
-export function getLastViewedLesson(courseId: string) {
+export function getLastViewedLesson(courseId: string): (Lesson & { viewedAt?: number }) | null {
   const lastViewed = localStorage.getItem(courseId);
 
   if (lastViewed) {
     try {
-      return JSON.parse(lastViewed) as Lesson;
+      return JSON.parse(lastViewed) as Lesson & { viewedAt?: number };
     } catch {
       return null;
     }
@@ -99,5 +99,25 @@ export function getLastViewedLesson(courseId: string) {
 }
 
 export function setLastViewedLesson(courseId: string, lesson: Lesson) {
-  localStorage.setItem(courseId, JSON.stringify(lesson));
+  const payload = {
+    ...lesson,
+    viewedAt: Date.now(),
+  };
+  localStorage.setItem(courseId, JSON.stringify(payload));
 }
+
+export function formatRelativeTime(timestamp?: number): string {
+  if (!timestamp) return "";
+  const now = Date.now();
+  const diffMs = now - timestamp;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) {
+    return "hoje";
+  }
+  if (diffDays === 1) {
+    return "ontem";
+  }
+  return `há ${diffDays} dias`;
+}
+

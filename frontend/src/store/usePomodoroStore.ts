@@ -22,6 +22,8 @@ export interface PomodoroState {
   soundEnabled: boolean;
   autoPauseVideo: boolean;
   durations: PomodoroDurations;
+  currentCourseId?: number | null;
+  currentCourseName?: string | null;
 
   // Actions
   start: () => void;
@@ -35,6 +37,7 @@ export interface PomodoroState {
   toggleSound: () => void;
   toggleAutoPauseVideo: () => void;
   updateDurations: (newDurations: Partial<PomodoroDurations>) => void;
+  setCurrentCourse: (courseId?: number | null, courseName?: string | null) => void;
 }
 
 const DEFAULT_DURATIONS: PomodoroDurations = {
@@ -54,10 +57,13 @@ export const usePomodoroStore = create<PomodoroState>()(
       soundEnabled: true,
       autoPauseVideo: true,
       durations: DEFAULT_DURATIONS,
+      currentCourseId: null,
+      currentCourseName: null,
 
       start: () => set({ isRunning: true }),
 
       pause: () => set({ isRunning: false }),
+
 
       toggle: () => set((state) => ({ isRunning: !state.isRunning })),
 
@@ -79,7 +85,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       },
 
       skip: (apiUrl?: string) => {
-        const { mode, sessionsCompleted, durations } = get();
+        const { mode, sessionsCompleted, durations, currentCourseId, currentCourseName } = get();
         let nextMode: PomodoroMode;
         let newSessions = sessionsCompleted;
 
@@ -87,7 +93,12 @@ export const usePomodoroStore = create<PomodoroState>()(
           newSessions += 1;
           nextMode = newSessions % 4 === 0 ? "long_break" : "short_break";
           void statsApi
-            .recordPomodoro(apiUrl, durations.focus * 60)
+            .recordPomodoro(
+              apiUrl,
+              durations.focus * 60,
+              currentCourseId ?? undefined,
+              currentCourseName ?? undefined
+            )
             .then(() => {
               window.dispatchEvent(new CustomEvent("statsUpdated"));
             })
@@ -112,7 +123,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           set({ timeLeft: state.timeLeft - 1 });
         } else {
           // Timer finished!
-          const { mode, sessionsCompleted, soundEnabled, autoPauseVideo, durations } = state;
+          const { mode, sessionsCompleted, soundEnabled, autoPauseVideo, durations, currentCourseId, currentCourseName } = state;
 
           if (soundEnabled) {
             playChimeSound(mode === "focus" ? "complete" : "break");
@@ -128,7 +139,12 @@ export const usePomodoroStore = create<PomodoroState>()(
             }
 
             void statsApi
-              .recordPomodoro(apiUrl, durations.focus * 60)
+              .recordPomodoro(
+                apiUrl,
+                durations.focus * 60,
+                currentCourseId ?? undefined,
+                currentCourseName ?? undefined
+              )
               .then(() => {
                 window.dispatchEvent(new CustomEvent("statsUpdated"));
               })
@@ -175,6 +191,13 @@ export const usePomodoroStore = create<PomodoroState>()(
           timeLeft: updated[mode] * 60,
         });
       },
+
+      setCurrentCourse: (courseId?: number | null, courseName?: string | null) => {
+        set({
+          currentCourseId: courseId ?? null,
+          currentCourseName: courseName ?? null,
+        });
+      },
     }),
     {
       name: "receitas-pomodoro-store",
@@ -186,5 +209,6 @@ export const usePomodoroStore = create<PomodoroState>()(
         isMinimized: state.isMinimized,
       }),
     }
+
   )
 );

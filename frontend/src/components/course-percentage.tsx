@@ -4,6 +4,7 @@ import Loading from "./loading";
 import useCourseCompletion from "@/hooks/useCourseCompletion";
 import ProgressCard from "./progress-card";
 import { coursesApi } from "@/services/coursesApi";
+import { getLastViewedLesson } from "@/utils/utils";
 
 type Props = {
   courseId: number;
@@ -16,7 +17,15 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
     percentage: number | null;
     total: number | null;
     completed: number | null;
-  }>({ percentage: null, total: null, completed: null });
+    remaining_seconds: number | null;
+    estimated_finish_month: string | null;
+  }>({
+    percentage: null,
+    total: null,
+    completed: null,
+    remaining_seconds: null,
+    estimated_finish_month: null,
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { apiUrl } = useApiUrl();
@@ -46,6 +55,8 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
           percentage: data.completed_percentage,
           total: data.total_lessons ?? null,
           completed: data.completed_lessons ?? null,
+          remaining_seconds: data.remaining_seconds ?? null,
+          estimated_finish_month: data.estimated_finish_month ?? null,
         });
       } catch (error) {
         console.error(
@@ -60,6 +71,7 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
     fetchCompletionPercentage();
   }, [courseId, fromGlobal, apiUrl, fetchCompletion]);
 
+
   return (
     <div className="w-full">
       {(fromGlobal ? globalLoading : isLoading) ? (
@@ -72,8 +84,12 @@ function CoursePercentage({ courseId, fromGlobal = false, showTitle = true }: Pr
               totalLessons={total}
               completedLessons={completed}
               showTitle={showTitle}
+              remainingSeconds={courseStats.remaining_seconds}
+              estimatedFinishMonth={courseStats.estimated_finish_month}
+              lastViewedAt={getLastViewedLesson(courseId.toString())?.viewedAt}
             />
           ) : (
+
             <div className="text-xs text-red-500">
               Erro ao carregar a porcentagem de conclusão do curso
             </div>

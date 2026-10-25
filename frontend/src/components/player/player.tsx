@@ -13,10 +13,13 @@ interface PlayerProps {
   title?: string;
   isEnding?: (lessonId: number, isEnding: boolean) => void;
   lessonId: number;
+  courseId?: number;
+  courseName?: string;
   onTimeUpdate?: (currentTime: number) => void;
   onPlay?: () => void;
   timeElapsed: number;
 }
+
 
 const getSourceType = (url: string) => {
   if (url.includes(".m3u8")) return "application/x-mpegURL";
@@ -52,6 +55,8 @@ export function Player({
   title,
   isEnding,
   lessonId,
+  courseId,
+  courseName,
   onTimeUpdate,
   onPlay,
   timeElapsed,
@@ -65,10 +70,13 @@ export function Player({
   const { handleTimeUpdate, forceSave, triggerCompletion, resetTracker } =
     useProgressTracker({
       lessonId,
+      courseId,
+      courseName,
       apiUrl,
       onTimeUpdate,
       isEnding,
     });
+
 
   usePlayerShortcuts({ playerRef });
 

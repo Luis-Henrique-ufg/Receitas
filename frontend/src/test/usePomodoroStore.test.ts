@@ -71,14 +71,33 @@ describe("usePomodoroStore", () => {
     expect(usePomodoroStore.getState().sessionsCompleted).toBe(1);
     expect(usePomodoroStore.getState().mode).toBe("short_break");
     expect(usePomodoroStore.getState().isRunning).toBe(false);
-    expect(statsApi.recordPomodoro).toHaveBeenCalledWith("http://localhost:9823", 25 * 60);
+    expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
+      "http://localhost:9823",
+      25 * 60,
+      undefined,
+      undefined
+    );
   });
 
   it("records pomodoro even when apiUrl is an empty string", () => {
     usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
     usePomodoroStore.getState().tick("");
 
-    expect(statsApi.recordPomodoro).toHaveBeenCalledWith("", 25 * 60);
+    expect(statsApi.recordPomodoro).toHaveBeenCalledWith("", 25 * 60, undefined, undefined);
+  });
+
+  it("passes course context when currentCourse is set", () => {
+    usePomodoroStore.getState().setCurrentCourse(42, "Estatística");
+    usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
+    usePomodoroStore.getState().tick("http://localhost:9823");
+
+    expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
+      "http://localhost:9823",
+      25 * 60,
+      42,
+      "Estatística"
+    );
   });
 });
+
 

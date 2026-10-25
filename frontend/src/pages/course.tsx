@@ -20,7 +20,9 @@ import useLessonResources from "@/hooks/useLessonResources";
 import { toast } from "sonner";
 import { Lesson } from "@/models/models";
 import { usePlaybackStore } from "@/store/usePlaybackStore";
+import { usePomodoroStore } from "@/store/usePomodoroStore";
 import { cn } from "@/lib/utils";
+
 
 export default function CoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -48,6 +50,17 @@ export default function CoursePage() {
   const clearNavigationAction = usePlaybackStore((state) => state.clearNavigationAction);
   const isZenMode = usePlaybackStore((state) => state.isZenMode);
   const toggleZenMode = usePlaybackStore((state) => state.toggleZenMode);
+  const setCurrentCoursePomodoro = usePomodoroStore((state) => state.setCurrentCourse);
+
+  useEffect(() => {
+    if (courseId && selectedLesson?.course_title) {
+      setCurrentCoursePomodoro(Number(courseId), selectedLesson.course_title);
+    }
+    return () => {
+      setCurrentCoursePomodoro(null, null);
+    };
+  }, [courseId, selectedLesson?.course_title, setCurrentCoursePomodoro]);
+
 
   // Flatten and sort lessons across all modules for linear navigation
   const allLessons = useMemo(() => {
@@ -241,8 +254,11 @@ export default function CoursePage() {
             <LessonViewer
               key={selectedLesson?.id}
               lesson={selectedLesson}
+              courseId={courseId ? Number(courseId) : undefined}
+              courseName={selectedLesson?.course_title}
               onLessonComplete={refreshCourseProgress}
             />
+
           </div>
         </div>
 

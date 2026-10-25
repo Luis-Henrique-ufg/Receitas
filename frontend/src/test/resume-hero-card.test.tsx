@@ -58,10 +58,12 @@ describe("ResumeHeroCard Component", () => {
     expect(screen.getByText("Continuar de Onde Parei")).toBeInTheDocument();
     expect(screen.getByText("Claude Impressionador")).toBeInTheDocument();
     expect(screen.getByText("01 - Introdução aos Modelos")).toBeInTheDocument();
-    expect(screen.getByText(/02:30 assistidos/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Continuar Aula/i })).toBeInTheDocument();
+    expect(screen.getByText("02:30")).toBeInTheDocument();
+    expect(screen.getByText("assistidos")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Continuar$/i })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /Continuar Aula/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^Continuar$/i }));
+
     expect(onPlay).toHaveBeenCalledWith(
       1,
       expect.objectContaining({ id: 101, title: "01 - Introdução aos Modelos" })

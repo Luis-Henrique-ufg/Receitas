@@ -1,4 +1,5 @@
 import { Progress } from "./ui/progress";
+import { formatRelativeTime } from "@/utils/utils";
 
 type Props = {
   value?: number;
@@ -6,6 +7,9 @@ type Props = {
   totalLessons?: number | null;
   completedLessons?: number | null;
   showTitle?: boolean;
+  remainingSeconds?: number | null;
+  estimatedFinishMonth?: string | null;
+  lastViewedAt?: number | null;
 };
 
 export default function ProgressCard({
@@ -14,6 +18,9 @@ export default function ProgressCard({
   totalLessons,
   completedLessons,
   showTitle = true,
+  remainingSeconds,
+  estimatedFinishMonth,
+  lastViewedAt,
 }: Props) {
   const roundedValue = Math.round(Number(value) || 0);
   
@@ -46,14 +53,50 @@ export default function ProgressCard({
     ? Math.max(0, totalLessons - (completedLessons ?? Math.round((roundedValue / 100) * totalLessons)))
     : null;
 
+  const renderSecondaryInfo = () => {
+    if (roundedValue === 100) {
+      return (
+        <span className="text-xs text-emerald-400/90 tracking-tight font-medium">
+          Todas as {totalLessons} aulas concluídas!
+        </span>
+      );
+    }
+
+    if (totalLessons === null || totalLessons === undefined || totalLessons === 0) {
+      return null;
+    }
+
+    let remainingText = "";
+    if (remainingSeconds !== null && remainingSeconds !== undefined && remainingSeconds > 0) {
+      const hours = Math.round(remainingSeconds / 3600);
+      remainingText = hours > 0 ? `~${hours} h restantes` : `< 1 h restante`;
+    } else {
+      remainingText = `${remaining} ${remaining === 1 ? "aula restante" : "aulas restantes"}`;
+    }
+
+    const relTime = formatRelativeTime(lastViewedAt ?? undefined);
+    const lastWatchedText = relTime ? ` · última aula ${relTime}` : "";
+
+    return (
+      <span className="text-xs text-zinc-400 tracking-tight">
+        {remainingText}{lastWatchedText}
+      </span>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-2 w-full">
       {showTitle && (
         <div className="flex justify-between items-center w-full text-xs">
           <span className="text-white/60 font-medium tracking-wide">Seu progresso</span>
-          <span className="font-semibold text-white tabular-nums tracking-tight">
-            {roundedValue}% concluído
-          </span>
+          <div className="flex items-center gap-1 text-white font-semibold tabular-nums tracking-tight">
+            <span>{roundedValue}%</span>
+            {estimatedFinishMonth && roundedValue > 0 && roundedValue < 100 ? (
+              <span className="text-zinc-400 font-normal">
+                · termina em ~{estimatedFinishMonth}
+              </span>
+            ) : null}
+          </div>
         </div>
       )}
 
@@ -62,16 +105,10 @@ export default function ProgressCard({
       {!hideValue && (
         <div className="flex flex-col items-start gap-1.5 mt-0.5">
           {getStatusBadge()}
-
-          {totalLessons !== null && totalLessons !== undefined && totalLessons > 0 && (
-            <span className="text-xs text-zinc-400 tracking-tight">
-              {roundedValue === 100
-                ? `Todas as ${totalLessons} aulas concluídas!`
-                : `${remaining} de ${totalLessons} ${totalLessons === 1 ? "aula restante" : "aulas restantes"}`}
-            </span>
-          )}
+          {renderSecondaryInfo()}
         </div>
       )}
     </div>
   );
 }
+

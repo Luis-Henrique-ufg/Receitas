@@ -5,6 +5,8 @@ import { statsApi } from "@/services/statsApi";
 
 interface ProgressTrackerOptions {
   lessonId: number;
+  courseId?: number;
+  courseName?: string;
   apiUrl: string;
   onTimeUpdate?: (currentTime: number) => void;
   isEnding?: (lessonId: number, isEnding: boolean) => void;
@@ -12,6 +14,8 @@ interface ProgressTrackerOptions {
 
 export function useProgressTracker({
   lessonId,
+  courseId,
+  courseName,
   apiUrl,
   onTimeUpdate,
   isEnding,
@@ -21,10 +25,11 @@ export function useProgressTracker({
   const lastPlaybackSecRef = useRef<number | null>(null);
   const accumulatedStudySecondsRef = useRef<number>(0);
 
-  const optionsRef = useRef({ lessonId, apiUrl, onTimeUpdate, isEnding });
+  const optionsRef = useRef({ lessonId, courseId, courseName, apiUrl, onTimeUpdate, isEnding });
   useEffect(() => {
-    optionsRef.current = { lessonId, apiUrl, onTimeUpdate, isEnding };
-  }, [lessonId, apiUrl, onTimeUpdate, isEnding]);
+    optionsRef.current = { lessonId, courseId, courseName, apiUrl, onTimeUpdate, isEnding };
+  }, [lessonId, courseId, courseName, apiUrl, onTimeUpdate, isEnding]);
+
 
   const setCurrentTimeStore = usePlaybackStore((state) => state.setCurrentTime);
   const setDurationStore = usePlaybackStore((state) => state.setDuration);
@@ -37,7 +42,12 @@ export function useProgressTracker({
     if (toSend > 0) {
       accumulatedStudySecondsRef.current -= toSend;
       void statsApi
-        .recordHeartbeat(optionsRef.current.apiUrl, toSend)
+        .recordHeartbeat(
+          optionsRef.current.apiUrl,
+          toSend,
+          optionsRef.current.courseId,
+          optionsRef.current.courseName
+        )
         .then(() => {
           window.dispatchEvent(new CustomEvent("statsUpdated"));
         })
@@ -97,12 +107,18 @@ export function useProgressTracker({
         const toSend = Math.floor(accumulatedStudySecondsRef.current);
         accumulatedStudySecondsRef.current -= toSend;
         void statsApi
-          .recordHeartbeat(optionsRef.current.apiUrl, toSend)
+          .recordHeartbeat(
+            optionsRef.current.apiUrl,
+            toSend,
+            optionsRef.current.courseId,
+            optionsRef.current.courseName
+          )
           .then(() => {
             window.dispatchEvent(new CustomEvent("statsUpdated"));
           })
           .catch((err) => console.error("Erro ao registrar tempo de estudo:", err));
       }
+
 
       const { onTimeUpdate: currentOnTimeUpdate } = optionsRef.current;
 

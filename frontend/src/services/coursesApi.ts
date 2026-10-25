@@ -19,7 +19,11 @@ export interface CourseCompletionStats {
   completed_percentage: number;
   total_lessons: number;
   completed_lessons: number;
+  remaining_lessons?: number;
+  remaining_seconds?: number;
+  estimated_finish_month?: string | null;
 }
+
 
 export const coursesApi = {
   async getAll(apiUrl: string): Promise<Course[]> {
