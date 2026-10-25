@@ -1,4 +1,5 @@
 import logging
+
 from sqlalchemy import inspect, text
 
 logger = logging.getLogger(__name__)
@@ -18,18 +19,20 @@ def run_migrations(engine):
             if "daily_activity" in tables:
                 columns = [c["name"] for c in inspector.get_columns("daily_activity")]
                 if "course_breakdown" not in columns:
-                    logger.info("Migrating daily_activity: adding course_breakdown column")
+                    logger.info(
+                        "Migrating daily_activity: adding course_breakdown column"
+                    )
                     conn.execute(
-                        text("ALTER TABLE daily_activity ADD COLUMN course_breakdown TEXT NOT NULL DEFAULT '{}'")
+                        text(
+                            "ALTER TABLE daily_activity ADD COLUMN course_breakdown TEXT NOT NULL DEFAULT '{}'"
+                        )
                     )
                     conn.commit()
 
             # 2. Check or create daily_course_activity table
             if "daily_course_activity" not in tables:
                 logger.info("Creating daily_course_activity table")
-                conn.execute(
-                    text(
-                        """
+                conn.execute(text("""
                         CREATE TABLE IF NOT EXISTS daily_course_activity (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             date VARCHAR(10) NOT NULL,
@@ -40,23 +43,23 @@ def run_migrations(engine):
                             lessons INTEGER NOT NULL DEFAULT 0,
                             CONSTRAINT uq_daily_course UNIQUE (date, course_id)
                         )
-                        """
+                        """))
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_daily_course_date ON daily_course_activity(date)"
                     )
                 )
                 conn.execute(
-                    text("CREATE INDEX IF NOT EXISTS idx_daily_course_date ON daily_course_activity(date)")
-                )
-                conn.execute(
-                    text("CREATE INDEX IF NOT EXISTS idx_daily_course_id ON daily_course_activity(course_id)")
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_daily_course_id ON daily_course_activity(course_id)"
+                    )
                 )
                 conn.commit()
 
             # 3. Check or create study_events table
             if "study_events" not in tables:
                 logger.info("Creating study_events table")
-                conn.execute(
-                    text(
-                        """
+                conn.execute(text("""
                         CREATE TABLE IF NOT EXISTS study_events (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             title VARCHAR(255) NOT NULL,
@@ -71,14 +74,16 @@ def run_migrations(engine):
                             updated_at DATETIME,
                             FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE SET NULL
                         )
-                        """
+                        """))
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_study_events_date ON study_events(date)"
                     )
                 )
                 conn.execute(
-                    text("CREATE INDEX IF NOT EXISTS idx_study_events_date ON study_events(date)")
-                )
-                conn.execute(
-                    text("CREATE INDEX IF NOT EXISTS idx_study_events_course_id ON study_events(course_id)")
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_study_events_course_id ON study_events(course_id)"
+                    )
                 )
                 conn.commit()
 
@@ -86,4 +91,3 @@ def run_migrations(engine):
     except Exception as e:
         logger.error("Error running database migrations: %s", e)
         raise
-

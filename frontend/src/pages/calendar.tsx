@@ -210,7 +210,7 @@ export default function CalendarPage() {
       </div>
 
       {/* Main Grid: Calendar Month on Left (2 cols), Upcoming Deadlines on Right (1 col) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 items-start transition-opacity duration-200 ${isLoading ? "opacity-80" : "opacity-100"}`}>
         <div className="lg:col-span-2">
           <CalendarMonthGrid
             currentDate={currentDate}

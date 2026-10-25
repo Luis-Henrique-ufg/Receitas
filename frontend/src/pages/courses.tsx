@@ -9,7 +9,7 @@ import ResumeHeroCard from "@/components/courses/resume-hero-card";
 import DashboardDeadlinesWidget from "@/components/calendar/dashboard-deadlines-widget";
 import { useNavigate } from "react-router-dom";
 import { coursesApi } from "@/services/coursesApi";
-import { getLastViewedLesson, getMostRecentActiveCourse } from "@/utils/utils";
+import { getMostRecentActiveCourse } from "@/utils/utils";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);

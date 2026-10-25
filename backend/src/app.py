@@ -6,7 +6,8 @@ from flask_cors import CORS
 from blueprints import courses_bp, events_bp, lessons_bp, media_bp, search_bp, stats_bp
 from config import Config
 from database import db
-from models import Course, DailyActivity, Lesson, Note, StudyEvent
+from migrations import run_migrations
+from models import Course, DailyActivity, DailyCourseActivity, Lesson, Note, StudyEvent
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,9 +16,6 @@ logging.basicConfig(
 
 app = Flask(__name__, static_folder="../front-end/dist", static_url_path="")
 app.config.from_object(Config)
-
-from migrations import run_migrations
-from models import Course, DailyActivity, DailyCourseActivity, Lesson, Note, StudyEvent
 
 db.init_app(app)
 CORS(app)

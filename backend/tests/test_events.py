@@ -1,8 +1,5 @@
-from datetime import date
-
 from database import db
 from models.course import Course
-from models.study_event import StudyEvent
 from services.event_service import EventService
 
 
@@ -13,24 +10,28 @@ class TestEventService:
             db.session.add(course)
             db.session.commit()
 
-            ev1 = EventService.create_event({
-                "title": "Prova 1",
-                "date": "2026-11-15",
-                "time": "14:00",
-                "category": "prova",
-                "notes": "Capítulos 1 a 4",
-                "course_id": course.id,
-            })
+            ev1 = EventService.create_event(
+                {
+                    "title": "Prova 1",
+                    "date": "2026-11-15",
+                    "time": "14:00",
+                    "category": "prova",
+                    "notes": "Capítulos 1 a 4",
+                    "course_id": course.id,
+                }
+            )
             assert ev1.id is not None
             assert ev1.title == "Prova 1"
             assert ev1.date == "2026-11-15"
             assert ev1.course_id == course.id
 
-            ev2 = EventService.create_event({
-                "title": "Entrega do Trabalho",
-                "date": "2026-11-20",
-                "category": "entrega",
-            })
+            ev2 = EventService.create_event(
+                {
+                    "title": "Entrega do Trabalho",
+                    "date": "2026-11-20",
+                    "category": "entrega",
+                }
+            )
             assert ev2.course_id is None
 
             # Test list by month
@@ -44,20 +45,25 @@ class TestEventService:
 
     def test_toggle_done_and_update(self, app):
         with app.app_context():
-            ev = EventService.create_event({
-                "title": "Revisão Geral",
-                "date": "2026-12-01",
-                "category": "revisao",
-            })
+            ev = EventService.create_event(
+                {
+                    "title": "Revisão Geral",
+                    "date": "2026-12-01",
+                    "category": "revisao",
+                }
+            )
             assert ev.done is False
 
             toggled = EventService.toggle_done(ev.id)
             assert toggled.done is True
 
-            updated = EventService.update_event(ev.id, {
-                "title": "Revisão Geral - Atualizada",
-                "time": "10:30",
-            })
+            updated = EventService.update_event(
+                ev.id,
+                {
+                    "title": "Revisão Geral - Atualizada",
+                    "time": "10:30",
+                },
+            )
             assert updated.title == "Revisão Geral - Atualizada"
             assert updated.time == "10:30"
 
@@ -68,13 +74,15 @@ class TestEventService:
 
     def test_generate_ics(self, app):
         with app.app_context():
-            ev = EventService.create_event({
-                "title": "Seminário de IA",
-                "date": "2026-11-25",
-                "time": "09:00",
-                "category": "entrega",
-                "notes": "Apresentação em slides",
-            })
+            ev = EventService.create_event(
+                {
+                    "title": "Seminário de IA",
+                    "date": "2026-11-25",
+                    "time": "09:00",
+                    "category": "entrega",
+                    "notes": "Apresentação em slides",
+                }
+            )
 
             ics = EventService.generate_ics([ev])
             assert "BEGIN:VCALENDAR" in ics
@@ -87,12 +95,15 @@ class TestEventService:
 class TestEventsAPI:
     def test_api_crud_flow(self, client, app):
         # Create
-        res = client.post("/api/events", json={
-            "title": "Prova de Cálculo",
-            "date": "2026-11-10",
-            "time": "08:00",
-            "category": "prova",
-        })
+        res = client.post(
+            "/api/events",
+            json={
+                "title": "Prova de Cálculo",
+                "date": "2026-11-10",
+                "time": "08:00",
+                "category": "prova",
+            },
+        )
         assert res.status_code == 201
         data = res.get_json()
         ev_id = data["id"]

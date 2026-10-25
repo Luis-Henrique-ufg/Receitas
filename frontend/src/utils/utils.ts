@@ -1,4 +1,4 @@
-import { Hierarchy, Lesson } from "@/models/models";
+import { Course, Hierarchy, Lesson } from "@/models/models";
 
 export function organizeLessonsInHierarchy(lessons: Lesson[]): Hierarchy {
   const hierarchy: Hierarchy = {};

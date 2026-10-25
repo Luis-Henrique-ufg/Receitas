@@ -144,9 +144,9 @@ class CourseService:
         remaining_lessons = max(0, total_lessons - completed_lessons)
 
         durations = []
-        for l in valid_lessons:
+        for lesson_item in valid_lessons:
             try:
-                d = int(float(l.duration)) if l.duration else 0
+                d = int(float(lesson_item.duration)) if lesson_item.duration else 0
                 if d > 0:
                     durations.append(d)
             except (ValueError, TypeError):
@@ -154,10 +154,10 @@ class CourseService:
         avg_duration = int(sum(durations) / len(durations)) if durations else 900
 
         remaining_seconds = 0
-        for l in valid_lessons:
-            if not l.is_completed:
+        for lesson_item in valid_lessons:
+            if not lesson_item.is_completed:
                 try:
-                    d = int(float(l.duration)) if l.duration else 0
+                    d = int(float(lesson_item.duration)) if lesson_item.duration else 0
                 except (ValueError, TypeError):
                     d = 0
                 remaining_seconds += d if d > 0 else avg_duration
@@ -180,6 +180,7 @@ class CourseService:
         if remaining_seconds > 0:
             # Check how many active study days exist in the system
             from models.daily_activity import DailyActivity
+
             active_days_count = DailyActivity.query.filter(
                 (DailyActivity.study_seconds > 0)
                 | (DailyActivity.pomodoros_completed > 0)
@@ -189,30 +190,44 @@ class CourseService:
             if active_days_count < 7:
                 estimated_finish_month = "sem previsão ainda"
             else:
-                weeks_needed = max(1, remaining_seconds / 10800)  # ~3 horas de estudo semanal
+                weeks_needed = max(
+                    1, remaining_seconds / 10800
+                )  # ~3 horas de estudo semanal
                 finish_date = date.today() + timedelta(weeks=weeks_needed)
                 # Include year if > 12 months
                 if weeks_needed > 52:
-                    estimated_finish_month = f"{month_names_br[finish_date.month - 1]}/{finish_date.year}"
+                    estimated_finish_month = (
+                        f"{month_names_br[finish_date.month - 1]}/{finish_date.year}"
+                    )
                 else:
                     estimated_finish_month = month_names_br[finish_date.month - 1]
 
         # Determine last studied date from DailyCourseActivity or DailyActivity
         from models.daily_activity import DailyCourseActivity
+
         last_studied_date = None
-        dca = DailyCourseActivity.query.filter(
-            DailyCourseActivity.course_id == course_id,
-            (DailyCourseActivity.study_seconds > 0)
-            | (DailyCourseActivity.pomodoros > 0)
-            | (DailyCourseActivity.lessons > 0)
-        ).order_by(DailyCourseActivity.date.desc()).first()
+        dca = (
+            DailyCourseActivity.query.filter(
+                DailyCourseActivity.course_id == course_id,
+                (DailyCourseActivity.study_seconds > 0)
+                | (DailyCourseActivity.pomodoros > 0)
+                | (DailyCourseActivity.lessons > 0),
+            )
+            .order_by(DailyCourseActivity.date.desc())
+            .first()
+        )
         if dca:
             last_studied_date = dca.date
         else:
             cid_key = f'"{course_id}"'
-            recent_acts = DailyActivity.query.filter(
-                DailyActivity.course_breakdown.like(f"%{cid_key}%")
-            ).order_by(DailyActivity.date.desc()).limit(10).all()
+            recent_acts = (
+                DailyActivity.query.filter(
+                    DailyActivity.course_breakdown.like(f"%{cid_key}%")
+                )
+                .order_by(DailyActivity.date.desc())
+                .limit(10)
+                .all()
+            )
             for a in recent_acts:
                 cb = a.get_course_breakdown()
                 if str(course_id) in cb:
@@ -221,7 +236,9 @@ class CourseService:
                         last_studied_date = a.date
                         break
 
-        current_lesson_number = min(total_lessons, completed_lessons + 1) if total_lessons > 0 else 0
+        current_lesson_number = (
+            min(total_lessons, completed_lessons + 1) if total_lessons > 0 else 0
+        )
 
         return {
             "completed_percentage": completion_percentage,
@@ -234,4 +251,3 @@ class CourseService:
             "last_studied_date": last_studied_date,
             "current_lesson_number": current_lesson_number,
         }
-

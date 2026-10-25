@@ -43,4 +43,3 @@ def record_heartbeat():
         date_str=date_str,
     )
     return jsonify({"message": "Atividade registrada", "activity": activity.to_dict()})
-

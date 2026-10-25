@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from database import db
 
 
@@ -8,7 +9,7 @@ class StudyEvent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     date = db.Column(db.String(10), nullable=False, index=True)  # 'YYYY-MM-DD'
-    time = db.Column(db.String(5), nullable=True)                 # 'HH:MM'
+    time = db.Column(db.String(5), nullable=True)  # 'HH:MM'
     category = db.Column(db.String(50), nullable=False, default="lembrete")
     color = db.Column(db.String(30), nullable=True)
     notes = db.Column(db.Text, nullable=True)
@@ -19,7 +20,9 @@ class StudyEvent(db.Model):
         nullable=True,
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     course = db.relationship("Course", backref=db.backref("events", lazy=True))
 

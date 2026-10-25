@@ -42,3 +42,7 @@ scratch/
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# Feature scratch notes
+newFeature.md
+

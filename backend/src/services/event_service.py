@@ -1,6 +1,5 @@
-from datetime import date, datetime
 import re
-from typing import Dict, List, Optional
+from datetime import date, datetime
 
 from database import db
 from models.course import Course
@@ -10,13 +9,13 @@ from models.study_event import StudyEvent
 class EventService:
     @staticmethod
     def list_events(
-        month: Optional[str] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        course_id: Optional[int] = None,
-        upcoming_limit: Optional[int] = None,
+        month: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        course_id: int | None = None,
+        upcoming_limit: int | None = None,
         include_done: bool = True,
-    ) -> List[StudyEvent]:
+    ) -> list[StudyEvent]:
         query = StudyEvent.query
 
         if month:
@@ -46,14 +45,16 @@ class EventService:
         if not include_done:
             query = query.filter(StudyEvent.done.is_(False))
 
-        return query.order_by(StudyEvent.date.asc(), StudyEvent.time.asc().nullslast()).all()
+        return query.order_by(
+            StudyEvent.date.asc(), StudyEvent.time.asc().nullslast()
+        ).all()
 
     @staticmethod
-    def get_by_id(event_id: int) -> Optional[StudyEvent]:
+    def get_by_id(event_id: int) -> StudyEvent | None:
         return db.session.get(StudyEvent, event_id)
 
     @staticmethod
-    def create_event(data: Dict) -> StudyEvent:
+    def create_event(data: dict) -> StudyEvent:
         title = (data.get("title") or "").strip()
         if not title:
             raise ValueError("O título do evento é obrigatório.")
@@ -94,7 +95,7 @@ class EventService:
         return event
 
     @staticmethod
-    def update_event(event_id: int, data: Dict) -> Optional[StudyEvent]:
+    def update_event(event_id: int, data: dict) -> StudyEvent | None:
         event = db.session.get(StudyEvent, event_id)
         if not event:
             return None
@@ -142,7 +143,7 @@ class EventService:
         return event
 
     @staticmethod
-    def toggle_done(event_id: int) -> Optional[StudyEvent]:
+    def toggle_done(event_id: int) -> StudyEvent | None:
         event = db.session.get(StudyEvent, event_id)
         if not event:
             return None
@@ -161,7 +162,9 @@ class EventService:
         return True
 
     @staticmethod
-    def generate_ics(events: List[StudyEvent], cal_name: str = "Agenda de Estudos") -> str:
+    def generate_ics(
+        events: list[StudyEvent], cal_name: str = "Agenda de Estudos"
+    ) -> str:
         """
         Gera conteúdo no formato padrão iCalendar RFC 5545 para exportação.
         """
@@ -179,8 +182,19 @@ class EventService:
 
         for ev in events:
             # Escape commas, semicolons and backslashes for ICS
-            clean_title = (ev.title or "Evento").replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,")
-            clean_notes = (ev.notes or "").replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")
+            clean_title = (
+                (ev.title or "Evento")
+                .replace("\\", "\\\\")
+                .replace(";", "\\;")
+                .replace(",", "\\,")
+            )
+            clean_notes = (
+                (ev.notes or "")
+                .replace("\\", "\\\\")
+                .replace(";", "\\;")
+                .replace(",", "\\,")
+                .replace("\n", "\\n")
+            )
             course_text = f"Curso: {ev.course.name}" if ev.course else ""
             desc = f"{course_text}\\n{clean_notes}".strip("\\n")
 

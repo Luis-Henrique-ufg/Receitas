@@ -6,4 +6,3 @@ from blueprints.search import search_bp
 from blueprints.stats import stats_bp
 
 __all__ = ["courses_bp", "events_bp", "lessons_bp", "media_bp", "search_bp", "stats_bp"]
-

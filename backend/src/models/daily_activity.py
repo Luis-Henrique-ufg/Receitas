@@ -48,9 +48,7 @@ class DailyCourseActivity(db.Model):
     pomodoros = db.Column(db.Integer, default=0, nullable=False)
     lessons = db.Column(db.Integer, default=0, nullable=False)
 
-    __table_args__ = (
-        db.UniqueConstraint("date", "course_id", name="uq_daily_course"),
-    )
+    __table_args__ = (db.UniqueConstraint("date", "course_id", name="uq_daily_course"),)
 
     def to_dict(self):
         return {
@@ -62,4 +60,3 @@ class DailyCourseActivity(db.Model):
             "pomodoros": self.pomodoros,
             "lessons": self.lessons,
         }
-

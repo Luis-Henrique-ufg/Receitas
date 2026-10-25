@@ -12,7 +12,11 @@ def list_events():
     end_date = request.args.get("end_date")
     course_id = request.args.get("course_id", type=int)
     upcoming_limit = request.args.get("upcoming", type=int)
-    include_done = request.args.get("include_done", "true").lower() in ("true", "1", "yes")
+    include_done = request.args.get("include_done", "true").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
 
     events = EventService.list_events(
         month=month,

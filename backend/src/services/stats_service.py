@@ -10,6 +10,7 @@ class StatsService:
     def _get_today_date() -> date:
         try:
             from zoneinfo import ZoneInfo
+
             return datetime.now(ZoneInfo("America/Sao_Paulo")).date()
         except Exception:
             return date.today()
@@ -66,7 +67,9 @@ class StatsService:
             activity.set_course_breakdown(cb)
 
             # Relational record
-            dca = DailyCourseActivity.query.filter_by(date=today_str, course_id=course_id).first()
+            dca = DailyCourseActivity.query.filter_by(
+                date=today_str, course_id=course_id
+            ).first()
             if not dca:
                 dca = DailyCourseActivity(
                     date=today_str,
@@ -109,7 +112,9 @@ class StatsService:
             activity.set_course_breakdown(cb)
 
             # Relational record
-            dca = DailyCourseActivity.query.filter_by(date=today_str, course_id=course_id).first()
+            dca = DailyCourseActivity.query.filter_by(
+                date=today_str, course_id=course_id
+            ).first()
             if not dca:
                 dca = DailyCourseActivity(
                     date=today_str,
@@ -153,13 +158,17 @@ class StatsService:
                 }
             cb[cid]["pomodoros"] = cb[cid].get("pomodoros", 0) + 1
             if study_seconds > 0:
-                cb[cid]["study_seconds"] = cb[cid].get("study_seconds", 0) + int(study_seconds)
+                cb[cid]["study_seconds"] = cb[cid].get("study_seconds", 0) + int(
+                    study_seconds
+                )
             if course_name:
                 cb[cid]["name"] = course_name
             activity.set_course_breakdown(cb)
 
             # Relational record
-            dca = DailyCourseActivity.query.filter_by(date=today_str, course_id=course_id).first()
+            dca = DailyCourseActivity.query.filter_by(
+                date=today_str, course_id=course_id
+            ).first()
             if not dca:
                 dca = DailyCourseActivity(
                     date=today_str,
@@ -212,11 +221,13 @@ class StatsService:
                 course_map[d.course_id] = d.course_name or f"Curso {d.course_id}"
 
         try:
-            all_courses = Course.query.order_by(Course.position.asc(), Course.id.asc()).all()
+            all_courses = Course.query.order_by(
+                Course.position.asc(), Course.id.asc()
+            ).all()
             for c in all_courses:
                 if c.id not in course_map:
                     course_map[c.id] = c.name
-        except Exception as e:
+        except Exception:
             pass
 
         available_courses = [
@@ -286,8 +297,13 @@ class StatsService:
                 for d in all_dca:
                     if d.date == ds and (d.study_seconds > 0 or d.pomodoros > 0):
                         if d.course_id in day_courses_dict:
-                            day_courses_dict[d.course_id]["seconds"] = max(day_courses_dict[d.course_id]["seconds"], d.study_seconds)
-                            day_courses_dict[d.course_id]["pomodoros"] = max(day_courses_dict[d.course_id]["pomodoros"], d.pomodoros)
+                            day_courses_dict[d.course_id]["seconds"] = max(
+                                day_courses_dict[d.course_id]["seconds"],
+                                d.study_seconds,
+                            )
+                            day_courses_dict[d.course_id]["pomodoros"] = max(
+                                day_courses_dict[d.course_id]["pomodoros"], d.pomodoros
+                            )
                         else:
                             day_courses_dict[d.course_id] = {
                                 "id": d.course_id,
@@ -369,18 +385,16 @@ class StatsService:
         ]
         week_seconds = sum(get_record_stats(r)[0] for r in week_records)
         week_active_days = len(
-            {
-                r.date
-                for r in week_records
-                if any(v > 0 for v in get_record_stats(r))
-            }
+            {r.date for r in week_records if any(v > 0 for v in get_record_stats(r))}
         )
 
         # Previous calendar week (Monday to Sunday of previous week)
         last_week_start = week_start - timedelta(days=7)
         last_week_end = week_start - timedelta(days=1)
         last_week_records = [
-            r for r in all_records if last_week_start.isoformat() <= r.date <= last_week_end.isoformat()
+            r
+            for r in all_records
+            if last_week_start.isoformat() <= r.date <= last_week_end.isoformat()
         ]
         last_week_seconds = sum(get_record_stats(r)[0] for r in last_week_records)
         delta_week_seconds = week_seconds - last_week_seconds
@@ -399,5 +413,3 @@ class StatsService:
             "available_courses": available_courses,
             "days": days_data,
         }
-
-

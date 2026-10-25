@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Play, Sparkles, BookOpen, Clock } from "lucide-react";
 import { Course, Lesson } from "@/models/models";
 import { Button } from "@/components/ui/button";
-import { getLastViewedLesson, getMostRecentActiveCourse } from "@/utils/utils";
+import { getMostRecentActiveCourse } from "@/utils/utils";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
 
@@ -42,13 +42,6 @@ export function extractLessonIndex(title?: string, hierarchyPath?: string): numb
   return null;
 }
 
-function middleTruncate(text: string, maxLength: number = 38): string {
-  if (!text || text.length <= maxLength) return text;
-  const charsToShow = maxLength - 3;
-  const frontChars = Math.ceil(charsToShow / 2);
-  const backChars = Math.floor(charsToShow / 2);
-  return `${text.slice(0, frontChars)}…${text.slice(-backChars)}`;
-}
 
 export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps) {
   const { apiUrl } = useApiUrl();
@@ -71,6 +64,8 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
   }, []);
 
   const activeItem = useMemo(() => {
+    // Reference updateTick so memo re-evaluates when lesson progress or course updates
+    void updateTick;
     return getMostRecentActiveCourse(courses);
   }, [courses, updateTick]);
 
