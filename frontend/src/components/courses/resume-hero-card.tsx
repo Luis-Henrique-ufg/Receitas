@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Play, Sparkles, BookOpen, Clock } from "lucide-react";
 import { Course, Lesson } from "@/models/models";
 import { Button } from "@/components/ui/button";
-import { getLastViewedLesson } from "@/utils/utils";
+import { getLastViewedLesson, getMostRecentActiveCourse } from "@/utils/utils";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
 
@@ -53,31 +53,27 @@ function middleTruncate(text: string, maxLength: number = 38): string {
 export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps) {
   const { apiUrl } = useApiUrl();
   const [totalLessons, setTotalLessons] = useState<number | null>(null);
-
   const [stats, setStats] = useState<CourseCompletionStats | null>(null);
+  const [updateTick, setUpdateTick] = useState(0);
+
+  // Subscribe to real-time lesson progress updates from video playback and navigation
+  useEffect(() => {
+    const handleUpdate = () => {
+      setUpdateTick((prev) => prev + 1);
+    };
+
+    window.addEventListener("lastViewedLessonUpdated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("lastViewedLessonUpdated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
 
   const activeItem = useMemo(() => {
-    if (!courses || courses.length === 0) return null;
+    return getMostRecentActiveCourse(courses);
+  }, [courses, updateTick]);
 
-    // 1. Find the first course with a recorded lastViewedLesson in localStorage
-    for (const course of courses) {
-      const lastWatched = getLastViewedLesson(course.id.toString());
-      if (lastWatched) {
-        return {
-          course,
-          lesson: lastWatched,
-          isResume: true,
-        };
-      }
-    }
-
-    // 2. Fallback to the first course if no history exists yet
-    return {
-      course: courses[0],
-      lesson: null,
-      isResume: false,
-    };
-  }, [courses]);
 
   useEffect(() => {
     if (!activeItem?.course) return;

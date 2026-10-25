@@ -22,6 +22,7 @@ import { Lesson } from "@/models/models";
 import { usePlaybackStore } from "@/store/usePlaybackStore";
 import { usePomodoroStore } from "@/store/usePomodoroStore";
 import { cn } from "@/lib/utils";
+import { setLastViewedLesson } from "@/utils/utils";
 
 
 export default function CoursePage() {
@@ -105,6 +106,14 @@ export default function CoursePage() {
       toast.info("Você já está na última aula.", { id: "lesson-navigation-toast", duration: 1500 });
     }
   }, [nextLesson, selectCourseLesson]);
+
+  const handleLessonComplete = useCallback(() => {
+    refreshCourseProgress();
+    if (nextLesson && courseId) {
+      setLastViewedLesson(courseId, nextLesson);
+    }
+  }, [refreshCourseProgress, nextLesson, courseId]);
+
 
   // Handle store-based and event-based navigation
   useEffect(() => {
@@ -256,7 +265,7 @@ export default function CoursePage() {
               lesson={selectedLesson}
               courseId={courseId ? Number(courseId) : undefined}
               courseName={selectedLesson?.course_title}
-              onLessonComplete={refreshCourseProgress}
+              onLessonComplete={handleLessonComplete}
             />
 
           </div>

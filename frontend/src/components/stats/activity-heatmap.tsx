@@ -374,7 +374,7 @@ export default function ActivityHeatmap() {
             <div
               className="flex flex-col select-none pr-1 w-6 shrink-0"
               style={{
-                marginTop: `${monthHeaderHeight}px`,
+                marginTop: `${monthHeaderHeight + 6}px`,
                 gap: `${cellGap}px`,
               }}
             >
@@ -392,7 +392,7 @@ export default function ActivityHeatmap() {
             {/* Scrollable Heatmap Grid Container: hidden scrollbar */}
             <div
               ref={scrollContainerRef}
-              className="overflow-x-auto overflow-y-hidden scrollbar-none [&::-webkit-scrollbar]:hidden flex-1 min-w-0 pb-1"
+              className="overflow-x-auto overflow-y-hidden scrollbar-none [&::-webkit-scrollbar]:hidden flex-1 min-w-0 pt-1.5 pb-2.5 px-1.5"
             >
               <div className="inline-block min-w-max">
                 {/* Months Header Row */}
@@ -455,10 +455,14 @@ export default function ActivityHeatmap() {
                             }}
                             style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
                             className={cn(
-                              "rounded-[2px] border transition-all duration-150 cursor-pointer focus:outline-none",
+                              "relative rounded-[2px] border transition-all duration-150 cursor-pointer focus:outline-none",
                               levelColors[day.level],
-                              isSelected && "ring-2 ring-white border-white scale-110 z-20",
-                              isToday && !isSelected && "ring-2 ring-[#007bff] ring-offset-1 ring-offset-[#080d1a] z-10"
+                              "hover:z-20 hover:ring-1 hover:ring-white/80",
+                              isSelected
+                                ? "ring-2 ring-white border-white scale-110 z-30 shadow-lg"
+                                : isToday
+                                ? "ring-2 ring-[#007bff] ring-offset-1 ring-offset-[#080d1a] z-10"
+                                : ""
                             )}
                           />
                         );

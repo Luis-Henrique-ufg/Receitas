@@ -5,6 +5,7 @@ import { updateWatchedTime } from "@/services/updateWatchedTime";
 import { useEffect, useState, useRef } from "react";
 import { lessonsApi } from "@/services/lessonsApi";
 import { statsApi } from "@/services/statsApi";
+import { setLastViewedLesson } from "@/utils/utils";
 
 const isDocumentFile = (url: string): boolean => {
   return (
@@ -86,6 +87,13 @@ export default function LessonViewer({
     if (!lesson) return;
     const lessonId = currentLessonIdRef.current ?? lesson.id;
     updateWatchedTime(apiUrl, lessonId, currentTime);
+
+    if (courseId) {
+      setLastViewedLesson(courseId.toString(), {
+        ...lesson,
+        time_elapsed: currentTime,
+      });
+    }
   };
 
   if (!lesson) {

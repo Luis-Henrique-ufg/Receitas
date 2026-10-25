@@ -104,7 +104,73 @@ export function setLastViewedLesson(courseId: string, lesson: Lesson) {
     viewedAt: Date.now(),
   };
   localStorage.setItem(courseId, JSON.stringify(payload));
+  localStorage.setItem("last_active_course_id", courseId);
+
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("lastViewedLessonUpdated", {
+        detail: { courseId, lesson: payload },
+      })
+    );
+  }
 }
+
+export function getMostRecentActiveCourse(courses: Course[]): {
+  course: Course;
+  lesson: (Lesson & { viewedAt?: number }) | null;
+  isResume: boolean;
+} | null {
+  if (!courses || courses.length === 0) return null;
+
+  // 1. Check if there is an explicit last active course in localStorage
+  const lastActiveId = localStorage.getItem("last_active_course_id");
+  if (lastActiveId) {
+    const matched = courses.find((c) => c.id.toString() === lastActiveId);
+    if (matched) {
+      const lastWatched = getLastViewedLesson(matched.id.toString());
+      if (lastWatched) {
+        return {
+          course: matched,
+          lesson: lastWatched,
+          isResume: true,
+        };
+      }
+    }
+  }
+
+  // 2. Scan all courses for the most recently viewed timestamp
+  let bestCourse: Course | null = null;
+  let bestLesson: (Lesson & { viewedAt?: number }) | null = null;
+  let highestViewedAt = -1;
+
+  for (const course of courses) {
+    const lastWatched = getLastViewedLesson(course.id.toString());
+    if (lastWatched) {
+      const timestamp = lastWatched.viewedAt || 0;
+      if (timestamp > highestViewedAt) {
+        highestViewedAt = timestamp;
+        bestCourse = course;
+        bestLesson = lastWatched;
+      }
+    }
+  }
+
+  if (bestCourse && bestLesson) {
+    return {
+      course: bestCourse,
+      lesson: bestLesson,
+      isResume: true,
+    };
+  }
+
+  // 3. Fallback to the first course in the list
+  return {
+    course: courses[0],
+    lesson: null,
+    isResume: false,
+  };
+}
+
 
 export function formatRelativeTime(timestamp?: number): string {
   if (!timestamp) return "";

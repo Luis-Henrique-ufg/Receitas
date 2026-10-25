@@ -41,11 +41,14 @@ export default function useCoursePlayer(courseId?: string) {
 
         if (lastWatched) {
           selectLesson(lastWatched);
+          setLastViewedLesson(courseId, lastWatched);
         } else {
           const firstModule = Object.keys(cleanModules)[0];
 
           if (cleanModules[firstModule]?.length > 0) {
-            selectLesson(cleanModules[firstModule][0]);
+            const firstLesson = cleanModules[firstModule][0];
+            selectLesson(firstLesson);
+            setLastViewedLesson(courseId, firstLesson);
           }
         }
       } else if (selectedLesson) {
