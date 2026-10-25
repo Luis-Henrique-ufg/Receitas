@@ -25,6 +25,9 @@ describe("ActivityHeatmap", () => {
       total_seconds: 7200,
       total_pomodoros: 4,
       total_lessons: 6,
+      today_seconds: 1800,
+      week_seconds: 3600,
+      week_active_days: 2,
       days: [
         { date: "2026-10-20", study_seconds: 1800, pomodoros: 1, lessons: 1, level: 2 },
         { date: "2026-10-21", study_seconds: 1800, pomodoros: 1, lessons: 1, level: 2 },
@@ -34,6 +37,10 @@ describe("ActivityHeatmap", () => {
     render(<ActivityHeatmap />);
 
     await waitFor(() => {
+      expect(screen.getByText("Hoje:")).toBeInTheDocument();
+      expect(screen.getByText("30 min")).toBeInTheDocument();
+      expect(screen.getByText("Esta semana:")).toBeInTheDocument();
+      expect(screen.getByText("2/7 dias")).toBeInTheDocument();
       expect(screen.getByText("5 dias")).toBeInTheDocument();
       expect(screen.getByText("12 dias")).toBeInTheDocument();
       expect(screen.getByText("2h 0m")).toBeInTheDocument();

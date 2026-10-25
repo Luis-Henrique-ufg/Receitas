@@ -16,9 +16,9 @@ import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi } from "@/services/coursesApi";
 
-type Props = { course: Course; onUpdate: () => void };
+type Props = { course: Course; onUpdate: () => void; trigger?: React.ReactNode };
 
-export default function DeleteCourse({ course, onUpdate }: Props) {
+export default function DeleteCourse({ course, onUpdate, trigger }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const { apiUrl } = useApiUrl();
@@ -45,14 +45,20 @@ export default function DeleteCourse({ course, onUpdate }: Props) {
 
   return (
     <>
-      <Button
-        className="bg-red-700 text-cyan-50 hover:bg-red-950 hover:text-white outline-none border-none"
-        variant="outline"
-        onClick={() => setShowConfirm(true)}
-        size="sm"
-      >
-        Apagar
-      </Button>
+      {trigger ? (
+        <div onClick={() => setShowConfirm(true)} className="w-full">
+          {trigger}
+        </div>
+      ) : (
+        <Button
+          className="bg-red-700 text-cyan-50 hover:bg-red-950 hover:text-white outline-none border-none"
+          variant="outline"
+          onClick={() => setShowConfirm(true)}
+          size="sm"
+        >
+          Apagar
+        </Button>
+      )}
       <AlertDialog
         open={showConfirm}
         // onOpenChange={() => setShowConfirm(false)}

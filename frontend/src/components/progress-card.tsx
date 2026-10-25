@@ -20,22 +20,22 @@ export default function ProgressCard({
   const getStatusBadge = () => {
     if (roundedValue === 0) {
       return (
-        <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/50 border border-white/5 bg-white/[0.02] inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-white/30 shrink-0" />
+        <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-zinc-300 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0" />
           Não iniciado
         </span>
       );
     }
     if (roundedValue === 100) {
       return (
-        <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-emerald-300 border border-emerald-500/20 bg-emerald-500/10 inline-flex items-center gap-1.5">
+        <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-emerald-300 border border-emerald-500/20 bg-emerald-500/10 inline-flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
           Concluído
         </span>
       );
     }
     return (
-      <span className="glass-panel px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider text-white/90 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
+      <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-white/90 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
         <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shrink-0" />
         Em andamento
       </span>
@@ -64,7 +64,7 @@ export default function ProgressCard({
           {getStatusBadge()}
 
           {totalLessons !== null && totalLessons !== undefined && totalLessons > 0 && (
-            <span className="text-xs text-white/50 tracking-tight">
+            <span className="text-xs text-zinc-400 tracking-tight">
               {roundedValue === 100
                 ? `Todas as ${totalLessons} aulas concluídas!`
                 : `${remaining} de ${totalLessons} ${totalLessons === 1 ? "aula restante" : "aulas restantes"}`}

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Flame, Trophy, Clock, Timer, Sparkles } from "lucide-react";
+import { Flame, Trophy, Clock, Timer, Sparkles, Calendar } from "lucide-react";
 import { statsApi, HeatmapResponse, HeatmapDay } from "@/services/statsApi";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,7 @@ export default function ActivityHeatmap() {
   const { apiUrl } = useApiUrl();
   const [data, setData] = useState<HeatmapResponse | null>(null);
   const [hoveredDay, setHoveredDay] = useState<HeatmapDay | null>(null);
+  const [selectedDay, setSelectedDay] = useState<HeatmapDay | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function ActivityHeatmap() {
     };
   }, [apiUrl]);
 
-  // Group days into columns of 7 days (weeks) and identify month labels
+  // Group days into columns of 7 days (weeks) and invert so that Current Week (Today) is on the left
   const { weeks, monthLabels } = useMemo(() => {
     if (!data?.days || data.days.length === 0) {
       return { weeks: [], monthLabels: [] };
@@ -85,11 +86,14 @@ export default function ActivityHeatmap() {
       }
     });
 
-    // Detect month headers based on week start
+    // Invert the columns: Current Week (containing Today) becomes Column 0 on the far left
+    const reversedCols = [...cols].reverse();
+
+    // Detect month headers based on week start in the reversed layout
     const labels: Array<{ weekIndex: number; month: string }> = [];
     let lastMonth = -1;
 
-    cols.forEach((week, wIdx) => {
+    reversedCols.forEach((week, wIdx) => {
       if (week.length > 0) {
         const m = parseInt(week[0].date.split("-")[1], 10) - 1;
         if (m !== lastMonth) {
@@ -99,7 +103,7 @@ export default function ActivityHeatmap() {
       }
     });
 
-    return { weeks: cols, monthLabels: labels };
+    return { weeks: reversedCols, monthLabels: labels };
   }, [data]);
 
   const levelColors = [
@@ -124,6 +128,26 @@ export default function ActivityHeatmap() {
   const totalSeconds = data?.total_seconds ?? 0;
   const totalPomodoros = data?.total_pomodoros ?? 0;
 
+  // Compute Today and This Week metrics
+  const todaySeconds =
+    data?.today_seconds ??
+    (() => {
+      if (!data?.days || data.days.length === 0) return 0;
+      const todayStr = new Date().toISOString().split("T")[0];
+      const match = data.days.find((d) => d.date === todayStr);
+      return match ? match.study_seconds : 0;
+    })();
+
+  const weekActiveDays =
+    data?.week_active_days ??
+    (() => {
+      if (!data?.days || data.days.length === 0) return 0;
+      const recent = data.days.slice(-7);
+      return recent.filter((d) => d.study_seconds > 0 || d.pomodoros > 0 || d.lessons > 0).length;
+    })();
+
+  const activeDetailDay = hoveredDay || selectedDay;
+
   return (
     <div className="w-full glass-panel rounded-2xl p-5 sm:p-7 border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
       {/* Header & Metric Bar */}
@@ -136,43 +160,64 @@ export default function ActivityHeatmap() {
             <h2 className="text-lg font-heading font-bold text-white tracking-tight flex items-center gap-2">
               Constância de Estudo
             </h2>
-            <p className="text-xs text-zinc-400">
-              Histórico diário de foco e dedicação no último ano
+            <p className="text-xs text-zinc-300">
+              Semana atual à esquerda com histórico diário de dedicação
             </p>
           </div>
         </div>
 
         {/* Compact Horizontal Badges */}
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
-            <Flame className="w-4 h-4 text-amber-400 fill-amber-400" />
-            <span className="text-zinc-400">Sequência:</span>
-            <span className="font-heading font-bold text-white">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          {/* Hoje */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-xs">
+            <Clock className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-zinc-300">Hoje:</span>
+            <span className="font-heading font-bold text-white font-mono">
+              {formatDuration(todaySeconds)}
+            </span>
+          </div>
+
+          {/* Esta semana */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
+            <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-zinc-300">Esta semana:</span>
+            <span className="font-heading font-bold text-white font-mono">
+              {weekActiveDays}/7 dias
+            </span>
+          </div>
+
+          {/* Sequência */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
+            <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+            <span className="text-zinc-300">Sequência:</span>
+            <span className="font-heading font-bold text-white font-mono">
               {currentStreak} {currentStreak === 1 ? "dia" : "dias"}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
-            <Trophy className="w-4 h-4 text-yellow-400" />
-            <span className="text-zinc-400">Recorde:</span>
-            <span className="font-heading font-bold text-white">
+          {/* Recorde */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
+            <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+            <span className="text-zinc-300">Recorde:</span>
+            <span className="font-heading font-bold text-white font-mono">
               {maxStreak} {maxStreak === 1 ? "dia" : "dias"}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
-            <Clock className="w-4 h-4 text-blue-400" />
-            <span className="text-zinc-400">Total:</span>
-            <span className="font-heading font-bold text-white">
-              {formatDuration(totalSeconds)}
+          {/* Pomodoros */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
+            <Timer className="w-3.5 h-3.5 text-rose-400" />
+            <span className="text-zinc-300">Pomodoros:</span>
+            <span className="font-heading font-bold text-white font-mono">
+              {totalPomodoros} 🍅
             </span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs">
-            <Timer className="w-4 h-4 text-rose-400" />
-            <span className="text-zinc-400">Pomodoros:</span>
-            <span className="font-heading font-bold text-white">
-              {totalPomodoros} 🍅
+          {/* Total Histórico */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+            <span className="text-zinc-400">Total:</span>
+            <span className="font-mono font-medium text-zinc-300">
+              {formatDuration(totalSeconds)}
             </span>
           </div>
         </div>
@@ -189,7 +234,12 @@ export default function ActivityHeatmap() {
                 return (
                   <div key={wIdx} className="flex-1 text-left overflow-visible">
                     {labelObj ? (
-                      <span className="font-semibold text-zinc-300">{labelObj.month}</span>
+                      <span className={cn(
+                        "font-semibold",
+                        wIdx === 0 ? "text-cyan-400" : "text-zinc-300"
+                      )}>
+                        {wIdx === 0 ? `${labelObj.month} (Atual)` : labelObj.month}
+                      </span>
                     ) : null}
                   </div>
                 );
@@ -199,7 +249,7 @@ export default function ActivityHeatmap() {
             {/* Grid with Day of Week labels on left */}
             <div className="flex w-full items-center gap-2">
               {/* Day Labels Column */}
-              <div className="flex flex-col justify-between h-[112px] text-[10px] text-zinc-500 font-mono pr-1 select-none shrink-0 w-6">
+              <div className="flex flex-col justify-between h-[112px] text-[10px] text-zinc-400 font-mono pr-1 select-none shrink-0 w-6">
                 <span>Seg</span>
                 <span>Qua</span>
                 <span>Sex</span>
@@ -209,17 +259,31 @@ export default function ActivityHeatmap() {
               <div className="flex w-full justify-between gap-[3px]">
                 {weeks.map((week, wIndex) => (
                   <div key={wIndex} className="flex flex-col gap-[3px] flex-1">
-                    {week.map((day) => (
-                      <div
-                        key={day.date}
-                        onMouseEnter={() => setHoveredDay(day)}
-                        onMouseLeave={() => setHoveredDay(null)}
-                        className={cn(
-                          "w-full aspect-square rounded-[3px] border transition-all duration-150 cursor-pointer",
-                          levelColors[day.level]
-                        )}
-                      />
-                    ))}
+                    {week.map((day) => {
+                      const isSelected = selectedDay?.date === day.date;
+                      return (
+                        <div
+                          key={day.date}
+                          tabIndex={0}
+                          role="button"
+                          aria-label={`Dia ${formatDateBr(day.date)}: ${formatDuration(day.study_seconds)}`}
+                          onMouseEnter={() => setHoveredDay(day)}
+                          onMouseLeave={() => setHoveredDay(null)}
+                          onClick={() => setSelectedDay(isSelected ? null : day)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setSelectedDay(isSelected ? null : day);
+                            }
+                          }}
+                          className={cn(
+                            "w-full aspect-square rounded-[3px] border transition-all duration-150 cursor-pointer focus:outline-none focus:ring-1 focus:ring-cyan-400",
+                            isSelected && "ring-2 ring-white border-white scale-110 z-10",
+                            levelColors[day.level]
+                          )}
+                        />
+                      );
+                    })}
                   </div>
                 ))}
               </div>
@@ -227,26 +291,34 @@ export default function ActivityHeatmap() {
           </div>
         </div>
 
-        {/* Footer: Hover details & Legend */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-400 pt-3 gap-2 border-t border-white/5">
-          <div className="min-h-[20px] flex items-center">
-            {hoveredDay ? (
+        {/* Footer: Details & Legend */}
+        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-300 pt-3 gap-2 border-t border-white/5">
+          <div className="min-h-[22px] flex items-center">
+            {activeDetailDay ? (
               <span className="text-white font-medium flex items-center gap-1.5 animate-in fade-in duration-150">
                 <span className="text-cyan-400 font-mono font-bold">
-                  {formatDateBr(hoveredDay.date)}:
+                  {formatDateBr(activeDetailDay.date)}:
                 </span>{" "}
-                {formatDuration(hoveredDay.study_seconds)} estudados
-                {hoveredDay.pomodoros > 0 ? ` • ${hoveredDay.pomodoros} pomodoros` : ""}
-                {hoveredDay.lessons > 0 ? ` • ${hoveredDay.lessons} aulas concluídas` : ""}
+                {formatDuration(activeDetailDay.study_seconds)} estudados
+                {activeDetailDay.pomodoros > 0 ? ` • ${activeDetailDay.pomodoros} pomodoros` : ""}
+                {activeDetailDay.lessons > 0 ? ` • ${activeDetailDay.lessons} aulas concluídas` : ""}
+                {selectedDay?.date === activeDetailDay.date && (
+                  <button
+                    onClick={() => setSelectedDay(null)}
+                    className="ml-2 text-[10px] text-zinc-400 hover:text-white underline cursor-pointer"
+                  >
+                    (Limpar seleção)
+                  </button>
+                )}
               </span>
             ) : (
-              <span className="text-zinc-500 text-[11px]">
-                Passe o cursor sobre os dias para ver detalhes de estudo
+              <span className="text-zinc-400 text-[11px]">
+                Passe o cursor ou toque nos dias para ver detalhes de estudo
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-zinc-500 shrink-0 select-none">
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400 shrink-0 select-none">
             <span>Menos</span>
             <div className="flex items-center gap-1">
               {levelColors.map((cls, idx) => (
@@ -260,3 +332,4 @@ export default function ActivityHeatmap() {
     </div>
   );
 }
+

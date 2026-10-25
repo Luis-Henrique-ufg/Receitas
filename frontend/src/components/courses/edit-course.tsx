@@ -26,9 +26,10 @@ import { coursesApi } from "@/services/coursesApi";
 type Props = {
   course: Course;
   onUpdate: () => void;
+  trigger?: React.ReactNode;
 };
 
-export default function EditCourse({ course, onUpdate }: Props) {
+export default function EditCourse({ course, onUpdate, trigger }: Props) {
   const fileInputRefEdit = useRef<HTMLInputElement>(null);
 
   const [currentCourse, setCurrentCourse] = useState<Course>(course);
@@ -85,14 +86,18 @@ export default function EditCourse({ course, onUpdate }: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="sm"
-          className="bg-transparent text-white/70 outline-none border-b-2 border-white/10"
-          variant="outline"
-          onClick={() => setIsOpen(true)}
-        >
-          Editar
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button
+            size="sm"
+            className="bg-transparent text-white/70 outline-none border-b-2 border-white/10"
+            variant="outline"
+            onClick={() => setIsOpen(true)}
+          >
+            Editar
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="md:max-w-[700px] max-w-80">
         <DialogHeader>

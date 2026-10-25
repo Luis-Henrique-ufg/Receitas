@@ -14,6 +14,9 @@ export interface HeatmapResponse {
   total_seconds: number;
   total_pomodoros: number;
   total_lessons: number;
+  today_seconds?: number;
+  week_seconds?: number;
+  week_active_days?: number;
   days: HeatmapDay[];
 }
 
