@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import date, timedelta
 
 from werkzeug.utils import secure_filename
 
@@ -131,16 +132,63 @@ class CourseService:
                 "completion_percentage": 0,
                 "total_lessons": 0,
                 "completed_lessons": 0,
+                "remaining_lessons": 0,
+                "remaining_seconds": 0,
+                "estimated_finish_month": None,
             }
 
         completed_lessons = len(
             [lesson for lesson in valid_lessons if lesson.is_completed]
         )
         completion_percentage = (completed_lessons / total_lessons) * 100
+        remaining_lessons = max(0, total_lessons - completed_lessons)
+
+        durations = []
+        for l in valid_lessons:
+            try:
+                d = int(float(l.duration)) if l.duration else 0
+                if d > 0:
+                    durations.append(d)
+            except (ValueError, TypeError):
+                pass
+        avg_duration = int(sum(durations) / len(durations)) if durations else 900
+
+        remaining_seconds = 0
+        for l in valid_lessons:
+            if not l.is_completed:
+                try:
+                    d = int(float(l.duration)) if l.duration else 0
+                except (ValueError, TypeError):
+                    d = 0
+                remaining_seconds += d if d > 0 else avg_duration
+
+        month_names_br = [
+            "janeiro",
+            "fevereiro",
+            "março",
+            "abril",
+            "maio",
+            "junho",
+            "julho",
+            "agosto",
+            "setembro",
+            "outubro",
+            "novembro",
+            "dezembro",
+        ]
+        estimated_finish_month = None
+        if remaining_seconds > 0:
+            weeks_needed = max(1, remaining_seconds / 10800)  # ~3 horas de estudo semanal
+            finish_date = date.today() + timedelta(weeks=weeks_needed)
+            estimated_finish_month = month_names_br[finish_date.month - 1]
 
         return {
             "completed_percentage": completion_percentage,
             "completion_percentage": completion_percentage,
             "total_lessons": total_lessons,
             "completed_lessons": completed_lessons,
+            "remaining_lessons": remaining_lessons,
+            "remaining_seconds": remaining_seconds,
+            "estimated_finish_month": estimated_finish_month,
         }
+
