@@ -1,4 +1,4 @@
-import { Cookie, Search } from "lucide-react";
+import { Calendar, Cookie, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -55,6 +55,15 @@ function Header({ onOpenSearch }: HeaderProps) {
           )}
 
           <Button
+            onClick={() => handleNavigate("/agenda")}
+            variant="link"
+            className="text-white/80 hover:text-white flex items-center gap-1.5"
+          >
+            <Calendar className="w-4 h-4 text-zinc-400" />
+            <span>Agenda</span>
+          </Button>
+
+          <Button
             onClick={() => handleNavigate("/configuracoes")}
             variant="link"
             className="text-white/80 hover:text-white"
@@ -68,3 +77,4 @@ function Header({ onOpenSearch }: HeaderProps) {
 }
 
 export default Header;
+

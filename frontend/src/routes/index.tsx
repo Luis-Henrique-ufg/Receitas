@@ -1,6 +1,7 @@
 import Header from "@/components/header";
 import CoursePage from "@/pages/course";
 import SettingsPage from "@/pages/settings";
+import CalendarPage from "@/pages/calendar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import CoursesPage from "@/pages/courses";
@@ -88,6 +89,7 @@ export default function Router() {
         <Routes>
           <Route path="/" element={<Navigate to="/receitas" replace />} />
           <Route path="/receitas/:courseId" element={<CoursePage />} />
+          <Route path="/agenda" element={<CalendarPage />} />
           <Route path="/configuracoes" element={<SettingsPage />} />
           <Route path="/receitas" element={<CoursesPage />} />
         </Routes>

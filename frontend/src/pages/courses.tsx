@@ -6,6 +6,7 @@ import useApiUrl from "@/hooks/useApiUrl";
 import AddCourse from "@/components/courses/add-course";
 import ActivityHeatmap from "@/components/stats/activity-heatmap";
 import ResumeHeroCard from "@/components/courses/resume-hero-card";
+import DashboardDeadlinesWidget from "@/components/calendar/dashboard-deadlines-widget";
 import { useNavigate } from "react-router-dom";
 import { coursesApi } from "@/services/coursesApi";
 import { getLastViewedLesson } from "@/utils/utils";
@@ -71,6 +72,9 @@ export default function CoursesPage() {
 
         {/* Heatmap & Streaks Panel (Current Week on Left) */}
         <ActivityHeatmap />
+
+        {/* Upcoming Deadlines Widget */}
+        <DashboardDeadlinesWidget />
 
         <div className="space-y-6 pt-2">
           <div className="flex justify-between items-center">

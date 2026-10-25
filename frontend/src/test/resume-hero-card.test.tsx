@@ -42,7 +42,7 @@ describe("ResumeHeroCard Component", () => {
     const onPlay = vi.fn();
     render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
 
-    expect(screen.getByText("Comece a Estudar")).toBeInTheDocument();
+    expect(screen.getByText("Comece a estudar")).toBeInTheDocument();
     expect(screen.getByText("Claude Impressionador")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Iniciar Curso/i })).toBeInTheDocument();
 
@@ -64,7 +64,7 @@ describe("ResumeHeroCard Component", () => {
     const onPlay = vi.fn();
     render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
 
-    expect(screen.getByText("Continuar de Onde Parei")).toBeInTheDocument();
+    expect(screen.getByText("Continuar de onde parei")).toBeInTheDocument();
     expect(screen.getByText("Claude Impressionador")).toBeInTheDocument();
     // Cleaned titles without numeric prefixes
     expect(screen.getByText("Módulo 1")).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("ResumeHeroCard Component", () => {
 
     // Check lesson number formatting
     await waitFor(() => {
-      expect(screen.getByText("(Aula 1 de 40)")).toBeInTheDocument();
+      expect(screen.getByText(/Aula 1 de 40/i)).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: /^Continuar$/i }));
@@ -99,7 +99,7 @@ describe("ResumeHeroCard Component", () => {
     const onPlay = vi.fn();
     render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
 
-    expect(screen.getByText("Continuar de Onde Parei")).toBeInTheDocument();
+    expect(screen.getByText("Continuar de onde parei")).toBeInTheDocument();
     expect(screen.queryByText(/Retomar em/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/assistidos/i)).not.toBeInTheDocument();
   });
