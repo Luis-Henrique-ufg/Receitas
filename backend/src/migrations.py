@@ -51,7 +51,39 @@ def run_migrations(engine):
                 )
                 conn.commit()
 
+            # 3. Check or create study_events table
+            if "study_events" not in tables:
+                logger.info("Creating study_events table")
+                conn.execute(
+                    text(
+                        """
+                        CREATE TABLE IF NOT EXISTS study_events (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            title VARCHAR(255) NOT NULL,
+                            date VARCHAR(10) NOT NULL,
+                            time VARCHAR(5),
+                            category VARCHAR(50) NOT NULL DEFAULT 'lembrete',
+                            color VARCHAR(30),
+                            notes TEXT,
+                            done BOOLEAN NOT NULL DEFAULT 0,
+                            course_id INTEGER,
+                            created_at DATETIME,
+                            updated_at DATETIME,
+                            FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE SET NULL
+                        )
+                        """
+                    )
+                )
+                conn.execute(
+                    text("CREATE INDEX IF NOT EXISTS idx_study_events_date ON study_events(date)")
+                )
+                conn.execute(
+                    text("CREATE INDEX IF NOT EXISTS idx_study_events_course_id ON study_events(course_id)")
+                )
+                conn.commit()
+
         logger.info("Database migrations executed successfully.")
     except Exception as e:
         logger.error("Error running database migrations: %s", e)
         raise
+
