@@ -86,9 +86,12 @@ export const usePomodoroStore = create<PomodoroState>()(
         if (mode === "focus") {
           newSessions += 1;
           nextMode = newSessions % 4 === 0 ? "long_break" : "short_break";
-          if (apiUrl) {
-            void statsApi.recordPomodoro(apiUrl, durations.focus * 60);
-          }
+          void statsApi
+            .recordPomodoro(apiUrl, durations.focus * 60)
+            .then(() => {
+              window.dispatchEvent(new CustomEvent("statsUpdated"));
+            })
+            .catch((err) => console.error("Erro ao registrar pomodoro:", err));
         } else {
           nextMode = "focus";
         }
@@ -124,9 +127,12 @@ export const usePomodoroStore = create<PomodoroState>()(
               window.dispatchEvent(new CustomEvent("pomodoroPauseVideo"));
             }
 
-            if (apiUrl) {
-              void statsApi.recordPomodoro(apiUrl, durations.focus * 60);
-            }
+            void statsApi
+              .recordPomodoro(apiUrl, durations.focus * 60)
+              .then(() => {
+                window.dispatchEvent(new CustomEvent("statsUpdated"));
+              })
+              .catch((err) => console.error("Erro ao registrar pomodoro:", err));
 
             toast.success("🍅 Ciclo de Foco Concluído!", {
               description: `Muito bem! Hora de descansar (${durations[nextMode]} min).`,

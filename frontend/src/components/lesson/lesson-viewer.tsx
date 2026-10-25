@@ -4,6 +4,7 @@ import useApiUrl from "@/hooks/useApiUrl";
 import { updateWatchedTime } from "@/services/updateWatchedTime";
 import { useEffect, useState, useRef } from "react";
 import { lessonsApi } from "@/services/lessonsApi";
+import { statsApi } from "@/services/statsApi";
 
 const isDocumentFile = (url: string): boolean => {
   return (
@@ -55,6 +56,24 @@ export default function LessonViewer({ lesson, onLessonComplete }: Props) {
 
     fetchElapsedTime();
   }, [lesson, apiUrl]);
+
+  // Track study time when reading documents/PDFs
+  useEffect(() => {
+    if (!isDocument || !lesson) return;
+
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        void statsApi
+          .recordHeartbeat(apiUrl, 15)
+          .then(() => {
+            window.dispatchEvent(new CustomEvent("statsUpdated"));
+          })
+          .catch((err) => console.error("Erro ao registrar estudo de documento:", err));
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [isDocument, lesson, apiUrl]);
 
   const handleTimeUpdate = (currentTime: number) => {
     if (!lesson) return;

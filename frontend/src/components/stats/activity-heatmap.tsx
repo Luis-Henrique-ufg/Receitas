@@ -43,19 +43,29 @@ export default function ActivityHeatmap() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStats() {
+    async function loadStats(showLoading = false) {
       try {
-        setIsLoading(true);
+        if (showLoading) setIsLoading(true);
         // Load 364 days (52 weeks)
         const res = await statsApi.getHeatmap(apiUrl, 364);
         setData(res);
       } catch (err) {
         console.error("Erro ao carregar dados do heatmap:", err);
       } finally {
-        setIsLoading(false);
+        if (showLoading) setIsLoading(false);
       }
     }
-    loadStats();
+
+    loadStats(true);
+
+    const handleStatsUpdated = () => {
+      void loadStats(false);
+    };
+
+    window.addEventListener("statsUpdated", handleStatsUpdated);
+    return () => {
+      window.removeEventListener("statsUpdated", handleStatsUpdated);
+    };
   }, [apiUrl]);
 
   // Group days into columns of 7 days (weeks) and identify month labels

@@ -17,17 +17,28 @@ export interface HeatmapResponse {
   days: HeatmapDay[];
 }
 
+function resolveUrl(apiUrl?: string, path: string = ""): string {
+  const base = (apiUrl || "").replace(/\/+$/, "");
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${normalizedPath}`;
+}
+
 export const statsApi = {
-  async getHeatmap(apiUrl: string, days: number = 180): Promise<HeatmapResponse> {
-    const res = await axios.get<HeatmapResponse>(`${apiUrl}/api/stats/heatmap?days=${days}`);
+  async getHeatmap(apiUrl?: string, days: number = 180): Promise<HeatmapResponse> {
+    const url = resolveUrl(apiUrl, `/api/stats/heatmap?days=${days}`);
+    const res = await axios.get<HeatmapResponse>(url);
     return res.data;
   },
 
-  async recordPomodoro(apiUrl: string, studySeconds: number = 1500): Promise<void> {
-    await axios.post(`${apiUrl}/api/stats/pomodoro`, { study_seconds: studySeconds });
+  async recordPomodoro(apiUrl?: string, studySeconds: number = 1500): Promise<void> {
+    const url = resolveUrl(apiUrl, "/api/stats/pomodoro");
+    await axios.post(url, { study_seconds: studySeconds });
   },
 
-  async recordHeartbeat(apiUrl: string, seconds: number): Promise<void> {
-    await axios.post(`${apiUrl}/api/stats/heartbeat`, { seconds });
+  async recordHeartbeat(apiUrl?: string, seconds: number): Promise<void> {
+    if (seconds <= 0) return;
+    const url = resolveUrl(apiUrl, "/api/stats/heartbeat");
+    await axios.post(url, { seconds });
   },
 };
+
