@@ -197,6 +197,30 @@ class CourseService:
                 else:
                     estimated_finish_month = month_names_br[finish_date.month - 1]
 
+        # Determine last studied date from DailyCourseActivity or DailyActivity
+        from models.daily_activity import DailyCourseActivity
+        last_studied_date = None
+        dca = DailyCourseActivity.query.filter(
+            DailyCourseActivity.course_id == course_id,
+            (DailyCourseActivity.study_seconds > 0)
+            | (DailyCourseActivity.pomodoros > 0)
+            | (DailyCourseActivity.lessons > 0)
+        ).order_by(DailyCourseActivity.date.desc()).first()
+        if dca:
+            last_studied_date = dca.date
+        else:
+            cid_str = str(course_id)
+            all_acts = DailyActivity.query.order_by(DailyActivity.date.desc()).all()
+            for a in all_acts:
+                cb = a.get_course_breakdown()
+                if cid_str in cb:
+                    info = cb[cid_str]
+                    if info.get("study_seconds", 0) > 0 or info.get("pomodoros", 0) > 0:
+                        last_studied_date = a.date
+                        break
+
+        current_lesson_number = min(total_lessons, completed_lessons + 1) if total_lessons > 0 else 0
+
         return {
             "completed_percentage": completion_percentage,
             "completion_percentage": completion_percentage,
@@ -205,5 +229,7 @@ class CourseService:
             "remaining_lessons": remaining_lessons,
             "remaining_seconds": remaining_seconds,
             "estimated_finish_month": estimated_finish_month,
+            "last_studied_date": last_studied_date,
+            "current_lesson_number": current_lesson_number,
         }
 

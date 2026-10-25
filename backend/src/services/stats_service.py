@@ -7,10 +7,18 @@ from models.daily_activity import DailyActivity, DailyCourseActivity
 
 class StatsService:
     @staticmethod
-    def _get_today_str(target_date: str | None = None) -> str:
+    def _get_today_date() -> date:
+        try:
+            from zoneinfo import ZoneInfo
+            return datetime.now(ZoneInfo("America/Sao_Paulo")).date()
+        except Exception:
+            return date.today()
+
+    @classmethod
+    def _get_today_str(cls, target_date: str | None = None) -> str:
         if target_date:
             return target_date
-        return date.today().isoformat()
+        return cls._get_today_date().isoformat()
 
     @classmethod
     def get_or_create_activity(cls, date_str: str | None = None) -> DailyActivity:
@@ -177,7 +185,7 @@ class StatsService:
         reference_date: date | None = None,
         course_id: int | None = None,
     ) -> dict:
-        ref = reference_date or date.today()
+        ref = reference_date or cls._get_today_date()
         start_date = ref - timedelta(days=days - 1)
         start_str = start_date.isoformat()
         end_str = ref.isoformat()
