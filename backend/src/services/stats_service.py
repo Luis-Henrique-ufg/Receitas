@@ -130,7 +130,7 @@ class StatsService:
     @classmethod
     def record_pomodoro_completed(
         cls,
-        study_seconds: int = 1500,
+        study_seconds: int = 0,
         course_id: int | None = None,
         course_name: str | None = None,
         date_str: str | None = None,
@@ -138,6 +138,7 @@ class StatsService:
         activity = cls.get_or_create_activity(date_str)
         today_str = cls._get_today_str(date_str)
         activity.pomodoros_completed += 1
+        # Study time is tracked exclusively by playback heartbeats; pomodoro only tracks session completion
         if study_seconds > 0:
             activity.study_seconds += int(study_seconds)
 

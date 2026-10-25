@@ -209,12 +209,14 @@ class CourseService:
         if dca:
             last_studied_date = dca.date
         else:
-            cid_str = str(course_id)
-            all_acts = DailyActivity.query.order_by(DailyActivity.date.desc()).all()
-            for a in all_acts:
+            cid_key = f'"{course_id}"'
+            recent_acts = DailyActivity.query.filter(
+                DailyActivity.course_breakdown.like(f"%{cid_key}%")
+            ).order_by(DailyActivity.date.desc()).limit(10).all()
+            for a in recent_acts:
                 cb = a.get_course_breakdown()
-                if cid_str in cb:
-                    info = cb[cid_str]
+                if str(course_id) in cb:
+                    info = cb[str(course_id)]
                     if info.get("study_seconds", 0) > 0 or info.get("pomodoros", 0) > 0:
                         last_studied_date = a.date
                         break

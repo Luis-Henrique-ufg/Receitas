@@ -16,7 +16,7 @@ def get_heatmap():
 @stats_bp.route("/api/stats/pomodoro", methods=["POST"])
 def record_pomodoro():
     payload = request.json or {}
-    study_seconds = payload.get("study_seconds", 1500)
+    study_seconds = payload.get("study_seconds", 0)
     course_id = payload.get("course_id")
     course_name = payload.get("course_name")
     date_str = payload.get("date")
