@@ -68,6 +68,8 @@ class StatsService:
         course_id: int | None = None,
         course_name: str | None = None,
         date_str: str | None = None,
+        subject_id: int | None = None,
+        subject_name: str | None = None,
     ) -> DailyActivity:
         if seconds <= 0:
             return cls.get_or_create_activity(date_str)
@@ -107,6 +109,48 @@ class StatsService:
             dca.study_seconds += int(seconds)
             if course_name:
                 dca.course_name = course_name
+
+        # Subject tracking (relational + breakdown)
+        resolved_subject_name = subject_name
+        if subject_id is not None and not resolved_subject_name:
+            sub = db.session.get(Subject, subject_id)
+            if sub:
+                resolved_subject_name = sub.name
+
+        if subject_id is None:
+            resolved_subject_name = resolved_subject_name or "Sem matéria"
+        elif not resolved_subject_name:
+            resolved_subject_name = f"Matéria #{subject_id}"
+
+        dsa = DailySubjectActivity.query.filter_by(
+            date=today_str, subject_id=subject_id
+        ).first()
+        if not dsa:
+            dsa = DailySubjectActivity(
+                date=today_str,
+                subject_id=subject_id,
+                subject_name=resolved_subject_name,
+                study_seconds=0,
+                pomodoros=0,
+            )
+            db.session.add(dsa)
+        dsa.study_seconds += int(seconds)
+        if resolved_subject_name:
+            dsa.subject_name = resolved_subject_name
+
+        sb = activity.get_subject_breakdown()
+        s_key = str(subject_id) if subject_id is not None else "none"
+        if s_key not in sb:
+            sb[s_key] = {
+                "id": subject_id,
+                "name": resolved_subject_name,
+                "study_seconds": 0,
+                "pomodoros": 0,
+            }
+        sb[s_key]["study_seconds"] = sb[s_key].get("study_seconds", 0) + int(seconds)
+        if resolved_subject_name:
+            sb[s_key]["name"] = resolved_subject_name
+        activity.set_subject_breakdown(sb)
 
         db.session.commit()
         return activity
@@ -165,10 +209,12 @@ class StatsService:
         subject_id: int | None = None,
         subject_name: str | None = None,
         date_str: str | None = None,
+        pomodoros: int = 1,
     ) -> DailyActivity:
         activity = cls.get_or_create_activity(date_str)
         today_str = cls._get_today_str(date_str)
-        activity.pomodoros_completed += 1
+        pomodoros_to_add = max(1, int(pomodoros))
+        activity.pomodoros_completed += pomodoros_to_add
 
         # Pomodoro study seconds
         if study_seconds > 0:
@@ -184,7 +230,7 @@ class StatsService:
                     "study_seconds": 0,
                     "pomodoros": 0,
                 }
-            cb[cid]["pomodoros"] = cb[cid].get("pomodoros", 0) + 1
+            cb[cid]["pomodoros"] = cb[cid].get("pomodoros", 0) + pomodoros_to_add
             if study_seconds > 0:
                 cb[cid]["study_seconds"] = cb[cid].get("study_seconds", 0) + int(
                     study_seconds
@@ -206,7 +252,7 @@ class StatsService:
                     lessons=0,
                 )
                 db.session.add(dca)
-            dca.pomodoros += 1
+            dca.pomodoros += pomodoros_to_add
             if study_seconds > 0:
                 dca.study_seconds += int(study_seconds)
             if course_name:
@@ -238,7 +284,7 @@ class StatsService:
                 pomodoros=0,
             )
             db.session.add(dsa)
-        dsa.pomodoros += 1
+        dsa.pomodoros += pomodoros_to_add
         if study_seconds > 0:
             dsa.study_seconds += int(study_seconds)
         if resolved_subject_name:
@@ -254,7 +300,7 @@ class StatsService:
                 "study_seconds": 0,
                 "pomodoros": 0,
             }
-        sb[s_key]["pomodoros"] = sb[s_key].get("pomodoros", 0) + 1
+        sb[s_key]["pomodoros"] = sb[s_key].get("pomodoros", 0) + pomodoros_to_add
         if study_seconds > 0:
             sb[s_key]["study_seconds"] = sb[s_key].get("study_seconds", 0) + int(
                 study_seconds
@@ -831,6 +877,33 @@ class StatsService:
                     activity_matrix[key]["pomodoros"] = max(
                         activity_matrix[key]["pomodoros"], pom
                     )
+
+        # Reconcile any unassigned study_seconds or pomodoros on DailyActivity into "Sem matéria"
+        for r in daily_records:
+            assigned_sec = sum(
+                info["seconds"]
+                for (d_str, _), info in activity_matrix.items()
+                if d_str == r.date
+            )
+            assigned_pom = sum(
+                info["pomodoros"]
+                for (d_str, _), info in activity_matrix.items()
+                if d_str == r.date
+            )
+            diff_sec = max(0, (r.study_seconds or 0) - assigned_sec)
+            diff_pom = max(0, (r.pomodoros_completed or 0) - assigned_pom)
+
+            if diff_sec > 0 or diff_pom > 0:
+                none_key = (r.date, None)
+                if none_key not in activity_matrix:
+                    activity_matrix[none_key] = {
+                        "seconds": diff_sec,
+                        "pomodoros": diff_pom,
+                        "name": "Sem matéria",
+                    }
+                else:
+                    activity_matrix[none_key]["seconds"] += diff_sec
+                    activity_matrix[none_key]["pomodoros"] += diff_pom
 
         # 4. Map into bars
         bars = []

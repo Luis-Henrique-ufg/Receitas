@@ -121,7 +121,8 @@ describe("usePomodoroStore", () => {
       undefined,
       undefined,
       10,
-      "Estatística UFG"
+      "Estatística UFG",
+      2
     );
     expect(usePomodoroStore.getState().sessionSummary).not.toBeNull();
     expect(usePomodoroStore.getState().sessionSummary?.pomodorosCount).toBe(2);

@@ -171,18 +171,19 @@ export default function FocusBarChart() {
   }, [maxSeconds]);
 
   // SVG Chart Geometry
-  const svgWidth = 840;
+  const barCount = filteredBars.length;
+  const isDense = barCount >= 20;
+  const svgWidth = isDense ? 960 : 840;
   const svgHeight = 240;
-  const paddingLeft = 50;
-  const paddingRight = 20;
+  const paddingLeft = isDense ? 45 : 50;
+  const paddingRight = isDense ? 15 : 20;
   const paddingTop = 25;
   const paddingBottom = 42;
   const plotWidth = svgWidth - paddingLeft - paddingRight;
   const plotHeight = svgHeight - paddingTop - paddingBottom;
 
-  const barCount = filteredBars.length;
   const slotWidth = barCount > 0 ? plotWidth / barCount : plotWidth;
-  const barWidth = Math.max(10, Math.min(36, slotWidth * 0.65));
+  const barWidth = Math.max(6, Math.min(36, slotWidth * (isDense ? 0.72 : 0.65)));
 
   const goalY =
     showGoalLine && goalSeconds <= maxSeconds
@@ -340,7 +341,10 @@ export default function FocusBarChart() {
           <div className="w-full overflow-x-auto select-none">
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              className="w-full h-auto min-w-[620px] overflow-visible"
+              className={cn(
+                "w-full h-auto overflow-visible",
+                isDense ? "min-w-[720px]" : "min-w-[620px]"
+              )}
             >
               {/* Horizontal Gridlines & Y-Axis Labels */}
               {yTicks.map((tickVal) => {
@@ -455,17 +459,45 @@ export default function FocusBarChart() {
                     )}
 
                     {/* X-Axis Bar Label */}
-                    <text
-                      x={slotX + slotWidth / 2}
-                      y={paddingTop + plotHeight + 16}
-                      textAnchor="middle"
-                      className={cn(
-                        "text-[10px] font-sans transition-colors",
-                        isHovered ? "fill-white font-semibold" : "fill-zinc-400"
-                      )}
-                    >
-                      {bar.label}
-                    </text>
+                    {(() => {
+                      // In dense view (e.g. 30 days), showing "26 Out" in every 30px slot causes overlap.
+                      // Instead, display only the day number (e.g. "26") or "1 Out" on the 1st of month.
+                      let labelText = bar.label;
+                      let isMonthMarker = false;
+
+                      if (slotWidth < 38) {
+                        const dayNum = bar.start_date
+                          ? parseInt(bar.start_date.split("-")[2], 10)
+                          : parseInt(bar.label.split(" ")[0], 10);
+                        const isFirst = index === 0;
+                        const isFirstOfMonth = dayNum === 1;
+
+                        if (isFirst || isFirstOfMonth) {
+                          isMonthMarker = true;
+                          labelText = bar.label;
+                        } else {
+                          labelText = String(dayNum);
+                        }
+                      }
+
+                      return (
+                        <text
+                          x={slotX + slotWidth / 2}
+                          y={paddingTop + plotHeight + 16}
+                          textAnchor="middle"
+                          className={cn(
+                            "text-[10px] font-sans transition-colors tabular-nums",
+                            isHovered
+                              ? "fill-white font-bold"
+                              : isMonthMarker
+                              ? "fill-cyan-400 font-semibold"
+                              : "fill-zinc-400 font-medium"
+                          )}
+                        >
+                          {labelText}
+                        </text>
+                      );
+                    })()}
 
                     {/* X-Axis Sublabel (e.g. Day name) */}
                     {bar.sublabel && (
@@ -473,9 +505,15 @@ export default function FocusBarChart() {
                         x={slotX + slotWidth / 2}
                         y={paddingTop + plotHeight + 28}
                         textAnchor="middle"
-                        className="text-[9px] font-sans fill-zinc-500"
+                        className={cn(
+                          "font-sans transition-colors",
+                          slotWidth < 32
+                            ? "text-[8.5px] fill-zinc-500 font-medium"
+                            : "text-[9px] fill-zinc-500",
+                          isHovered && "fill-zinc-300 font-semibold"
+                        )}
                       >
-                        {bar.sublabel}
+                        {slotWidth < 32 ? bar.sublabel.charAt(0) : bar.sublabel}
                       </text>
                     )}
                   </g>

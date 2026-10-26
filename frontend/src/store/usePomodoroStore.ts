@@ -269,7 +269,8 @@ export const usePomodoroStore = create<PomodoroState>()(
             currentCourseId ?? undefined,
             currentCourseName ?? undefined,
             currentSubjectId ?? undefined,
-            currentSubjectName ?? undefined
+            currentSubjectName ?? undefined,
+            earnedPomodoros
           );
           window.dispatchEvent(new CustomEvent("statsUpdated"));
         } catch (err) {

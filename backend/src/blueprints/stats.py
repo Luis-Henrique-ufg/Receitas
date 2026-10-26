@@ -33,6 +33,7 @@ def record_pomodoro():
     course_name = payload.get("course_name")
     subject_id = payload.get("subject_id")
     subject_name = payload.get("subject_name")
+    pomodoros = payload.get("pomodoros", 1)
     date_str = payload.get("date")
 
     activity = StatsService.record_pomodoro_completed(
@@ -42,6 +43,7 @@ def record_pomodoro():
         subject_id=subject_id,
         subject_name=subject_name,
         date_str=date_str,
+        pomodoros=pomodoros,
     )
     return jsonify({"message": "Pomodoro registrado", "activity": activity.to_dict()})
 
@@ -52,11 +54,15 @@ def record_heartbeat():
     seconds = payload.get("seconds", 0)
     course_id = payload.get("course_id")
     course_name = payload.get("course_name")
+    subject_id = payload.get("subject_id")
+    subject_name = payload.get("subject_name")
     date_str = payload.get("date")
     activity = StatsService.record_study_seconds(
         seconds=seconds,
         course_id=course_id,
         course_name=course_name,
         date_str=date_str,
+        subject_id=subject_id,
+        subject_name=subject_name,
     )
     return jsonify({"message": "Atividade registrada", "activity": activity.to_dict()})

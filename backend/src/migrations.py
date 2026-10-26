@@ -145,6 +145,53 @@ def run_migrations(engine):
                 )
                 conn.commit()
 
+            # 6. Reconcile existing daily_activity with daily_subject_activity
+            if "daily_activity" in tables and "daily_subject_activity" in tables:
+                rows = conn.execute(
+                    text(
+                        "SELECT date, study_seconds, pomodoros_completed FROM daily_activity WHERE study_seconds > 0 OR pomodoros_completed > 0"
+                    )
+                ).fetchall()
+                for r in rows:
+                    r_date, r_sec, r_pom = r[0], r[1] or 0, r[2] or 0
+                    assigned = conn.execute(
+                        text(
+                            "SELECT COALESCE(SUM(study_seconds), 0), COALESCE(SUM(pomodoros), 0) FROM daily_subject_activity WHERE date = :d"
+                        ),
+                        {"d": r_date},
+                    ).fetchone()
+                    assigned_sec = assigned[0] if assigned else 0
+                    assigned_pom = assigned[1] if assigned else 0
+                    diff_sec = max(0, r_sec - assigned_sec)
+                    diff_pom = max(0, r_pom - assigned_pom)
+
+                    if diff_sec > 0 or diff_pom > 0:
+                        existing_null = conn.execute(
+                            text(
+                                "SELECT id, study_seconds, pomodoros FROM daily_subject_activity WHERE date = :d AND subject_id IS NULL"
+                            ),
+                            {"d": r_date},
+                        ).fetchone()
+                        if existing_null:
+                            conn.execute(
+                                text(
+                                    "UPDATE daily_subject_activity SET study_seconds = study_seconds + :sec, pomodoros = pomodoros + :pom WHERE id = :id"
+                                ),
+                                {
+                                    "sec": diff_sec,
+                                    "pom": diff_pom,
+                                    "id": existing_null[0],
+                                },
+                            )
+                        else:
+                            conn.execute(
+                                text(
+                                    "INSERT INTO daily_subject_activity (date, subject_id, subject_name, study_seconds, pomodoros) VALUES (:d, NULL, 'Sem matéria', :sec, :pom)"
+                                ),
+                                {"d": r_date, "sec": diff_sec, "pom": diff_pom},
+                            )
+                        conn.commit()
+
         logger.info("Database migrations executed successfully.")
     except Exception as e:
         logger.error("Error running database migrations: %s", e)
