@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
+import { BookOpen, BarChart3 } from "lucide-react";
 import CoursesList from "@/components/courses/courses-list";
 import { Course } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
@@ -8,6 +9,7 @@ import ActivityHeatmap from "@/components/stats/activity-heatmap";
 import FocusBarChart from "@/components/stats/focus-bar-chart";
 import ResumeHeroCard from "@/components/courses/resume-hero-card";
 import DashboardDeadlinesWidget from "@/components/calendar/dashboard-deadlines-widget";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { coursesApi } from "@/services/coursesApi";
 import { getMostRecentActiveCourse } from "@/utils/utils";
@@ -57,53 +59,88 @@ export default function CoursesPage() {
     return active ? active.course.id : (courses[0]?.id ?? null);
   }, [courses]);
 
-
   return (
-    <>
-      <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto pb-20">
-        {/* Spotlight: Resume Studies Hero */}
-        {!isLoading && courses.length > 0 && (
-          <ResumeHeroCard
-            courses={courses}
-            onPlay={(courseId) => navigate(`/receitas/${courseId}`)}
-          />
-        )}
-
-        {/* Heatmap & Streaks Panel (Current Week on Left) */}
-        <ActivityHeatmap />
-
-        {/* Stacked Focus Time Bar Chart */}
-        <FocusBarChart />
-
-        {/* Upcoming Deadlines Widget */}
-        <DashboardDeadlinesWidget />
-
-        <div className="space-y-6 pt-2">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
-              Meus Cursos
-            </h1>
-            <AddCourse onCreate={() => fetchCourses()} />
-          </div>
-          <section className="mt-10 flex flex-wrap gap-4 w-full justify-center">
-            {isLoading ? (
-              // Skeleton Loaders
-              Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="w-[300px] h-[350px] glass-panel rounded-2xl animate-pulse"></div>
-              ))
-            ) : (
-              <CoursesList
-                courses={courses}
-                heroCourseId={heroCourseId}
-                isEditable
-                onRefresh={fetchCourses}
-                onReorder={handleReorderCourses}
-                onPlay={(courseId) => navigate(`/receitas/${courseId}`)}
-              />
-            )}
-          </section>
+    <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto pb-20">
+      <Tabs defaultValue="courses" className="w-full">
+        {/* Navigation Tabs Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl self-start">
+            <TabsTrigger
+              value="courses"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            >
+              <BookOpen className="w-4 h-4" />
+              Cursos & Estudos
+            </TabsTrigger>
+            <TabsTrigger
+              value="analytics"
+              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            >
+              <BarChart3 className="w-4 h-4" />
+              Tempo de Foco & Prazos
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
-    </>
+
+        {/* Tab 1: Cursos & Estudos (Hero, Heatmap, Meus Cursos) */}
+        <TabsContent
+          value="courses"
+          className="outline-none focus:outline-none space-y-6 mt-4"
+        >
+          {/* Spotlight: Resume Studies Hero */}
+          {!isLoading && courses.length > 0 && (
+            <ResumeHeroCard
+              courses={courses}
+              onPlay={(courseId) => navigate(`/receitas/${courseId}`)}
+            />
+          )}
+
+          {/* Heatmap & Streaks Panel (Current Week on Left) */}
+          <ActivityHeatmap />
+
+          {/* Courses List Section */}
+          <div className="space-y-6 pt-2">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
+                Meus Cursos
+              </h1>
+              <AddCourse onCreate={() => fetchCourses()} />
+            </div>
+            <section className="mt-8 flex flex-wrap gap-4 w-full justify-center">
+              {isLoading ? (
+                // Skeleton Loaders
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-[300px] h-[350px] glass-panel rounded-2xl animate-pulse"
+                  />
+                ))
+              ) : (
+                <CoursesList
+                  courses={courses}
+                  heroCourseId={heroCourseId}
+                  isEditable
+                  onRefresh={fetchCourses}
+                  onReorder={handleReorderCourses}
+                  onPlay={(courseId) => navigate(`/receitas/${courseId}`)}
+                />
+              )}
+            </section>
+          </div>
+        </TabsContent>
+
+        {/* Tab 2: Tempo de Foco & Prazos (Stacked Bar Chart, Deadlines) */}
+        <TabsContent
+          value="analytics"
+          className="outline-none focus:outline-none space-y-6 mt-4"
+        >
+          {/* Stacked Focus Time Bar Chart by Subject */}
+          <FocusBarChart />
+
+          {/* Upcoming Deadlines Widget */}
+          <DashboardDeadlinesWidget />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

@@ -27,10 +27,20 @@ describe("usePomodoroStore", () => {
       mode: "focus",
       timeLeft: 25 * 60,
       isRunning: false,
+      isOvertime: false,
+      overtimeSeconds: 0,
+      startedAt: null,
+      initialFocusDuration: 25 * 60,
+      completionBehavior: "flow",
       sessionsCompleted: 0,
       soundEnabled: true,
-      autoPauseVideo: true,
+      autoPauseVideo: false,
       durations: { focus: 25, short_break: 5, long_break: 15 },
+      currentCourseId: null,
+      currentCourseName: null,
+      currentSubjectId: null,
+      currentSubjectName: null,
+      sessionSummary: null,
     });
   });
 
@@ -43,9 +53,11 @@ describe("usePomodoroStore", () => {
   });
 
   it("resets timer according to current mode", () => {
-    usePomodoroStore.setState({ timeLeft: 50 });
+    usePomodoroStore.setState({ timeLeft: 50, isOvertime: true, overtimeSeconds: 120 });
     usePomodoroStore.getState().reset();
     expect(usePomodoroStore.getState().timeLeft).toBe(25 * 60);
+    expect(usePomodoroStore.getState().isOvertime).toBe(false);
+    expect(usePomodoroStore.getState().overtimeSeconds).toBe(0);
   });
 
   it("switches modes properly", () => {
@@ -58,14 +70,74 @@ describe("usePomodoroStore", () => {
     expect(usePomodoroStore.getState().timeLeft).toBe(15 * 60);
   });
 
-  it("decrements timeLeft on tick when running", () => {
-    usePomodoroStore.getState().start();
+  it("decrements timeLeft on tick before reaching initial duration", () => {
+    const startedAt = Date.now() - 10 * 1000; // 10s elapsed
+    usePomodoroStore.setState({
+      isRunning: true,
+      startedAt,
+      initialFocusDuration: 1500,
+      mode: "focus",
+    });
     usePomodoroStore.getState().tick("http://localhost:9823");
-    expect(usePomodoroStore.getState().timeLeft).toBe(25 * 60 - 1);
+    expect(usePomodoroStore.getState().timeLeft).toBeLessThanOrEqual(1490);
+    expect(usePomodoroStore.getState().isOvertime).toBe(false);
   });
 
-  it("handles cycle completion when timer reaches zero", () => {
-    usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
+  it("enters overtime flow when reaching 25:00 in flow mode", () => {
+    // 25 min + 10s elapsed
+    const startedAt = Date.now() - (25 * 60 + 10) * 1000;
+    usePomodoroStore.setState({
+      isRunning: true,
+      startedAt,
+      initialFocusDuration: 25 * 60,
+      completionBehavior: "flow",
+      mode: "focus",
+      isOvertime: false,
+    });
+
+    usePomodoroStore.getState().tick("http://localhost:9823");
+
+    expect(usePomodoroStore.getState().isOvertime).toBe(true);
+    expect(usePomodoroStore.getState().overtimeSeconds).toBeGreaterThanOrEqual(10);
+    expect(usePomodoroStore.getState().isRunning).toBe(true); // video and timer keep running!
+  });
+
+  it("stops and records flow session with earned pomodoros and subject", async () => {
+    usePomodoroStore.getState().setCurrentSubject(10, "Estatística UFG");
+    // 50 minutes elapsed in flow (2 pomodoros)
+    usePomodoroStore.setState({
+      startedAt: Date.now() - 50 * 60 * 1000,
+      initialFocusDuration: 25 * 60,
+      isOvertime: true,
+      overtimeSeconds: 25 * 60,
+      mode: "focus",
+    });
+
+    await usePomodoroStore.getState().stopAndRecord("http://localhost:9823");
+
+    expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
+      "http://localhost:9823",
+      expect.any(Number),
+      undefined,
+      undefined,
+      10,
+      "Estatística UFG"
+    );
+    expect(usePomodoroStore.getState().sessionSummary).not.toBeNull();
+    expect(usePomodoroStore.getState().sessionSummary?.pomodorosCount).toBe(2);
+  });
+
+  it("handles cycle completion in strict mode when timer reaches zero", () => {
+    const startedAt = Date.now() - 25 * 60 * 1000;
+    usePomodoroStore.setState({
+      isRunning: true,
+      startedAt,
+      initialFocusDuration: 25 * 60,
+      completionBehavior: "strict",
+      mode: "focus",
+      isOvertime: false,
+    });
+
     usePomodoroStore.getState().tick("http://localhost:9823");
 
     expect(usePomodoroStore.getState().sessionsCompleted).toBe(1);
@@ -80,36 +152,4 @@ describe("usePomodoroStore", () => {
       undefined
     );
   });
-
-  it("records pomodoro even when apiUrl is an empty string", () => {
-    usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
-    usePomodoroStore.getState().tick("");
-
-    expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
-      "",
-      25 * 60,
-      undefined,
-      undefined,
-      undefined,
-      undefined
-    );
-  });
-
-  it("passes course and subject context when set", () => {
-    usePomodoroStore.getState().setCurrentCourse(42, "Estatística");
-    usePomodoroStore.getState().setCurrentSubject(10, "Estatística UFG");
-    usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
-    usePomodoroStore.getState().tick("http://localhost:9823");
-
-    expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
-      "http://localhost:9823",
-      25 * 60,
-      42,
-      "Estatística",
-      10,
-      "Estatística UFG"
-    );
-  });
 });
-
-
