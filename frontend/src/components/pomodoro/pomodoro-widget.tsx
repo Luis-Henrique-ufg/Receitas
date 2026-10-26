@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Play,
   Pause,
@@ -10,8 +10,11 @@ import {
   Maximize2,
   Settings2,
   Check,
+  BookOpen,
 } from "lucide-react";
 import { usePomodoroStore, PomodoroMode } from "@/store/usePomodoroStore";
+import { subjectsApi } from "@/services/subjectsApi";
+import { Subject } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,6 +35,8 @@ export default function PomodoroWidget() {
     isMinimized,
     soundEnabled,
     durations,
+    currentSubjectId,
+    currentSubjectName,
     start,
     pause,
     reset,
@@ -41,11 +46,37 @@ export default function PomodoroWidget() {
     toggleMinimized,
     toggleSound,
     updateDurations,
+    setCurrentSubject,
   } = usePomodoroStore();
 
   const [isEditingSettings, setIsEditingSettings] = useState(false);
   const [customFocus, setCustomFocus] = useState(durations.focus);
   const [customBreak, setCustomBreak] = useState(durations.short_break);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
+
+  // Load active subjects for selection
+  const loadSubjects = useCallback(async () => {
+    try {
+      const data = await subjectsApi.getAll(apiUrl, false);
+      setSubjects(data);
+    } catch {
+      // benign error if offline
+    }
+  }, [apiUrl]);
+
+  useEffect(() => {
+    loadSubjects();
+
+    const handleSubjectsUpdated = () => {
+      void loadSubjects();
+    };
+
+    window.addEventListener("subjectsUpdated", handleSubjectsUpdated);
+    return () => {
+      window.removeEventListener("subjectsUpdated", handleSubjectsUpdated);
+    };
+  }, [loadSubjects]);
 
   // Timer heartbeat
   useEffect(() => {
@@ -79,11 +110,19 @@ export default function PomodoroWidget() {
     setIsEditingSettings(false);
   }
 
+  // Active subject metadata
+  const activeSubject = subjects.find((s) => s.id === currentSubjectId);
+  const subjectDisplayColor = activeSubject ? activeSubject.color : "#64748b";
+  const subjectDisplayName = activeSubject
+    ? activeSubject.name
+    : currentSubjectName || "Sem matéria";
+
   if (isMinimized) {
     return (
       <div
         onClick={toggleMinimized}
         style={{ position: "fixed", bottom: "1.5rem", right: "1.5rem", zIndex: 70 }}
+        title={currentSubjectId ? `Matéria: ${subjectDisplayName}` : "Pomodoro"}
         className="flex items-center gap-2.5 px-4 py-2 rounded-full glass-panel glass-panel-hover border border-white/20 shadow-2xl cursor-pointer select-none transition-all duration-300 hover:scale-105 bg-[#050a14]/90 backdrop-blur-xl"
       >
         <span className="text-lg">{currentModeInfo.icon}</span>
@@ -91,10 +130,8 @@ export default function PomodoroWidget() {
           {formatSeconds(timeLeft)}
         </span>
         <div
-          className={cn(
-            "w-2 h-2 rounded-full",
-            isRunning ? "bg-emerald-400 animate-pulse" : "bg-zinc-500"
-          )}
+          className="w-2 h-2 rounded-full flex-shrink-0"
+          style={{ backgroundColor: isRunning ? "#10b981" : subjectDisplayColor }}
         />
         <Maximize2 className="w-3.5 h-3.5 text-zinc-400 hover:text-white ml-1" />
       </div>
@@ -197,7 +234,7 @@ export default function PomodoroWidget() {
       ) : (
         /* Main Timer Body */
         <div className="py-4 flex flex-col items-center">
-          {/* Progress ring or line */}
+          {/* Progress bar */}
           <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mb-4">
             <div
               className={cn("h-full transition-all duration-500 bg-gradient-to-r", currentModeInfo.color)}
@@ -209,10 +246,85 @@ export default function PomodoroWidget() {
             {formatSeconds(timeLeft)}
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-4">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-3">
             <span>{currentModeInfo.icon} {currentModeInfo.label}</span>
             <span>•</span>
             <span>{sessionsCompleted} {sessionsCompleted === 1 ? "ciclo concluído" : "ciclos concluídos"}</span>
+          </div>
+
+          {/* Subject Selector dropdown */}
+          <div className="w-full relative mb-3">
+            <button
+              type="button"
+              onClick={() => setIsSubjectDropdownOpen(!isSubjectDropdownOpen)}
+              className="w-full flex items-center justify-between px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 transition-colors"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <div
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: subjectDisplayColor }}
+                />
+                <span className="truncate">{subjectDisplayName}</span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0 ml-1.5" />
+            </button>
+
+            {isSubjectDropdownOpen && (
+              <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#0c1222] border border-white/20 rounded-xl shadow-2xl p-1 z-30 max-h-48 overflow-y-auto space-y-0.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentSubject(null, null);
+                    setIsSubjectDropdownOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors",
+                    currentSubjectId === null
+                      ? "bg-blue-600/30 text-white font-medium"
+                      : "text-zinc-300 hover:bg-white/10"
+                  )}
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <div className="w-2 h-2 rounded-full bg-zinc-500" />
+                    <span>Sem matéria</span>
+                  </div>
+                  {currentSubjectId === null && <Check className="w-3.5 h-3.5 text-blue-400" />}
+                </button>
+
+                {subjects.map((sub) => (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => {
+                      setCurrentSubject(sub.id, sub.name);
+                      setIsSubjectDropdownOpen(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors",
+                      currentSubjectId === sub.id
+                        ? "bg-blue-600/30 text-white font-medium"
+                        : "text-zinc-300 hover:bg-white/10"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: sub.color }}
+                      />
+                      <span className="truncate">{sub.name}</span>
+                    </div>
+                    {currentSubjectId === sub.id && <Check className="w-3.5 h-3.5 text-blue-400" />}
+                  </button>
+                ))}
+
+                {subjects.length === 0 && (
+                  <div className="p-2 text-center text-[11px] text-zinc-500">
+                    <BookOpen className="w-3.5 h-3.5 mx-auto mb-1 opacity-60" />
+                    Cadastre matérias em Configurações
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Controls */}

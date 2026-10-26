@@ -14,6 +14,7 @@ class DailyActivity(db.Model):
     lessons_completed = db.Column(db.Integer, default=0, nullable=False)
     pomodoros_completed = db.Column(db.Integer, default=0, nullable=False)
     course_breakdown = db.Column(db.Text, default="{}", nullable=False)
+    subject_breakdown = db.Column(db.Text, default="{}", nullable=False)
 
     def get_course_breakdown(self) -> dict:
         if not self.course_breakdown:
@@ -26,6 +27,17 @@ class DailyActivity(db.Model):
     def set_course_breakdown(self, data: dict):
         self.course_breakdown = json.dumps(data, ensure_ascii=False)
 
+    def get_subject_breakdown(self) -> dict:
+        if not self.subject_breakdown:
+            return {}
+        try:
+            return json.loads(self.subject_breakdown)
+        except Exception:
+            return {}
+
+    def set_subject_breakdown(self, data: dict):
+        self.subject_breakdown = json.dumps(data, ensure_ascii=False)
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -34,6 +46,7 @@ class DailyActivity(db.Model):
             "lessons_completed": self.lessons_completed,
             "pomodoros_completed": self.pomodoros_completed,
             "course_breakdown": self.get_course_breakdown(),
+            "subject_breakdown": self.get_subject_breakdown(),
         }
 
 
@@ -59,4 +72,29 @@ class DailyCourseActivity(db.Model):
             "study_seconds": self.study_seconds,
             "pomodoros": self.pomodoros,
             "lessons": self.lessons,
+        }
+
+
+class DailySubjectActivity(db.Model):
+    __tablename__ = "daily_subject_activity"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(10), nullable=False, index=True)
+    subject_id = db.Column(db.Integer, nullable=True, index=True)
+    subject_name = db.Column(db.String(150), nullable=True)
+    study_seconds = db.Column(db.Integer, default=0, nullable=False)
+    pomodoros = db.Column(db.Integer, default=0, nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint("date", "subject_id", name="uq_daily_subject"),
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "date": self.date,
+            "subject_id": self.subject_id,
+            "subject_name": self.subject_name,
+            "study_seconds": self.study_seconds,
+            "pomodoros": self.pomodoros,
         }

@@ -33,3 +33,13 @@ export type Modules = Record<string, Lesson[]>;
 export type Hierarchy = {
   [key: string]: Hierarchy | Lesson[];
 };
+
+export interface Subject {
+  id: number;
+  name: string;
+  color: string;
+  code?: string | null;
+  semester?: string | null;
+  is_archived: boolean;
+  created_at?: string;
+}

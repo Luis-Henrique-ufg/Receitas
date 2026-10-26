@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { Flame, Sparkles, ChevronDown, AlertCircle, RotateCcw } from "lucide-react";
-import { statsApi, HeatmapResponse, HeatmapDay, AvailableCourse } from "@/services/statsApi";
+import { statsApi, HeatmapResponse, HeatmapDay, AvailableSubject } from "@/services/statsApi";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +66,7 @@ export default function ActivityHeatmap() {
 
   // View mode: compact 14 weeks (~98 days) vs full year (~364 days)
   const [viewMode, setViewMode] = useState<"compact" | "full">("compact");
-  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
 
   // Dynamic cell sizing and scroll refs
   const gridContainerRef = useRef<HTMLDivElement>(null);
@@ -81,7 +81,7 @@ export default function ActivityHeatmap() {
         if (showLoading) setIsLoading(true);
         setHasError(false);
         const daysToLoad = viewMode === "compact" ? 98 : 364;
-        const res = await statsApi.getHeatmap(apiUrl, daysToLoad, selectedCourseId);
+        const res = await statsApi.getHeatmap(apiUrl, daysToLoad, null, selectedSubjectId);
         setData(res);
       } catch (err) {
         console.error("Erro ao carregar dados do heatmap:", err);
@@ -90,7 +90,7 @@ export default function ActivityHeatmap() {
         if (showLoading) setIsLoading(false);
       }
     },
-    [apiUrl, viewMode, selectedCourseId]
+    [apiUrl, viewMode, selectedSubjectId]
   );
 
   useEffect(() => {
@@ -216,7 +216,7 @@ export default function ActivityHeatmap() {
   }, [viewMode, weeks.length, cellSize]);
 
   const activeDetailDay = hoveredDay || selectedDay;
-  const availableCourses: AvailableCourse[] = data?.available_courses || [];
+  const availableSubjects: AvailableSubject[] = data?.available_subjects || [];
 
   const currentStreak = data?.current_streak ?? 0;
   const maxStreak = data?.max_streak ?? 0;
@@ -311,23 +311,27 @@ export default function ActivityHeatmap() {
 
         {/* Controls: Course Select with Content Width + Segmented Period Switcher */}
         <div className="flex items-center gap-2 self-start sm:self-center">
-          {availableCourses.length > 0 && (
+          {availableSubjects.length > 0 && (
             <div className="relative max-w-[170px] sm:max-w-[210px]">
               <select
-                value={selectedCourseId ?? ""}
+                value={selectedSubjectId ?? ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  setSelectedCourseId(val === "" ? null : Number(val));
+                  setSelectedSubjectId(val === "" ? null : Number(val));
                 }}
                 className="w-full truncate appearance-none bg-white/[0.04] hover:bg-white/[0.08] text-xs text-zinc-200 border border-white/10 rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer font-medium transition-colors"
-                aria-label="Filtrar heatmap por curso"
+                aria-label="Filtrar heatmap por matéria"
               >
                 <option value="" className="bg-[#050a14] text-white">
-                  Todos os cursos
+                  Todas as matérias
                 </option>
-                {availableCourses.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-[#050a14] text-white">
-                    {c.name}
+                {availableSubjects.map((s) => (
+                  <option
+                    key={s.id ?? -1}
+                    value={s.id ?? -1}
+                    className="bg-[#050a14] text-white"
+                  >
+                    {s.name}
                   </option>
                 ))}
               </select>
@@ -484,7 +488,11 @@ export default function ActivityHeatmap() {
                 <span className="font-medium text-white tabular-nums">
                   {formatDuration(activeDetailDay.study_seconds)}
                 </span>
-                {activeDetailDay.courses && activeDetailDay.courses.length > 0 ? (
+                {activeDetailDay.subjects && activeDetailDay.subjects.length > 0 ? (
+                  <span className="text-zinc-300">
+                    · {activeDetailDay.subjects.map((s) => `${s.name} (${formatDuration(s.seconds)})`).join(", ")}
+                  </span>
+                ) : activeDetailDay.courses && activeDetailDay.courses.length > 0 ? (
                   <span className="text-zinc-300">
                     · {activeDetailDay.courses.map((c) => c.name).join(", ")}
                   </span>

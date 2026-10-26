@@ -7,6 +7,14 @@ export interface DayCourse {
   pomodoros?: number;
 }
 
+export interface DaySubject {
+  id: number | null;
+  name: string;
+  color: string;
+  seconds: number;
+  pomodoros: number;
+}
+
 export interface HeatmapDay {
   date: string;
   study_seconds: number;
@@ -14,11 +22,19 @@ export interface HeatmapDay {
   lessons: number;
   level: number;
   courses?: DayCourse[];
+  subjects?: DaySubject[];
 }
 
 export interface AvailableCourse {
   id: number;
   name: string;
+}
+
+export interface AvailableSubject {
+  id: number;
+  name: string;
+  color: string;
+  is_archived?: boolean;
 }
 
 export interface HeatmapResponse {
@@ -33,7 +49,48 @@ export interface HeatmapResponse {
   last_week_seconds?: number;
   delta_week_seconds?: number;
   available_courses?: AvailableCourse[];
+  available_subjects?: AvailableSubject[];
   days: HeatmapDay[];
+}
+
+export interface FocusBarBreakdownItem {
+  subject_id: number | null;
+  name: string;
+  color: string;
+  seconds: number;
+  pomodoros: number;
+}
+
+export interface FocusBar {
+  key: string;
+  label: string;
+  sublabel: string;
+  start_date: string;
+  end_date: string;
+  total_seconds: number;
+  total_pomodoros: number;
+  breakdown: FocusBarBreakdownItem[];
+}
+
+export interface FocusBarsSubjectMeta {
+  id: number | null;
+  name: string;
+  color: string;
+  is_archived?: boolean;
+  study_seconds: number;
+  pomodoros: number;
+}
+
+export interface FocusBarsResponse {
+  period: "day" | "week" | "month" | "year";
+  offset: number;
+  range_label: string;
+  start_date: string;
+  end_date: string;
+  total_study_seconds: number;
+  total_pomodoros: number;
+  subjects: FocusBarsSubjectMeta[];
+  bars: FocusBar[];
 }
 
 function resolveUrl(apiUrl?: string, path: string = ""): string {
@@ -46,14 +103,33 @@ export const statsApi = {
   async getHeatmap(
     apiUrl?: string,
     days: number = 180,
-    courseId?: number | null
+    courseId?: number | null,
+    subjectId?: number | null
   ): Promise<HeatmapResponse> {
     const query = new URLSearchParams({ days: days.toString() });
     if (courseId !== undefined && courseId !== null) {
       query.set("course_id", courseId.toString());
     }
+    if (subjectId !== undefined && subjectId !== null) {
+      query.set("subject_id", subjectId.toString());
+    }
     const url = resolveUrl(apiUrl, `/api/stats/heatmap?${query.toString()}`);
     const res = await axios.get<HeatmapResponse>(url);
+    return res.data;
+  },
+
+  async getFocusBars(
+    apiUrl?: string,
+    period: "day" | "week" | "month" | "year" = "day",
+    offset: number = 0,
+    limit?: number
+  ): Promise<FocusBarsResponse> {
+    const query = new URLSearchParams({ period, offset: offset.toString() });
+    if (limit) {
+      query.set("limit", limit.toString());
+    }
+    const url = resolveUrl(apiUrl, `/api/stats/focus-bars?${query.toString()}`);
+    const res = await axios.get<FocusBarsResponse>(url);
     return res.data;
   },
 
@@ -61,7 +137,9 @@ export const statsApi = {
     apiUrl?: string,
     studySeconds: number = 1500,
     courseId?: number,
-    courseName?: string
+    courseName?: string,
+    subjectId?: number | null,
+    subjectName?: string | null
   ): Promise<void> {
     const d = new Date();
     const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -70,6 +148,8 @@ export const statsApi = {
       study_seconds: studySeconds,
       course_id: courseId,
       course_name: courseName,
+      subject_id: subjectId,
+      subject_name: subjectName,
       date: localDate,
     });
   },
@@ -92,5 +172,3 @@ export const statsApi = {
     });
   },
 };
-
-

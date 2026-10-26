@@ -24,6 +24,8 @@ export interface PomodoroState {
   durations: PomodoroDurations;
   currentCourseId?: number | null;
   currentCourseName?: string | null;
+  currentSubjectId?: number | null;
+  currentSubjectName?: string | null;
 
   // Actions
   start: () => void;
@@ -38,6 +40,7 @@ export interface PomodoroState {
   toggleAutoPauseVideo: () => void;
   updateDurations: (newDurations: Partial<PomodoroDurations>) => void;
   setCurrentCourse: (courseId?: number | null, courseName?: string | null) => void;
+  setCurrentSubject: (subjectId?: number | null, subjectName?: string | null) => void;
 }
 
 const DEFAULT_DURATIONS: PomodoroDurations = {
@@ -59,11 +62,12 @@ export const usePomodoroStore = create<PomodoroState>()(
       durations: DEFAULT_DURATIONS,
       currentCourseId: null,
       currentCourseName: null,
+      currentSubjectId: null,
+      currentSubjectName: null,
 
       start: () => set({ isRunning: true }),
 
       pause: () => set({ isRunning: false }),
-
 
       toggle: () => set((state) => ({ isRunning: !state.isRunning })),
 
@@ -85,19 +89,30 @@ export const usePomodoroStore = create<PomodoroState>()(
       },
 
       skip: (apiUrl?: string) => {
-        const { mode, sessionsCompleted, durations, currentCourseId, currentCourseName } = get();
+        const {
+          mode,
+          sessionsCompleted,
+          durations,
+          currentCourseId,
+          currentCourseName,
+          currentSubjectId,
+          currentSubjectName,
+        } = get();
         let nextMode: PomodoroMode;
         let newSessions = sessionsCompleted;
 
         if (mode === "focus") {
           newSessions += 1;
           nextMode = newSessions % 4 === 0 ? "long_break" : "short_break";
+          const focusSecs = durations.focus * 60;
           void statsApi
             .recordPomodoro(
               apiUrl,
-              0,
+              focusSecs,
               currentCourseId ?? undefined,
-              currentCourseName ?? undefined
+              currentCourseName ?? undefined,
+              currentSubjectId ?? undefined,
+              currentSubjectName ?? undefined
             )
             .then(() => {
               window.dispatchEvent(new CustomEvent("statsUpdated"));
@@ -123,7 +138,17 @@ export const usePomodoroStore = create<PomodoroState>()(
           set({ timeLeft: state.timeLeft - 1 });
         } else {
           // Timer finished!
-          const { mode, sessionsCompleted, soundEnabled, autoPauseVideo, durations, currentCourseId, currentCourseName } = state;
+          const {
+            mode,
+            sessionsCompleted,
+            soundEnabled,
+            autoPauseVideo,
+            durations,
+            currentCourseId,
+            currentCourseName,
+            currentSubjectId,
+            currentSubjectName,
+          } = state;
 
           if (soundEnabled) {
             playChimeSound(mode === "focus" ? "complete" : "break");
@@ -132,6 +157,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           if (mode === "focus") {
             const newSessions = sessionsCompleted + 1;
             const nextMode: PomodoroMode = newSessions % 4 === 0 ? "long_break" : "short_break";
+            const focusSecs = durations.focus * 60;
 
             if (autoPauseVideo) {
               usePlaybackStore.getState().setIsPlaying(false);
@@ -141,9 +167,11 @@ export const usePomodoroStore = create<PomodoroState>()(
             void statsApi
               .recordPomodoro(
                 apiUrl,
-                0,
+                focusSecs,
                 currentCourseId ?? undefined,
-                currentCourseName ?? undefined
+                currentCourseName ?? undefined,
+                currentSubjectId ?? undefined,
+                currentSubjectName ?? undefined
               )
               .then(() => {
                 window.dispatchEvent(new CustomEvent("statsUpdated"));
@@ -183,12 +211,11 @@ export const usePomodoroStore = create<PomodoroState>()(
       toggleAutoPauseVideo: () => set((state) => ({ autoPauseVideo: !state.autoPauseVideo })),
 
       updateDurations: (newDurations: Partial<PomodoroDurations>) => {
-        const current = get().durations;
-        const updated = { ...current, ...newDurations };
-        const mode = get().mode;
+        const { durations, mode, isRunning } = get();
+        const updated = { ...durations, ...newDurations };
         set({
           durations: updated,
-          timeLeft: updated[mode] * 60,
+          timeLeft: isRunning ? get().timeLeft : updated[mode] * 60,
         });
       },
 
@@ -196,6 +223,13 @@ export const usePomodoroStore = create<PomodoroState>()(
         set({
           currentCourseId: courseId ?? null,
           currentCourseName: courseName ?? null,
+        });
+      },
+
+      setCurrentSubject: (subjectId?: number | null, subjectName?: string | null) => {
+        set({
+          currentSubjectId: subjectId ?? null,
+          currentSubjectName: subjectName ?? null,
         });
       },
     }),
@@ -206,9 +240,11 @@ export const usePomodoroStore = create<PomodoroState>()(
         soundEnabled: state.soundEnabled,
         autoPauseVideo: state.autoPauseVideo,
         sessionsCompleted: state.sessionsCompleted,
-        isMinimized: state.isMinimized,
+        currentCourseId: state.currentCourseId,
+        currentCourseName: state.currentCourseName,
+        currentSubjectId: state.currentSubjectId,
+        currentSubjectName: state.currentSubjectName,
       }),
     }
-
   )
 );

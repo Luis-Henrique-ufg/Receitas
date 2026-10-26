@@ -73,7 +73,9 @@ describe("usePomodoroStore", () => {
     expect(usePomodoroStore.getState().isRunning).toBe(false);
     expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
       "http://localhost:9823",
-      0,
+      25 * 60,
+      undefined,
+      undefined,
       undefined,
       undefined
     );
@@ -83,19 +85,29 @@ describe("usePomodoroStore", () => {
     usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
     usePomodoroStore.getState().tick("");
 
-    expect(statsApi.recordPomodoro).toHaveBeenCalledWith("", 0, undefined, undefined);
+    expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
+      "",
+      25 * 60,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    );
   });
 
-  it("passes course context when currentCourse is set", () => {
+  it("passes course and subject context when set", () => {
     usePomodoroStore.getState().setCurrentCourse(42, "Estatística");
+    usePomodoroStore.getState().setCurrentSubject(10, "Estatística UFG");
     usePomodoroStore.setState({ isRunning: true, timeLeft: 1, mode: "focus" });
     usePomodoroStore.getState().tick("http://localhost:9823");
 
     expect(statsApi.recordPomodoro).toHaveBeenCalledWith(
       "http://localhost:9823",
-      0,
+      25 * 60,
       42,
-      "Estatística"
+      "Estatística",
+      10,
+      "Estatística UFG"
     );
   });
 });

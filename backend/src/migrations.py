@@ -15,7 +15,7 @@ def run_migrations(engine):
         tables = inspector.get_table_names()
 
         with engine.connect() as conn:
-            # 1. Check daily_activity.course_breakdown
+            # 1. Check daily_activity columns
             if "daily_activity" in tables:
                 columns = [c["name"] for c in inspector.get_columns("daily_activity")]
                 if "course_breakdown" not in columns:
@@ -25,6 +25,17 @@ def run_migrations(engine):
                     conn.execute(
                         text(
                             "ALTER TABLE daily_activity ADD COLUMN course_breakdown TEXT NOT NULL DEFAULT '{}'"
+                        )
+                    )
+                    conn.commit()
+
+                if "subject_breakdown" not in columns:
+                    logger.info(
+                        "Migrating daily_activity: adding subject_breakdown column"
+                    )
+                    conn.execute(
+                        text(
+                            "ALTER TABLE daily_activity ADD COLUMN subject_breakdown TEXT NOT NULL DEFAULT '{}'"
                         )
                     )
                     conn.commit()
@@ -83,6 +94,53 @@ def run_migrations(engine):
                 conn.execute(
                     text(
                         "CREATE INDEX IF NOT EXISTS idx_study_events_course_id ON study_events(course_id)"
+                    )
+                )
+                conn.commit()
+
+            # 4. Check or create subjects table
+            if "subjects" not in tables:
+                logger.info("Creating subjects table")
+                conn.execute(text("""
+                        CREATE TABLE IF NOT EXISTS subjects (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name VARCHAR(150) NOT NULL,
+                            color VARCHAR(20) NOT NULL DEFAULT '#3b82f6',
+                            code VARCHAR(50),
+                            semester VARCHAR(50),
+                            is_archived BOOLEAN NOT NULL DEFAULT 0,
+                            created_at DATETIME
+                        )
+                        """))
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_subjects_is_archived ON subjects(is_archived)"
+                    )
+                )
+                conn.commit()
+
+            # 5. Check or create daily_subject_activity table
+            if "daily_subject_activity" not in tables:
+                logger.info("Creating daily_subject_activity table")
+                conn.execute(text("""
+                        CREATE TABLE IF NOT EXISTS daily_subject_activity (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            date VARCHAR(10) NOT NULL,
+                            subject_id INTEGER,
+                            subject_name VARCHAR(150),
+                            study_seconds INTEGER NOT NULL DEFAULT 0,
+                            pomodoros INTEGER NOT NULL DEFAULT 0,
+                            CONSTRAINT uq_daily_subject UNIQUE (date, subject_id)
+                        )
+                        """))
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_daily_subject_date ON daily_subject_activity(date)"
+                    )
+                )
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_daily_subject_id ON daily_subject_activity(subject_id)"
                     )
                 )
                 conn.commit()

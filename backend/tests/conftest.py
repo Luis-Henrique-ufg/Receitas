@@ -10,6 +10,7 @@ from blueprints import (
     media_bp,
     search_bp,
     stats_bp,
+    subjects_bp,
 )
 from database import db
 
@@ -34,6 +35,7 @@ def app():
     test_app.register_blueprint(media_bp)
     test_app.register_blueprint(search_bp)
     test_app.register_blueprint(stats_bp)
+    test_app.register_blueprint(subjects_bp)
 
     with test_app.app_context():
         db.create_all()

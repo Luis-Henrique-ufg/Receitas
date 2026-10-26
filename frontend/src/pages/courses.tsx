@@ -5,6 +5,7 @@ import { Course } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
 import AddCourse from "@/components/courses/add-course";
 import ActivityHeatmap from "@/components/stats/activity-heatmap";
+import FocusBarChart from "@/components/stats/focus-bar-chart";
 import ResumeHeroCard from "@/components/courses/resume-hero-card";
 import DashboardDeadlinesWidget from "@/components/calendar/dashboard-deadlines-widget";
 import { useNavigate } from "react-router-dom";
@@ -70,6 +71,9 @@ export default function CoursesPage() {
 
         {/* Heatmap & Streaks Panel (Current Week on Left) */}
         <ActivityHeatmap />
+
+        {/* Stacked Focus Time Bar Chart */}
+        <FocusBarChart />
 
         {/* Upcoming Deadlines Widget */}
         <DashboardDeadlinesWidget />

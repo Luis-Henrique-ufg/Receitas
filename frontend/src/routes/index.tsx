@@ -91,6 +91,7 @@ export default function Router() {
           <Route path="/receitas/:courseId" element={<CoursePage />} />
           <Route path="/agenda" element={<CalendarPage />} />
           <Route path="/configuracoes" element={<SettingsPage />} />
+          <Route path="/settings" element={<Navigate to="/configuracoes" replace />} />
           <Route path="/receitas" element={<CoursesPage />} />
         </Routes>
       </main>

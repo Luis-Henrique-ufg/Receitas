@@ -30,6 +30,7 @@ describe("ActivityHeatmap", () => {
       week_active_days: 2,
       delta_week_seconds: 1800,
       available_courses: [{ id: 1, name: "Estatística" }],
+      available_subjects: [{ id: 1, name: "Estatística", color: "#f59e0b" }],
       days: [
         {
           date: "2026-10-20",
@@ -55,7 +56,7 @@ describe("ActivityHeatmap", () => {
       expect(screen.getByText("(recorde: 12)")).toBeInTheDocument();
       expect(screen.getByText("14 sem")).toBeInTheDocument();
       expect(screen.getByText("Ano")).toBeInTheDocument();
-      expect(screen.getByText("Todos os cursos")).toBeInTheDocument();
+      expect(screen.getByText("Todas as matérias")).toBeInTheDocument();
       expect(screen.getByText("Estatística")).toBeInTheDocument();
     });
   });

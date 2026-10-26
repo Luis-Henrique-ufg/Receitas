@@ -3,11 +3,28 @@ import logging
 from flask import Flask
 from flask_cors import CORS
 
-from blueprints import courses_bp, events_bp, lessons_bp, media_bp, search_bp, stats_bp
+from blueprints import (
+    courses_bp,
+    events_bp,
+    lessons_bp,
+    media_bp,
+    search_bp,
+    stats_bp,
+    subjects_bp,
+)
 from config import Config
 from database import db
 from migrations import run_migrations
-from models import Course, DailyActivity, DailyCourseActivity, Lesson, Note, StudyEvent
+from models import (
+    Course,
+    DailyActivity,
+    DailyCourseActivity,
+    DailySubjectActivity,
+    Lesson,
+    Note,
+    StudyEvent,
+    Subject,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,6 +43,7 @@ app.register_blueprint(lessons_bp)
 app.register_blueprint(media_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(stats_bp)
+app.register_blueprint(subjects_bp)
 
 __all__ = [
     "app",
@@ -35,7 +53,9 @@ __all__ = [
     "Note",
     "DailyActivity",
     "DailyCourseActivity",
+    "DailySubjectActivity",
     "StudyEvent",
+    "Subject",
 ]
 
 with app.app_context():
