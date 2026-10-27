@@ -37,6 +37,26 @@ function formatAxisHours(seconds: number): string {
   return `${h}h${m.toString().padStart(2, "0")}`;
 }
 
+function getStackedSegmentPath(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  isTopSegment: boolean,
+  radius = 4
+): string {
+  if (h <= 0) return "";
+  const r = isTopSegment ? Math.min(radius, w / 2, h) : 0;
+
+  if (r === 0) {
+    return `M ${x} ${y} H ${x + w} V ${y + h} H ${x} Z`;
+  }
+
+  // Round ONLY top-left and top-right; bottom corners remain completely flat
+  // so that segments stack seamlessly without rounded bottom gaps between colors
+  return `M ${x + r} ${y} H ${x + w - r} A ${r} ${r} 0 0 1 ${x + w} ${y + r} V ${y + h} H ${x} V ${y + r} A ${r} ${r} 0 0 1 ${x + r} ${y} Z`;
+}
+
 export default function FocusBarChart() {
   const { apiUrl } = useApiUrl();
   const [period, setPeriod] = useState<PeriodType>("day");
@@ -427,15 +447,19 @@ export default function FocusBarChart() {
                       currentY -= segHeight;
                       const isTopSegment = itemIdx === bar.breakdown.length - 1;
 
+                      const pathData = getStackedSegmentPath(
+                        barX,
+                        currentY,
+                        barWidth,
+                        Math.max(0, segHeight),
+                        isTopSegment
+                      );
+
                       return (
-                        <rect
+                        <path
                           key={`${bar.key}-${item.subject_id ?? "none"}`}
-                          x={barX}
-                          y={currentY}
-                          width={barWidth}
-                          height={Math.max(0, segHeight)}
+                          d={pathData}
                           fill={item.color || "#64748b"}
-                          rx={isTopSegment ? 4 : 0}
                           className={cn(
                             "transition-all duration-200",
                             isHovered

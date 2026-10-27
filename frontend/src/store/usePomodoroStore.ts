@@ -115,18 +115,28 @@ export const usePomodoroStore = create<PomodoroState>()(
       },
 
       start: () => {
-        const { startedAt, timeLeft, initialFocusDuration, mode } = get();
+        const {
+          isOvertime,
+          overtimeSeconds,
+          timeLeft,
+          initialFocusDuration,
+          mode,
+        } = get();
         const now = Date.now();
-        // If resuming or starting fresh
-        let newStartedAt = startedAt;
-        if (!newStartedAt) {
-          if (mode === "focus") {
-            const alreadyElapsed = Math.max(0, initialFocusDuration - timeLeft);
-            newStartedAt = now - alreadyElapsed * 1000;
+        // Compute startedAt shifted by real focus seconds already elapsed
+        let newStartedAt: number;
+        if (mode === "focus") {
+          if (isOvertime) {
+            newStartedAt =
+              now - (initialFocusDuration + overtimeSeconds) * 1000;
           } else {
-            newStartedAt = now;
+            const elapsed = Math.max(0, initialFocusDuration - timeLeft);
+            newStartedAt = now - elapsed * 1000;
           }
+        } else {
+          newStartedAt = now;
         }
+
         set({
           isRunning: true,
           startedAt: newStartedAt,
@@ -135,7 +145,35 @@ export const usePomodoroStore = create<PomodoroState>()(
       },
 
       pause: () => {
-        set({ isRunning: false });
+        const {
+          mode,
+          isOvertime,
+          startedAt,
+          initialFocusDuration,
+        } = get();
+        const now = Date.now();
+
+        if (mode === "focus" && startedAt) {
+          const totalElapsed = Math.floor((now - startedAt) / 1000);
+          if (isOvertime || totalElapsed >= initialFocusDuration) {
+            set({
+              isRunning: false,
+              isOvertime: true,
+              overtimeSeconds: Math.max(0, totalElapsed - initialFocusDuration),
+              startedAt: null,
+            });
+            return;
+          } else {
+            set({
+              isRunning: false,
+              timeLeft: Math.max(0, initialFocusDuration - totalElapsed),
+              startedAt: null,
+            });
+            return;
+          }
+        }
+
+        set({ isRunning: false, startedAt: null });
       },
 
       toggle: () => {
@@ -233,6 +271,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           initialFocusDuration,
           overtimeSeconds,
           isOvertime,
+          timeLeft,
           durations,
           sessionsCompleted,
           currentCourseId,
@@ -245,7 +284,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         const now = Date.now();
         const baseElapsed = startedAt
           ? Math.floor((now - startedAt) / 1000)
-          : initialFocusDuration;
+          : initialFocusDuration - timeLeft;
         const rawTotalSeconds = isOvertime
           ? initialFocusDuration + overtimeSeconds
           : baseElapsed;

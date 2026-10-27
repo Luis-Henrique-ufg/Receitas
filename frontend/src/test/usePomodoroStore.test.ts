@@ -153,4 +153,37 @@ describe("usePomodoroStore", () => {
       undefined
     );
   });
+
+  it("does not count paused time when resumed after a pause", () => {
+    // Start fresh
+    usePomodoroStore.getState().start();
+    expect(usePomodoroStore.getState().isRunning).toBe(true);
+
+    // Simulate 5 minutes running
+    const originalStartedAt = Date.now() - 5 * 60 * 1000;
+    usePomodoroStore.setState({ startedAt: originalStartedAt });
+
+    // User pauses
+    usePomodoroStore.getState().pause();
+    expect(usePomodoroStore.getState().isRunning).toBe(false);
+    expect(usePomodoroStore.getState().startedAt).toBeNull();
+    // 20 minutes remaining
+    expect(usePomodoroStore.getState().timeLeft).toBe(20 * 60);
+
+    // Simulate 30 minutes passing while paused, then user resumes
+    usePomodoroStore.getState().start();
+    expect(usePomodoroStore.getState().isRunning).toBe(true);
+
+    // startedAt should now be ~5 minutes ago, NOT 35 minutes ago!
+    const effectiveElapsed = Math.floor(
+      (Date.now() - (usePomodoroStore.getState().startedAt || 0)) / 1000
+    );
+    expect(effectiveElapsed).toBe(5 * 60);
+
+    // Tick should NOT trigger overtime, should maintain ~20 min remaining
+    usePomodoroStore.getState().tick();
+    expect(usePomodoroStore.getState().isOvertime).toBe(false);
+    expect(usePomodoroStore.getState().timeLeft).toBeLessThanOrEqual(20 * 60);
+    expect(usePomodoroStore.getState().timeLeft).toBeGreaterThanOrEqual(20 * 60 - 2);
+  });
 });
