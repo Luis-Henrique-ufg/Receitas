@@ -169,3 +169,49 @@ class TestFocusBarsAndSubjectStats:
         data = res.get_json()
         assert "bars" in data
         assert "subjects" in data
+
+    def test_video_heartbeat_does_not_create_sem_materia_in_focus_bars(
+        self, app, client
+    ):
+        with app.app_context():
+            from database import db
+
+            sub = Subject(name="Cálculo II", color="#10b981")
+            db.session.add(sub)
+            db.session.commit()
+            sub_id = sub.id
+
+            # 1. User watches video course (heartbeat: 1200 seconds, course_id=10, no subject)
+            StatsService.record_study_seconds(
+                seconds=1200,
+                course_id=10,
+                course_name="Curso de Vídeo",
+                date_str="2026-10-27",
+            )
+
+            # 2. User completes a Pomodoro linked to Cálculo II (study_seconds=1800 with overtime, 1 pomodoro)
+            StatsService.record_pomodoro_completed(
+                study_seconds=1800,
+                subject_id=sub_id,
+                subject_name="Cálculo II",
+                date_str="2026-10-27",
+                pomodoros=1,
+            )
+
+            # 3. Retrieve focus bars for this day
+            bars_day = StatsService.get_focus_bars_data(
+                period="day",
+                offset=0,
+                limit=14,
+                reference_date=date(2026, 10, 27),
+            )
+            oct27_bar = next(
+                b for b in bars_day["bars"] if b["start_date"] == "2026-10-27"
+            )
+
+            # The bar should only have Cálculo II and NOT "Sem matéria"
+            assert oct27_bar["total_seconds"] == 1800
+            assert oct27_bar["total_pomodoros"] == 1
+            breakdown_names = [seg["name"] for seg in oct27_bar["breakdown"]]
+            assert "Cálculo II" in breakdown_names
+            assert "Sem matéria" not in breakdown_names

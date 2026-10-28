@@ -110,47 +110,48 @@ class StatsService:
             if course_name:
                 dca.course_name = course_name
 
-        # Subject tracking (relational + breakdown)
-        resolved_subject_name = subject_name
-        if subject_id is not None and not resolved_subject_name:
-            sub = db.session.get(Subject, subject_id)
-            if sub:
-                resolved_subject_name = sub.name
+        # Subject tracking (relational + breakdown) - only when linked to a subject
+        if subject_id is not None:
+            resolved_subject_name = subject_name
+            if not resolved_subject_name:
+                sub = db.session.get(Subject, subject_id)
+                if sub:
+                    resolved_subject_name = sub.name
 
-        if subject_id is None:
-            resolved_subject_name = resolved_subject_name or "Sem matéria"
-        elif not resolved_subject_name:
-            resolved_subject_name = f"Matéria #{subject_id}"
+            if not resolved_subject_name:
+                resolved_subject_name = f"Matéria #{subject_id}"
 
-        dsa = DailySubjectActivity.query.filter_by(
-            date=today_str, subject_id=subject_id
-        ).first()
-        if not dsa:
-            dsa = DailySubjectActivity(
-                date=today_str,
-                subject_id=subject_id,
-                subject_name=resolved_subject_name,
-                study_seconds=0,
-                pomodoros=0,
+            dsa = DailySubjectActivity.query.filter_by(
+                date=today_str, subject_id=subject_id
+            ).first()
+            if not dsa:
+                dsa = DailySubjectActivity(
+                    date=today_str,
+                    subject_id=subject_id,
+                    subject_name=resolved_subject_name,
+                    study_seconds=0,
+                    pomodoros=0,
+                )
+                db.session.add(dsa)
+            dsa.study_seconds += int(seconds)
+            if resolved_subject_name:
+                dsa.subject_name = resolved_subject_name
+
+            sb = activity.get_subject_breakdown()
+            s_key = str(subject_id)
+            if s_key not in sb:
+                sb[s_key] = {
+                    "id": subject_id,
+                    "name": resolved_subject_name,
+                    "study_seconds": 0,
+                    "pomodoros": 0,
+                }
+            sb[s_key]["study_seconds"] = sb[s_key].get("study_seconds", 0) + int(
+                seconds
             )
-            db.session.add(dsa)
-        dsa.study_seconds += int(seconds)
-        if resolved_subject_name:
-            dsa.subject_name = resolved_subject_name
-
-        sb = activity.get_subject_breakdown()
-        s_key = str(subject_id) if subject_id is not None else "none"
-        if s_key not in sb:
-            sb[s_key] = {
-                "id": subject_id,
-                "name": resolved_subject_name,
-                "study_seconds": 0,
-                "pomodoros": 0,
-            }
-        sb[s_key]["study_seconds"] = sb[s_key].get("study_seconds", 0) + int(seconds)
-        if resolved_subject_name:
-            sb[s_key]["name"] = resolved_subject_name
-        activity.set_subject_breakdown(sb)
+            if resolved_subject_name:
+                sb[s_key]["name"] = resolved_subject_name
+            activity.set_subject_breakdown(sb)
 
         db.session.commit()
         return activity
@@ -521,8 +522,11 @@ class StatsService:
                 for skey, sinfo in sb.items():
                     s_sec = sinfo.get("study_seconds", 0)
                     s_pom = sinfo.get("pomodoros", 0)
+                    sid = None if skey == "none" else int(skey)
+                    # For unassigned ("none"), only include if actual pomodoros exist
+                    if sid is None and s_pom == 0:
+                        continue
                     if s_sec > 0 or s_pom > 0:
-                        sid = None if skey == "none" else int(skey)
                         color = (
                             subject_dict.get(sid, {}).get("color", "#3b82f6")
                             if sid
@@ -539,6 +543,8 @@ class StatsService:
                             "pomodoros": s_pom,
                         }
                 for d in all_dsa:
+                    if d.subject_id is None and (d.pomodoros or 0) == 0:
+                        continue
                     if d.date == ds and (d.study_seconds > 0 or d.pomodoros > 0):
                         color = (
                             subject_dict.get(d.subject_id, {}).get("color", "#3b82f6")
@@ -846,6 +852,8 @@ class StatsService:
         # Merge activity per (date, subject_id)
         activity_matrix = {}
         for d in dsa_list:
+            if d.subject_id is None and (d.pomodoros or 0) == 0:
+                continue
             key = (d.date, d.subject_id)
             activity_matrix[key] = {
                 "seconds": d.study_seconds,
@@ -858,9 +866,11 @@ class StatsService:
             sb = r.get_subject_breakdown()
             for skey, sval in sb.items():
                 sid = None if skey == "none" else int(skey)
+                pom = sval.get("pomodoros", 0)
+                if sid is None and pom == 0:
+                    continue
                 key = (r.date, sid)
                 sec = sval.get("study_seconds", 0)
-                pom = sval.get("pomodoros", 0)
                 if key not in activity_matrix:
                     activity_matrix[key] = {
                         "seconds": sec,
@@ -878,22 +888,25 @@ class StatsService:
                         activity_matrix[key]["pomodoros"], pom
                     )
 
-        # Reconcile any unassigned study_seconds or pomodoros on DailyActivity into "Sem matéria"
+        # Reconcile any unassigned pomodoros on DailyActivity into "Sem matéria"
         for r in daily_records:
-            assigned_sec = sum(
-                info["seconds"]
-                for (d_str, _), info in activity_matrix.items()
-                if d_str == r.date
-            )
             assigned_pom = sum(
                 info["pomodoros"]
                 for (d_str, _), info in activity_matrix.items()
                 if d_str == r.date
             )
-            diff_sec = max(0, (r.study_seconds or 0) - assigned_sec)
             diff_pom = max(0, (r.pomodoros_completed or 0) - assigned_pom)
 
-            if diff_sec > 0 or diff_pom > 0:
+            # Only allocate unassigned focus time when there are actually unassigned pomodoros
+            if diff_pom > 0:
+                assigned_sec = sum(
+                    info["seconds"]
+                    for (d_str, _), info in activity_matrix.items()
+                    if d_str == r.date
+                )
+                diff_sec = max(0, (r.study_seconds or 0) - assigned_sec)
+                if diff_sec == 0:
+                    diff_sec = diff_pom * 1500
                 none_key = (r.date, None)
                 if none_key not in activity_matrix:
                     activity_matrix[none_key] = {

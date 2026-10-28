@@ -147,9 +147,40 @@ def run_migrations(engine):
 
             # 6. Reconcile existing daily_activity with daily_subject_activity
             if "daily_activity" in tables and "daily_subject_activity" in tables:
+                # Clean up any daily_subject_activity rows where subject_id is NULL and pomodoros = 0 (e.g. passive video heartbeats)
+                conn.execute(
+                    text(
+                        "DELETE FROM daily_subject_activity WHERE subject_id IS NULL AND pomodoros = 0"
+                    )
+                )
+                conn.commit()
+
+                # Clean up "none" with 0 pomodoros in daily_activity.subject_breakdown
+                import json
+
+                act_rows = conn.execute(
+                    text(
+                        "SELECT id, subject_breakdown FROM daily_activity WHERE subject_breakdown LIKE '%\"none\"%'"
+                    )
+                ).fetchall()
+                for aid, sb_str in act_rows:
+                    try:
+                        sb = json.loads(sb_str) if sb_str else {}
+                        if "none" in sb and sb["none"].get("pomodoros", 0) == 0:
+                            del sb["none"]
+                            conn.execute(
+                                text(
+                                    "UPDATE daily_activity SET subject_breakdown = :sb WHERE id = :id"
+                                ),
+                                {"sb": json.dumps(sb), "id": aid},
+                            )
+                            conn.commit()
+                    except Exception:
+                        pass
+
                 rows = conn.execute(
                     text(
-                        "SELECT date, study_seconds, pomodoros_completed FROM daily_activity WHERE study_seconds > 0 OR pomodoros_completed > 0"
+                        "SELECT date, study_seconds, pomodoros_completed FROM daily_activity WHERE pomodoros_completed > 0"
                     )
                 ).fetchall()
                 for r in rows:
@@ -162,10 +193,13 @@ def run_migrations(engine):
                     ).fetchone()
                     assigned_sec = assigned[0] if assigned else 0
                     assigned_pom = assigned[1] if assigned else 0
-                    diff_sec = max(0, r_sec - assigned_sec)
                     diff_pom = max(0, r_pom - assigned_pom)
 
-                    if diff_sec > 0 or diff_pom > 0:
+                    # Only backfill into 'Sem matéria' if there are unassigned POMODOROS
+                    if diff_pom > 0:
+                        diff_sec = max(0, r_sec - assigned_sec)
+                        if diff_sec == 0:
+                            diff_sec = diff_pom * 1500
                         existing_null = conn.execute(
                             text(
                                 "SELECT id, study_seconds, pomodoros FROM daily_subject_activity WHERE date = :d AND subject_id IS NULL"
