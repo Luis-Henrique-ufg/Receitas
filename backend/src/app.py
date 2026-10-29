@@ -11,6 +11,7 @@ from blueprints import (
     search_bp,
     stats_bp,
     subjects_bp,
+    sync_bp,
 )
 from config import Config
 from database import db
@@ -44,6 +45,7 @@ app.register_blueprint(media_bp)
 app.register_blueprint(search_bp)
 app.register_blueprint(stats_bp)
 app.register_blueprint(subjects_bp)
+app.register_blueprint(sync_bp)
 
 __all__ = [
     "app",

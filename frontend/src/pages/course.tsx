@@ -176,13 +176,13 @@ export default function CoursePage() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:h-[calc(100vh-136px)]">
+    <div className="grid grid-cols-1 lg:grid-cols-10 gap-3 xl:gap-4 lg:h-[calc(100vh-100px)] lg:min-h-[500px]">
       <div
         className={cn(
           "flex flex-col min-w-0 transition-all duration-300",
           isZenMode
             ? "fixed inset-0 z-[80] bg-[#050a14] p-3 sm:p-6 justify-between select-none"
-            : "w-full lg:col-span-7 lg:h-full glass-panel rounded-2xl overflow-hidden bg-black/40"
+            : "w-full lg:col-span-7 lg:h-full glass-panel rounded-2xl overflow-hidden bg-black/40 flex flex-col justify-between"
         )}
       >
         {/* Minimal Zen Top Bar */}
@@ -248,8 +248,8 @@ export default function CoursePage() {
         <div
           key="player-wrapper"
           className={cn(
-            "w-full min-w-0",
-            isZenMode ? "flex-1 flex items-center justify-center min-h-0 my-2" : ""
+            "w-full min-w-0 flex-1 flex items-center justify-center min-h-0",
+            isZenMode ? "my-2" : "p-1.5 sm:p-2"
           )}
         >
           <div
@@ -257,7 +257,7 @@ export default function CoursePage() {
               "w-full transition-all duration-300",
               isZenMode
                 ? "max-w-[min(1152px,calc((100vh-130px)*16/9))] rounded-2xl overflow-hidden glass-panel border border-white/10 p-1.5 sm:p-2 shadow-2xl shadow-black/80 flex items-center justify-center"
-                : ""
+                : "max-h-[calc(100vh-185px)] aspect-video max-w-full flex items-center justify-center"
             )}
           >
             <LessonViewer
@@ -275,13 +275,13 @@ export default function CoursePage() {
         {!isZenMode && (
           <div
             key="normal-bottom-bar"
-            className="p-3.5 sm:p-4 border-t border-white/10 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0"
+            className="py-2.5 px-3 sm:px-4 border-t border-white/10 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 min-w-0 bg-black/20"
           >
             <div className="flex-1 min-w-0 pr-2">
-              <div className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/50 mb-1 truncate">
+              <div className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/50 mb-0.5 truncate">
                 {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
               </div>
-              <h3 className="text-left font-heading font-medium text-base sm:text-lg lg:text-xl tracking-tight text-white truncate" title={selectedLesson?.title}>
+              <h3 className="text-left font-heading font-medium text-sm sm:text-base lg:text-lg tracking-tight text-white truncate" title={selectedLesson?.title}>
                 {selectedLesson?.title}
               </h3>
             </div>
@@ -383,9 +383,9 @@ export default function CoursePage() {
           </div>
         )}
       </div>
-      <div className={cn("lg:col-span-3 flex flex-col lg:h-full h-[600px] glass-panel rounded-2xl overflow-hidden min-w-0", isZenMode && "hidden")}>
-        <div className="p-4 border-b border-white/10 space-y-2 shrink-0 bg-black/20">
-          <h2 className="text-xl font-heading font-medium text-white line-clamp-1" title={selectedLesson?.course_title}>{selectedLesson?.course_title}</h2>
+      <div className={cn("lg:col-span-3 flex flex-col lg:h-full h-[550px] glass-panel rounded-2xl overflow-hidden min-w-0", isZenMode && "hidden")}>
+        <div className="p-3 sm:p-3.5 border-b border-white/10 space-y-1.5 shrink-0 bg-black/20">
+          <h2 className="text-base sm:text-lg font-heading font-medium text-white line-clamp-1" title={selectedLesson?.course_title}>{selectedLesson?.course_title}</h2>
           <CoursePercentage courseId={Number(courseId)} fromGlobal />
         </div>
         <div className="shrink-0 bg-black/10">
@@ -393,11 +393,11 @@ export default function CoursePage() {
         </div>
         
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full flex-1 flex flex-col min-h-0">
-          <div className="w-full border-b border-white/10 shrink-0 px-6 py-2">
-            <TabsList className="flex w-full bg-transparent p-0 justify-between items-center border-none gap-2">
-              <TabsTrigger value="videos" className="flex-1 rounded-lg py-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Vídeos</TabsTrigger>
-              <TabsTrigger value="attachments" className="flex-1 rounded-lg py-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Anexos e Materiais</TabsTrigger>
-              <TabsTrigger value="notes" className="flex-1 rounded-lg py-1.5 px-2 text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Anotações</TabsTrigger>
+          <div className="w-full border-b border-white/10 shrink-0 px-3 py-1.5">
+            <TabsList className="flex w-full bg-transparent p-0 justify-between items-center border-none gap-1">
+              <TabsTrigger value="videos" className="flex-1 rounded-lg py-1 px-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Vídeos</TabsTrigger>
+              <TabsTrigger value="attachments" className="flex-1 rounded-lg py-1 px-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Materiais</TabsTrigger>
+              <TabsTrigger value="notes" className="flex-1 rounded-lg py-1 px-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 border border-transparent data-[state=active]:bg-[#007bff] data-[state=active]:text-white data-[state=active]:border-[#007bff] data-[state=active]:shadow-md data-[state=active]:shadow-blue-900/30 text-white/60 bg-transparent hover:bg-white hover:text-[#007bff] hover:border-white">Anotações</TabsTrigger>
             </TabsList>
           </div>
           

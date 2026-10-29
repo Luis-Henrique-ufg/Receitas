@@ -17,7 +17,8 @@ import useApiUrl from "@/hooks/useApiUrl";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import SubjectManager from "@/components/subjects/subject-manager";
-import { BookOpen, Server, Settings, Timer, Check, Volume2, VolumeX } from "lucide-react";
+import SyncManager from "@/components/sync/sync-manager";
+import { BookOpen, Server, Settings, Timer, Check, Volume2, VolumeX, ArrowRightLeft } from "lucide-react";
 import { usePomodoroStore, CompletionBehavior } from "@/store/usePomodoroStore";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,13 @@ export default function SettingsPage() {
           >
             <Timer className="w-4 h-4" />
             Sessões de Foco & Flow
+          </TabsTrigger>
+          <TabsTrigger
+            value="sync"
+            className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          >
+            <ArrowRightLeft className="w-4 h-4" />
+            Sincronização & Backup
           </TabsTrigger>
           <TabsTrigger
             value="connection"
@@ -268,7 +276,12 @@ export default function SettingsPage() {
           </div>
         </TabsContent>
 
-        {/* Tab 3: Conexão API */}
+        {/* Tab 3: Sincronização & Backup */}
+        <TabsContent value="sync" className="outline-none focus:outline-none">
+          <SyncManager />
+        </TabsContent>
+
+        {/* Tab 4: Conexão API */}
         <TabsContent value="connection" className="outline-none focus:outline-none">
           <div className="glass-panel p-6 rounded-2xl border border-white/10 bg-[#090d16]/80 backdrop-blur-xl max-w-xl">
             <h2 className="text-lg font-heading font-bold text-white mb-1">

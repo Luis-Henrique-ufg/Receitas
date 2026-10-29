@@ -5,6 +5,7 @@ from blueprints.media import media_bp
 from blueprints.search import search_bp
 from blueprints.stats import stats_bp
 from blueprints.subjects import subjects_bp
+from blueprints.sync import sync_bp
 
 __all__ = [
     "courses_bp",
@@ -14,4 +15,5 @@ __all__ = [
     "search_bp",
     "stats_bp",
     "subjects_bp",
+    "sync_bp",
 ]

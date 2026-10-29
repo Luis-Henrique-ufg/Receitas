@@ -14,8 +14,8 @@ function Header({ onOpenSearch }: HeaderProps) {
   }
 
   return (
-    <nav className="fixed w-full z-[60] top-0 transition-all duration-300 py-4 px-4">
-      <div className="max-w-7xl mx-auto glass-panel rounded-full px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+    <nav className="fixed w-full z-[60] top-0 transition-all duration-300 py-2 sm:py-3 px-3 sm:px-4">
+      <div className="max-w-7xl mx-auto glass-panel rounded-full px-4 sm:px-6 py-2 sm:py-2.5 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
         <div
           onClick={() => handleNavigate("/")}
           className="glass-panel glass-panel-hover px-4 py-2 rounded-full inline-flex items-center gap-2.5 cursor-pointer font-medium text-xl cursor-hover group border border-white/10 select-none"

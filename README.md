@@ -207,25 +207,17 @@ Durante a reprodução de um vídeo, você pode utilizar os seguintes atalhos pa
 
 ---
 
-## 📁 Estrutura do Projeto
+## 🔄 Sincronização entre Dispositivos (Notebook & Desktop)
 
-```text
-Receitas/
-├── docker-compose.yml        # Orquestração dos serviços frontend e backend
-├── backend/
-│   ├── Dockerfile            # Configuração do contêiner Python 3.11 com FFmpeg
-│   └── src/
-│       ├── app.py            # Inicialização do Flask e modelos SQLAlchemy (Course, Lesson, Note)
-│       ├── routes.py         # Endpoints da API REST e streaming de conteúdo
-│       ├── utils.py          # Lógica de escaneamento de diretórios e módulos
-│       ├── video_utils.py    # Extração de duração via FFmpeg
-│       └── requirements.txt  # Dependências Python
-└── frontend/
-    ├── Dockerfile            # Build multi-stage com Nginx
-    ├── package.json          # Dependências React, Vite, Tailwind e Video.js
-    └── src/
-        ├── components/       # Componentes de UI, player, cards, anotações e anexos
-        ├── hooks/            # Hooks de dados, player e gerenciamento de API
-        ├── pages/            # Páginas da aplicação (Cursos, Visualizador de Curso, Configurações)
-        └── routes/           # Configuração de rotas com React Router
-```
+Você pode manter seus estudos e métricas sincronizados entre seu desktop e notebook através da aba **Configurações > Sincronização & Backup**:
+
+1. **Sincronização Direta via Wi-Fi (Recomendada)**:
+   - Com ambos os computadores na mesma rede, insira o IP do outro dispositivo (ex: `192.168.0.15:9823`) e clique em **"Sincronizar Agora"**.
+   - A sincronização é **bidirecional**: puxa e unifica os dados nos dois dispositivos ao mesmo tempo.
+2. **Exportar / Importar Arquivo (`.json`)**:
+   - Baixe o arquivo de sincronização em um computador e importe-o no outro (via pendrive, nuvem, etc.).
+3. **Política de Merge Inteligente (Sem Perda de Dados)**:
+   - **Horas e Pomodoros**: Se você estudou no mesmo dia em computadores diferentes, os tempos são unificados sem sobrescrever para zero.
+   - **Aulas Concluídas**: Aulas marcadas como assistidas em qualquer um dos dispositivos continuam concluídas.
+   - **Anotações**: Anotações com timestamp são unificadas evitando duplicatas exatas.
+

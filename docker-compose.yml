@@ -17,5 +17,6 @@ services:
     ports:
       - 9823:9823
     volumes:
-      - C:\Users\kamik\Downloads:/courses:ro
+      - C:\Users\thays\Downloads:/courses:ro
       - ./data:/app/data
+      - ./backend/src:/app

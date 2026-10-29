@@ -11,6 +11,7 @@ from blueprints import (
     search_bp,
     stats_bp,
     subjects_bp,
+    sync_bp,
 )
 from database import db
 
@@ -36,6 +37,7 @@ def app():
     test_app.register_blueprint(search_bp)
     test_app.register_blueprint(stats_bp)
     test_app.register_blueprint(subjects_bp)
+    test_app.register_blueprint(sync_bp)
 
     with test_app.app_context():
         db.create_all()

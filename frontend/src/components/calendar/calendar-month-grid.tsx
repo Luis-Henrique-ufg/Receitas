@@ -257,7 +257,7 @@ export default function CalendarMonthGrid({
               key={cell.dateStr}
               onClick={() => onSelectDate(cell.dateStr)}
               className={cn(
-                "min-h-[90px] sm:min-h-[105px] p-1.5 sm:p-2 rounded-xl border flex flex-col justify-between transition-all cursor-pointer group",
+                "min-h-[70px] sm:min-h-[80px] lg:min-h-[82px] xl:min-h-[95px] p-1 sm:p-1.5 rounded-xl border flex flex-col justify-between transition-all cursor-pointer group",
                 cell.isCurrentMonth
                   ? "bg-white/[0.02] hover:bg-white/[0.06] border-white/10"
                   : "bg-black/30 border-white/5 opacity-40 hover:opacity-75",

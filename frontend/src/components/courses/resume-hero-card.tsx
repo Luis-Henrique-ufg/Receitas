@@ -149,13 +149,13 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
   const showModule = Boolean(cleanedModule) && !isDuplicateName;
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-5 sm:p-6 border border-white/15 shadow-2xl relative overflow-hidden backdrop-blur-2xl group bg-gradient-to-r from-blue-950/20 via-black/40 to-black/60">
+    <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/15 shadow-2xl relative overflow-hidden backdrop-blur-2xl group bg-gradient-to-r from-blue-950/20 via-black/40 to-black/60">
       {/* Decorative background glow */}
       <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="flex flex-col md:flex-row items-center gap-5 sm:gap-6 relative z-10">
+      <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-5 relative z-10">
         {/* Cover Thumbnail with optional bottom progress line */}
-        <div className="relative w-full md:w-56 aspect-video md:aspect-[16/10] rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-lg group-hover:border-blue-500/40 transition-colors">
+        <div className="relative w-full md:w-48 lg:w-52 aspect-video md:aspect-[16/10] rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-lg group-hover:border-blue-500/40 transition-colors">
           <img
             src={courseCover}
             alt={course.name}
