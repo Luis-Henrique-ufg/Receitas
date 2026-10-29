@@ -79,7 +79,7 @@ export default function Router() {
         <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         {!isZenMode && <PomodoroWidget />}
         <Toaster
-          position="bottom-right"
+          position="bottom-left"
           richColors
           expand={false}
           visibleToasts={1}
