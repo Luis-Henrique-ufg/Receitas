@@ -10,6 +10,7 @@ def list_events():
     month = request.args.get("month")
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
+    subject_id = request.args.get("subject_id", type=int)
     course_id = request.args.get("course_id", type=int)
     upcoming_limit = request.args.get("upcoming", type=int)
     include_done = request.args.get("include_done", "true").lower() in (
@@ -22,6 +23,7 @@ def list_events():
         month=month,
         start_date=start_date,
         end_date=end_date,
+        subject_id=subject_id,
         course_id=course_id,
         upcoming_limit=upcoming_limit,
         include_done=include_done,
@@ -78,9 +80,12 @@ def delete_event(event_id: int):
 @events_bp.route("/api/events/export.ics", methods=["GET"])
 def export_ics():
     month = request.args.get("month")
+    subject_id = request.args.get("subject_id", type=int)
     course_id = request.args.get("course_id", type=int)
 
-    events = EventService.list_events(month=month, course_id=course_id)
+    events = EventService.list_events(
+        month=month, subject_id=subject_id, course_id=course_id
+    )
     ics_data = EventService.generate_ics(events)
 
     return Response(

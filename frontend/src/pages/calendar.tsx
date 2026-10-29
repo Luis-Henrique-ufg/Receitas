@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
-import { Course } from "@/models/models";
+import { Course, Subject } from "@/models/models";
 import { coursesApi } from "@/services/coursesApi";
+import { subjectsApi } from "@/services/subjectsApi";
 import { eventsApi } from "@/services/eventsApi";
 import { statsApi, HeatmapDay } from "@/services/statsApi";
 import {
@@ -21,6 +22,7 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [events, setEvents] = useState<StudyEvent[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [heatmapDays, setHeatmapDays] = useState<HeatmapDay[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<EventCategory | "all">("all");
 
@@ -36,17 +38,21 @@ export default function CalendarPage() {
     return `${y}-${m}`;
   }, [currentDate]);
 
-  // Load courses once
+  // Load courses and subjects
   useEffect(() => {
-    async function loadCourses() {
+    async function loadData() {
       try {
-        const data = await coursesApi.getAll(apiUrl);
-        setCourses(data);
+        const [cList, sList] = await Promise.all([
+          coursesApi.getAll(apiUrl).catch(() => []),
+          subjectsApi.getAll(apiUrl).catch(() => []),
+        ]);
+        setCourses(cList);
+        setSubjects(sList);
       } catch (err) {
-        console.error("Erro ao carregar cursos:", err);
+        console.error("Erro ao carregar cursos/matérias:", err);
       }
     }
-    loadCourses();
+    loadData();
   }, [apiUrl]);
 
   // Load heatmap days once
@@ -228,6 +234,7 @@ export default function CalendarPage() {
           <UpcomingDeadlines
             events={events}
             courses={courses}
+            subjects={subjects}
             onToggleDone={handleToggleDone}
             onEdit={handleOpenEditDialog}
             onNewEvent={() => handleOpenNewDialog()}
@@ -246,6 +253,7 @@ export default function CalendarPage() {
         initialDate={selectedDate}
         eventToEdit={eventToEdit}
         courses={courses}
+        subjects={subjects}
       />
     </div>
   );

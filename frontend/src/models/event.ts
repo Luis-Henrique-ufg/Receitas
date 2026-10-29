@@ -9,6 +9,9 @@ export interface StudyEvent {
   color?: string | null;
   notes?: string | null;
   done: boolean;
+  subject_id?: number | null;
+  subject_name?: string | null;
+  subject_color?: string | null;
   course_id?: number | null;
   course_name?: string | null;
   created_at?: string;
@@ -22,9 +25,11 @@ export interface CreateEventInput {
   category: EventCategory;
   color?: string | null;
   notes?: string | null;
+  subject_id?: number | null;
   course_id?: number | null;
   done?: boolean;
 }
+
 
 export type UpdateEventInput = Partial<CreateEventInput>;
 

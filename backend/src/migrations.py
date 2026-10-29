@@ -80,9 +80,11 @@ def run_migrations(engine):
                             color VARCHAR(30),
                             notes TEXT,
                             done BOOLEAN NOT NULL DEFAULT 0,
+                            subject_id INTEGER,
                             course_id INTEGER,
                             created_at DATETIME,
                             updated_at DATETIME,
+                            FOREIGN KEY(subject_id) REFERENCES subjects(id) ON DELETE SET NULL,
                             FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE SET NULL
                         )
                         """))
@@ -93,10 +95,46 @@ def run_migrations(engine):
                 )
                 conn.execute(
                     text(
+                        "CREATE INDEX IF NOT EXISTS idx_study_events_subject_id ON study_events(subject_id)"
+                    )
+                )
+                conn.execute(
+                    text(
                         "CREATE INDEX IF NOT EXISTS idx_study_events_course_id ON study_events(course_id)"
                     )
                 )
                 conn.commit()
+            else:
+                ev_columns = [c["name"] for c in inspector.get_columns("study_events")]
+                if "subject_id" not in ev_columns:
+                    logger.info("Migrating study_events: adding subject_id column")
+                    conn.execute(
+                        text(
+                            "ALTER TABLE study_events ADD COLUMN subject_id INTEGER REFERENCES subjects(id) ON DELETE SET NULL"
+                        )
+                    )
+                    conn.execute(
+                        text(
+                            "CREATE INDEX IF NOT EXISTS idx_study_events_subject_id ON study_events(subject_id)"
+                        )
+                    )
+                    conn.commit()
+
+                # Auto-link existing events to subjects if subject_id is NULL
+                try:
+                    conn.execute(text("""
+                        UPDATE study_events
+                        SET subject_id = (
+                            SELECT id FROM subjects
+                            WHERE LOWER(study_events.title) LIKE '%' || LOWER(subjects.name) || '%'
+                               OR (subjects.code IS NOT NULL AND LOWER(study_events.title) LIKE '%' || LOWER(subjects.code) || '%')
+                            LIMIT 1
+                        )
+                        WHERE subject_id IS NULL;
+                    """))
+                    conn.commit()
+                except Exception:
+                    pass
 
             # 4. Check or create subjects table
             if "subjects" not in tables:

@@ -314,6 +314,12 @@ export default function CalendarMonthGrid({
                       )}
                       title={`${event.title}${event.time ? ` às ${event.time}` : ""}`}
                     >
+                      {event.subject_color && (
+                        <span
+                          className="inline-block w-1.5 h-1.5 rounded-full mr-1 shrink-0 align-middle"
+                          style={{ backgroundColor: event.subject_color }}
+                        />
+                      )}
                       {event.time && (
                         <span className="font-mono mr-1 opacity-80">{event.time}</span>
                       )}

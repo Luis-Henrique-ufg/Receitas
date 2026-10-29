@@ -11,6 +11,7 @@ export interface ListEventsParams {
   month?: string;
   start_date?: string;
   end_date?: string;
+  subject_id?: number;
   course_id?: number;
   upcoming?: number;
   include_done?: boolean;
@@ -22,9 +23,13 @@ export const eventsApi = {
     if (params?.month) query.set("month", params.month);
     if (params?.start_date) query.set("start_date", params.start_date);
     if (params?.end_date) query.set("end_date", params.end_date);
+    if (params?.subject_id !== undefined && params?.subject_id !== null) {
+      query.set("subject_id", params.subject_id.toString());
+    }
     if (params?.course_id !== undefined && params?.course_id !== null) {
       query.set("course_id", params.course_id.toString());
     }
+
     if (params?.upcoming !== undefined && params?.upcoming !== null) {
       query.set("upcoming", params.upcoming.toString());
     }
@@ -71,9 +76,13 @@ export const eventsApi = {
     await axios.delete(url);
   },
 
-  getExportIcsUrl(apiUrl?: string, params?: { month?: string; course_id?: number }): string {
+  getExportIcsUrl(
+    apiUrl?: string,
+    params?: { month?: string; subject_id?: number; course_id?: number }
+  ): string {
     const query = new URLSearchParams();
     if (params?.month) query.set("month", params.month);
+    if (params?.subject_id) query.set("subject_id", params.subject_id.toString());
     if (params?.course_id) query.set("course_id", params.course_id.toString());
     const qs = query.toString();
     return resolveUrl(apiUrl, `/api/events/export.ics${qs ? `?${qs}` : ""}`);
@@ -81,7 +90,7 @@ export const eventsApi = {
 
   async downloadIcs(
     apiUrl?: string,
-    params?: { month?: string; course_id?: number }
+    params?: { month?: string; subject_id?: number; course_id?: number }
   ): Promise<void> {
     const url = this.getExportIcsUrl(apiUrl, params);
     const res = await axios.get(url, { responseType: "blob" });
@@ -93,4 +102,5 @@ export const eventsApi = {
     link.click();
     link.remove();
   },
+
 };

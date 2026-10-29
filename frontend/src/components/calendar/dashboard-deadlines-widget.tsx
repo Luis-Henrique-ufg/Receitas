@@ -147,10 +147,17 @@ export default function DashboardDeadlinesWidget() {
                 </h3>
 
                 <div className="flex items-center justify-between text-[11px] text-zinc-400 gap-1">
-                  {ev.course_name ? (
-                    <span className="flex items-center gap-1 truncate text-zinc-400">
-                      <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
-                      <span className="truncate">{ev.course_name}</span>
+                  {ev.subject_name || ev.course_name ? (
+                    <span className="flex items-center gap-1.5 truncate text-zinc-400">
+                      {ev.subject_color ? (
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0"
+                          style={{ backgroundColor: ev.subject_color }}
+                        />
+                      ) : (
+                        <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
+                      )}
+                      <span className="truncate">{ev.subject_name || ev.course_name}</span>
                     </span>
                   ) : (
                     <span className="text-zinc-500 text-[10px]">Evento avulso</span>

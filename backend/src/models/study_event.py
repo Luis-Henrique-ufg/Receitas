@@ -14,6 +14,11 @@ class StudyEvent(db.Model):
     color = db.Column(db.String(30), nullable=True)
     notes = db.Column(db.Text, nullable=True)
     done = db.Column(db.Boolean, nullable=False, default=False)
+    subject_id = db.Column(
+        db.Integer,
+        db.ForeignKey("subjects.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     course_id = db.Column(
         db.Integer,
         db.ForeignKey("course.id", ondelete="SET NULL"),
@@ -24,6 +29,7 @@ class StudyEvent(db.Model):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
+    subject = db.relationship("Subject", backref=db.backref("events", lazy=True))
     course = db.relationship("Course", backref=db.backref("events", lazy=True))
 
     def to_dict(self):
@@ -33,9 +39,12 @@ class StudyEvent(db.Model):
             "date": self.date,
             "time": self.time,
             "category": self.category,
-            "color": self.color,
+            "color": self.color or (self.subject.color if self.subject else None),
             "notes": self.notes,
             "done": self.done,
+            "subject_id": self.subject_id,
+            "subject_name": self.subject.name if self.subject else None,
+            "subject_color": self.subject.color if self.subject else None,
             "course_id": self.course_id,
             "course_name": self.course.name if self.course else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,

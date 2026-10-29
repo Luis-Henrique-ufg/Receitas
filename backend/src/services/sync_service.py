@@ -1,8 +1,9 @@
-from datetime import datetime
 import json
 import logging
 import urllib.error
 import urllib.request
+from datetime import datetime
+from urllib.parse import urlparse
 
 from database import db
 from models.course import Course
@@ -30,9 +31,7 @@ class SyncService:
         """
         subjects = [s.to_dict() for s in Subject.query.all()]
         daily_activities = [a.to_dict() for a in DailyActivity.query.all()]
-        daily_course_activities = [
-            a.to_dict() for a in DailyCourseActivity.query.all()
-        ]
+        daily_course_activities = [a.to_dict() for a in DailyCourseActivity.query.all()]
         daily_subject_activities = [
             a.to_dict() for a in DailySubjectActivity.query.all()
         ]
@@ -43,22 +42,22 @@ class SyncService:
         active_lessons = Lesson.query.filter(
             (Lesson.is_completed == 1) | (Lesson.time_elapsed.isnot(None))
         ).all()
-        for l in active_lessons:
+        for lesson in active_lessons:
             try:
-                elapsed = float(l.time_elapsed) if l.time_elapsed else 0.0
+                elapsed = float(lesson.time_elapsed) if lesson.time_elapsed else 0.0
             except (ValueError, TypeError):
                 elapsed = 0.0
 
-            if l.is_completed or elapsed > 0:
+            if lesson.is_completed or elapsed > 0:
                 lessons_progress.append(
                     {
-                        "course_name": l.course.name if l.course else None,
-                        "lesson_title": l.title,
-                        "module": l.module,
-                        "hierarchy_path": l.hierarchy_path,
-                        "is_completed": bool(l.is_completed),
+                        "course_name": lesson.course.name if lesson.course else None,
+                        "lesson_title": lesson.title,
+                        "module": lesson.module,
+                        "hierarchy_path": lesson.hierarchy_path,
+                        "is_completed": bool(lesson.is_completed),
                         "time_elapsed": elapsed,
-                        "progress_status": l.progress_status,
+                        "progress_status": lesson.progress_status,
                     }
                 )
 
@@ -67,9 +66,7 @@ class SyncService:
             notes.append(
                 {
                     "course_name": (
-                        n.lesson.course.name
-                        if n.lesson and n.lesson.course
-                        else None
+                        n.lesson.course.name if n.lesson and n.lesson.course else None
                     ),
                     "lesson_title": n.lesson.title if n.lesson else None,
                     "module": n.lesson.module if n.lesson else None,
@@ -150,9 +147,7 @@ class SyncService:
                 stats["subjects_synced"] += 1
 
         # Pre-cache courses for fast lookup
-        courses_by_name = {
-            c.name.strip().lower(): c for c in Course.query.all()
-        }
+        courses_by_name = {c.name.strip().lower(): c for c in Course.query.all()}
 
         # 2. Merge DailyCourseActivity
         incoming_course_acts = data.get("daily_course_activities") or []
@@ -162,8 +157,12 @@ class SyncService:
             if not date_str:
                 continue
 
-            matched_course = courses_by_name.get(course_name.lower()) if course_name else None
-            effective_course_id = matched_course.id if matched_course else dca.get("course_id", 0)
+            matched_course = (
+                courses_by_name.get(course_name.lower()) if course_name else None
+            )
+            effective_course_id = (
+                matched_course.id if matched_course else dca.get("course_id", 0)
+            )
 
             existing = DailyCourseActivity.query.filter_by(
                 date=date_str, course_id=effective_course_id
@@ -183,7 +182,8 @@ class SyncService:
                 new_dca = DailyCourseActivity(
                     date=date_str,
                     course_id=effective_course_id,
-                    course_name=course_name or (matched_course.name if matched_course else None),
+                    course_name=course_name
+                    or (matched_course.name if matched_course else None),
                     study_seconds=in_seconds,
                     pomodoros=in_poms,
                     lessons=in_lessons,
@@ -201,9 +201,7 @@ class SyncService:
 
             subj_key = subj_name.lower() if subj_name else None
             effective_subj_id = (
-                subject_name_to_id.get(subj_key)
-                if subj_key
-                else dsa.get("subject_id")
+                subject_name_to_id.get(subj_key) if subj_key else dsa.get("subject_id")
             )
 
             existing = DailySubjectActivity.query.filter_by(
@@ -259,19 +257,59 @@ class SyncService:
                 existing.pomodoros_completed = max(
                     existing.pomodoros_completed, in_poms
                 )
-                existing.lessons_completed = max(
-                    existing.lessons_completed, in_lessons
-                )
+                existing.lessons_completed = max(existing.lessons_completed, in_lessons)
 
-                # Merge breakdowns by taking max value for each key
+                # Merge breakdowns safely handling dict or int structures
                 curr_c_bk = existing.get_course_breakdown()
                 for k, v in in_course_bk.items():
-                    curr_c_bk[str(k)] = max(int(curr_c_bk.get(str(k), 0)), int(v))
+                    k_str = str(k)
+                    curr_val = curr_c_bk.get(k_str)
+                    if isinstance(v, dict):
+                        if isinstance(curr_val, dict):
+                            curr_val["study_seconds"] = max(
+                                int(curr_val.get("study_seconds", 0)),
+                                int(v.get("study_seconds", 0)),
+                            )
+                            curr_val["pomodoros"] = max(
+                                int(curr_val.get("pomodoros", 0)),
+                                int(v.get("pomodoros", 0)),
+                            )
+                            if not curr_val.get("name") and v.get("name"):
+                                curr_val["name"] = v["name"]
+                            curr_c_bk[k_str] = curr_val
+                        else:
+                            curr_c_bk[k_str] = v
+                    else:
+                        try:
+                            curr_c_bk[k_str] = max(int(curr_val or 0), int(v or 0))
+                        except (ValueError, TypeError):
+                            curr_c_bk[k_str] = v
                 existing.set_course_breakdown(curr_c_bk)
 
                 curr_s_bk = existing.get_subject_breakdown()
                 for k, v in in_subj_bk.items():
-                    curr_s_bk[str(k)] = max(int(curr_s_bk.get(str(k), 0)), int(v))
+                    k_str = str(k)
+                    curr_val = curr_s_bk.get(k_str)
+                    if isinstance(v, dict):
+                        if isinstance(curr_val, dict):
+                            curr_val["study_seconds"] = max(
+                                int(curr_val.get("study_seconds", 0)),
+                                int(v.get("study_seconds", 0)),
+                            )
+                            curr_val["pomodoros"] = max(
+                                int(curr_val.get("pomodoros", 0)),
+                                int(v.get("pomodoros", 0)),
+                            )
+                            if not curr_val.get("name") and v.get("name"):
+                                curr_val["name"] = v["name"]
+                            curr_s_bk[k_str] = curr_val
+                        else:
+                            curr_s_bk[k_str] = v
+                    else:
+                        try:
+                            curr_s_bk[k_str] = max(int(curr_val or 0), int(v or 0))
+                        except (ValueError, TypeError):
+                            curr_s_bk[k_str] = v
                 existing.set_subject_breakdown(curr_s_bk)
             else:
                 new_da = DailyActivity(
@@ -375,13 +413,18 @@ class SyncService:
             if not title or not date_str:
                 continue
 
-            existing_ev = StudyEvent.query.filter_by(
-                title=title, date=date_str
-            ).first()
+            existing_ev = StudyEvent.query.filter_by(title=title, date=date_str).first()
+
+            s_name = (ev.get("subject_name") or "").strip()
+            matched_subject_id = (
+                subject_name_to_id.get(s_name.lower())
+                if s_name
+                else ev.get("subject_id")
+            )
 
             c_name = (ev.get("course_name") or "").strip()
             matched_course = courses_by_name.get(c_name.lower()) if c_name else None
-            course_id = matched_course.id if matched_course else None
+            course_id = matched_course.id if matched_course else ev.get("course_id")
 
             if existing_ev:
                 # If marked done in either device, mark done
@@ -391,6 +434,8 @@ class SyncService:
                     existing_ev.time = ev["time"]
                 if not existing_ev.notes and ev.get("notes"):
                     existing_ev.notes = ev["notes"]
+                if not existing_ev.subject_id and matched_subject_id:
+                    existing_ev.subject_id = matched_subject_id
             else:
                 new_ev = StudyEvent(
                     title=title,
@@ -400,6 +445,7 @@ class SyncService:
                     color=ev.get("color"),
                     notes=ev.get("notes"),
                     done=bool(ev.get("done", False)),
+                    subject_id=matched_subject_id,
                     course_id=course_id,
                 )
                 db.session.add(new_ev)
@@ -419,36 +465,67 @@ class SyncService:
         pulls remote data, merges locally, and sends merged data back to the remote device
         so both machines stay in sync with one click.
         """
-        remote_url = remote_url.strip().rstrip("/")
-        if not remote_url.startswith("http://") and not remote_url.startswith("https://"):
-            remote_url = f"http://{remote_url}"
+        cleaned = remote_url.strip().rstrip("/")
+        if not cleaned.startswith("http://") and not cleaned.startswith("https://"):
+            cleaned = f"http://{cleaned}"
 
-        # 1. Fetch remote data
-        export_endpoint = f"{remote_url}/api/sync/export"
-        try:
-            req = urllib.request.Request(
-                export_endpoint,
-                headers={"User-Agent": "Receitas-Sync-Client/1.0"},
-            )
-            with urllib.request.urlopen(req, timeout=12) as response:
-                if response.status != 200:
-                    raise ValueError(
-                        f"O servidor remoto respondeu com status {response.status}"
+        p = urlparse(cleaned)
+        host = p.hostname or ""
+        port = p.port
+        scheme = p.scheme or "http"
+
+        # If no port specified, try default ports 5050 and 9823
+        base_urls = []
+        if port is None:
+            base_urls.append(f"{scheme}://{host}:5050")
+            base_urls.append(f"{scheme}://{host}:9823")
+            base_urls.append(cleaned)
+        else:
+            base_urls.append(cleaned)
+
+        # Also support localhost / 127.0.0.1 mapping inside Docker
+        candidates = []
+        for url in base_urls:
+            candidates.append(url)
+            if "localhost" in url or "127.0.0.1" in url:
+                candidates.append(
+                    url.replace("localhost", "host.docker.internal").replace(
+                        "127.0.0.1", "host.docker.internal"
                     )
-                remote_data = json.loads(response.read().decode("utf-8"))
-        except urllib.error.URLError as e:
+                )
+
+        # 1. Fetch remote data from the first working candidate
+        remote_data = None
+        working_url = None
+        last_error = None
+
+        for cand in candidates:
+            export_endpoint = f"{cand}/api/sync/export"
+            try:
+                req = urllib.request.Request(
+                    export_endpoint,
+                    headers={"User-Agent": "Receitas-Sync-Client/1.0"},
+                )
+                with urllib.request.urlopen(req, timeout=8) as response:
+                    if response.status == 200:
+                        remote_data = json.loads(response.read().decode("utf-8"))
+                        working_url = cand
+                        break
+            except Exception as e:
+                last_error = e
+
+        if remote_data is None:
+            detail = f" (Detalhe: {last_error})" if last_error else ""
             raise ConnectionError(
-                f"Não foi possível conectar ao notebook no endereço '{remote_url}'. "
-                f"Verifique se o aplicativo está rodando no notebook e se ambos estão na mesma rede Wi-Fi. (Detalhe: {e.reason})"
-            )
-        except Exception as e:
-            raise RuntimeError(f"Erro ao obter dados remotos: {str(e)}")
+                f"Não foi possível conectar ao outro dispositivo no endereço '{remote_url}'. "
+                f"Verifique se o aplicativo está rodando nele e se ambos estão na mesma rede Wi-Fi.{detail}"
+            ) from last_error
 
         # 2. Merge remote into local
         import_result = SyncService.import_data(remote_data)
 
         # 3. Export combined local data and push back to remote for 2-way sync
-        push_endpoint = f"{remote_url}/api/sync/import"
+        push_endpoint = f"{working_url}/api/sync/import"
         pushed_back = False
         try:
             merged_export = SyncService.export_data()
@@ -462,11 +539,13 @@ class SyncService:
                 },
                 method="POST",
             )
-            with urllib.request.urlopen(post_req, timeout=12) as post_res:
+            with urllib.request.urlopen(post_req, timeout=10) as post_res:
                 if post_res.status == 200:
                     pushed_back = True
         except Exception as e:
-            logger.warning("Falha ao reenviar dados mesclados ao notebook: %s", e)
+            logger.warning(
+                "Falha ao reenviar dados mesclados ao outro dispositivo: %s", e
+            )
 
         return {
             "success": True,
@@ -474,7 +553,7 @@ class SyncService:
             "message": (
                 "Sincronização bidirecional concluída com sucesso! Ambos os dispositivos agora possuem as mesmas métricas."
                 if pushed_back
-                else "Métricas do notebook recebidas e mescladas com sucesso!"
+                else "Métricas do outro dispositivo recebidas e mescladas com sucesso!"
             ),
             "summary": import_result.get("summary", {}),
         }

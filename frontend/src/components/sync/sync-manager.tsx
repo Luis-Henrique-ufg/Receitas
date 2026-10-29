@@ -5,7 +5,6 @@ import {
   Wifi,
   RefreshCw,
   CheckCircle2,
-  AlertCircle,
   HelpCircle,
   ArrowRightLeft,
   Calendar,
@@ -194,8 +193,8 @@ export default function SyncManager() {
           <span>
             <strong>Como achar o IP no notebook:</strong> Abra o PowerShell no notebook e digite{" "}
             <code className="text-cyan-300 font-mono">ipconfig</code>. Procure pelo &quot;Endereço IPv4&quot;
-            (geralmente algo como <code className="text-cyan-300 font-mono">192.168.x.x</code>). Adicione{" "}
-            <code className="text-cyan-300 font-mono">:9823</code> no final.
+            (geralmente algo como <code className="text-cyan-300 font-mono">192.168.x.x</code>). Digite o IP aqui
+            (a porta <code className="text-cyan-300 font-mono">:9823</code> ou <code className="text-cyan-300 font-mono">:5050</code> é detectada automaticamente).
           </span>
         </div>
       </div>

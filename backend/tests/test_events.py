@@ -10,6 +10,12 @@ class TestEventService:
             db.session.add(course)
             db.session.commit()
 
+            from models.subject import Subject
+
+            sub = Subject(name="Cálculo Diferencial", color="#10b981")
+            db.session.add(sub)
+            db.session.commit()
+
             ev1 = EventService.create_event(
                 {
                     "title": "Prova 1",
@@ -17,12 +23,16 @@ class TestEventService:
                     "time": "14:00",
                     "category": "prova",
                     "notes": "Capítulos 1 a 4",
+                    "subject_id": sub.id,
                     "course_id": course.id,
                 }
             )
             assert ev1.id is not None
             assert ev1.title == "Prova 1"
             assert ev1.date == "2026-11-15"
+            assert ev1.subject_id == sub.id
+            assert ev1.to_dict()["subject_name"] == "Cálculo Diferencial"
+            assert ev1.to_dict()["subject_color"] == "#10b981"
             assert ev1.course_id == course.id
 
             ev2 = EventService.create_event(
@@ -33,10 +43,16 @@ class TestEventService:
                 }
             )
             assert ev2.course_id is None
+            assert ev2.subject_id is None
 
             # Test list by month
             nov_events = EventService.list_events(month="2026-11")
             assert len(nov_events) >= 2
+
+            # Test list by subject
+            sub_events = EventService.list_events(subject_id=sub.id)
+            assert len(sub_events) == 1
+            assert sub_events[0].title == "Prova 1"
 
             # Test list by course
             course_events = EventService.list_events(course_id=course.id)

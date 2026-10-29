@@ -72,10 +72,11 @@ describe("eventsApi service", () => {
     const url = eventsApi.getExportIcsUrl("http://localhost:9823", {
       month: "2026-11",
       course_id: 3,
+      subject_id: 5,
     });
 
     expect(url).toBe(
-      "http://localhost:9823/api/events/export.ics?month=2026-11&course_id=3"
+      "http://localhost:9823/api/events/export.ics?month=2026-11&subject_id=5&course_id=3"
     );
   });
 });

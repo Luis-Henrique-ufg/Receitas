@@ -1,7 +1,8 @@
+import io
 import json
 import logging
+
 from flask import Blueprint, jsonify, request, send_file
-import io
 
 from services.sync_service import SyncService
 
@@ -21,6 +22,7 @@ def export_sync():
         if as_download:
             json_bytes = json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8")
             from datetime import datetime
+
             filename = f"receitas-sync-{datetime.now().strftime('%Y-%m-%d-%H%M')}.json"
             return send_file(
                 io.BytesIO(json_bytes),
@@ -75,7 +77,14 @@ def peer_sync():
         body = request.get_json() or {}
         remote_url = body.get("remote_url", "").strip()
         if not remote_url:
-            return jsonify({"error": "Informe o endereço do notebook (ex: 192.168.1.50:9823)"}), 400
+            return (
+                jsonify(
+                    {
+                        "error": "Informe o endereço do outro dispositivo (ex: 192.168.1.50:5050 ou :9823)"
+                    }
+                ),
+                400,
+            )
 
         result = SyncService.peer_sync(remote_url)
         return jsonify(result)
@@ -84,3 +93,28 @@ def peer_sync():
     except Exception as e:
         logger.exception("Erro na sincronização de rede")
         return jsonify({"error": f"Falha na sincronização: {str(e)}"}), 500
+
+
+@sync_bp.route("/api/sync/info", methods=["GET"])
+def sync_info():
+    """
+    Returns network and endpoint information to assist peer-to-peer sync.
+    """
+    import socket
+
+    host_ips = []
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        host_ips.append(s.getsockname()[0])
+        s.close()
+    except Exception:
+        pass
+
+    return jsonify(
+        {
+            "local_ips": host_ips,
+            "frontend_port": 5050,
+            "backend_port": 9823,
+        }
+    )

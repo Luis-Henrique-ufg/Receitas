@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { StudyEvent, CATEGORY_CONFIGS } from "@/models/event";
-import { Course } from "@/models/models";
+import { Course, Subject } from "@/models/models";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -14,7 +14,8 @@ import {
 
 interface UpcomingDeadlinesProps {
   events: StudyEvent[];
-  courses: Course[];
+  courses?: Course[];
+  subjects?: Subject[];
   onToggleDone: (id: number) => Promise<void>;
   onEdit: (event: StudyEvent) => void;
   onNewEvent: () => void;
@@ -50,7 +51,8 @@ function formatCountdown(diffDays: number): { text: string; urgent: boolean } {
 
 export default function UpcomingDeadlines({
   events,
-  courses,
+  courses = [],
+  subjects = [],
   onToggleDone,
   onEdit,
   onNewEvent,
@@ -72,6 +74,12 @@ export default function UpcomingDeadlines({
     courses.forEach((c) => map.set(c.id, c));
     return map;
   }, [courses]);
+
+  const subjectsMap = useMemo(() => {
+    const map = new Map<number, Subject>();
+    subjects.forEach((s) => map.set(s.id, s));
+    return map;
+  }, [subjects]);
 
   return (
     <div className="w-full glass-panel rounded-2xl p-5 border border-white/10 shadow-xl space-y-4">
@@ -128,6 +136,9 @@ export default function UpcomingDeadlines({
             const conf = CATEGORY_CONFIGS[event.category] || CATEGORY_CONFIGS.lembrete;
             const diffDays = getDaysDiff(event.date);
             const countdown = formatCountdown(diffDays);
+            const subj = event.subject_id ? subjectsMap.get(event.subject_id) : null;
+            const subjectName = event.subject_name || subj?.name;
+            const subjectColor = event.subject_color || subj?.color;
             const course = event.course_id ? coursesMap.get(event.course_id) : null;
 
             return (
@@ -193,12 +204,24 @@ export default function UpcomingDeadlines({
                         {event.title}
                       </h3>
 
-                      {course && (
+                      {subjectName ? (
+                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-300 truncate">
+                          {subjectColor ? (
+                            <span
+                              className="w-2 h-2 rounded-full shrink-0"
+                              style={{ backgroundColor: subjectColor }}
+                            />
+                          ) : (
+                            <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
+                          )}
+                          <span className="truncate">{subjectName}</span>
+                        </div>
+                      ) : course ? (
                         <div className="flex items-center gap-1 text-[11px] text-zinc-400 truncate">
                           <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
                           <span className="truncate">{course.name}</span>
                         </div>
-                      )}
+                      ) : null}
 
                       {event.notes && (
                         <p className="text-[11px] text-zinc-400 line-clamp-1 italic">

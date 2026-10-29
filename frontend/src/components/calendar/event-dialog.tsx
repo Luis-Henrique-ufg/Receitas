@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Course } from "@/models/models";
+import { Course, Subject } from "@/models/models";
 import {
   CATEGORY_CONFIGS,
   CreateEventInput,
@@ -27,7 +27,8 @@ interface EventDialogProps {
   onDelete?: (id: number) => Promise<void>;
   initialDate?: string;
   eventToEdit?: StudyEvent | null;
-  courses: Course[];
+  courses?: Course[];
+  subjects?: Subject[];
 }
 
 const CATEGORIES: EventCategory[] = ["prova", "entrega", "revisao", "lembrete"];
@@ -39,12 +40,14 @@ export default function EventDialog({
   onDelete,
   initialDate,
   eventToEdit,
-  courses,
+  courses: _courses = [],
+  subjects = [],
 }: EventDialogProps) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [category, setCategory] = useState<EventCategory>("lembrete");
+  const [subjectId, setSubjectId] = useState<number | null>(null);
   const [courseId, setCourseId] = useState<number | null>(null);
   const [notes, setNotes] = useState("");
   const [done, setDone] = useState(false);
@@ -56,7 +59,8 @@ export default function EventDialog({
       setDate(eventToEdit.date);
       setTime(eventToEdit.time || "");
       setCategory(eventToEdit.category);
-      setCourseId(eventToEdit.course_id || null);
+      setSubjectId(eventToEdit.subject_id ?? null);
+      setCourseId(eventToEdit.course_id ?? null);
       setNotes(eventToEdit.notes || "");
       setDone(eventToEdit.done);
     } else {
@@ -65,6 +69,7 @@ export default function EventDialog({
       setDate(initialDate || todayStr);
       setTime("");
       setCategory("lembrete");
+      setSubjectId(null);
       setCourseId(null);
       setNotes("");
       setDone(false);
@@ -82,6 +87,7 @@ export default function EventDialog({
         date,
         time: time.trim() ? time : null,
         category,
+        subject_id: subjectId,
         course_id: courseId,
         notes: notes.trim() ? notes : null,
         done,
@@ -193,31 +199,33 @@ export default function EventDialog({
             </div>
           </div>
 
-          {/* Curso relacionado (opcional) */}
+          {/* Matéria relacionada (opcional) */}
           <div className="space-y-1.5">
-            <Label htmlFor="event-course" className="text-xs text-zinc-300 font-medium">
-              Curso relacionado (opcional)
+            <Label htmlFor="event-subject" className="text-xs text-zinc-300 font-medium">
+              Matéria relacionada (opcional)
             </Label>
             <select
-              id="event-course"
-              value={courseId ?? ""}
+              id="event-subject"
+              value={subjectId ?? ""}
               onChange={(e) =>
-                setCourseId(e.target.value ? Number(e.target.value) : null)
+                setSubjectId(e.target.value ? Number(e.target.value) : null)
               }
               className="w-full h-10 px-3 rounded-md bg-white/5 border border-white/10 text-sm text-zinc-200 focus:outline-none focus:border-blue-500/50"
             >
               <option value="" className="bg-zinc-900 text-zinc-300">
-                Nenhum (evento avulso)
+                Nenhuma (evento avulso)
               </option>
-              {courses.map((course) => (
-                <option
-                  key={course.id}
-                  value={course.id}
-                  className="bg-zinc-900 text-white"
-                >
-                  {course.name}
-                </option>
-              ))}
+              {subjects
+                .filter((s) => !s.is_archived)
+                .map((subj) => (
+                  <option
+                    key={subj.id}
+                    value={subj.id}
+                    className="bg-zinc-900 text-white"
+                  >
+                    {subj.name} {subj.code ? `(${subj.code})` : ""}
+                  </option>
+                ))}
             </select>
           </div>
 

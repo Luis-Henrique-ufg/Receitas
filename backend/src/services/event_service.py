@@ -4,6 +4,7 @@ from datetime import date, datetime
 from database import db
 from models.course import Course
 from models.study_event import StudyEvent
+from models.subject import Subject
 
 
 class EventService:
@@ -12,6 +13,7 @@ class EventService:
         month: str | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
+        subject_id: int | None = None,
         course_id: int | None = None,
         upcoming_limit: int | None = None,
         include_done: bool = True,
@@ -27,6 +29,9 @@ class EventService:
 
         if end_date:
             query = query.filter(StudyEvent.date <= end_date)
+
+        if subject_id:
+            query = query.filter(StudyEvent.subject_id == subject_id)
 
         if course_id:
             query = query.filter(StudyEvent.course_id == course_id)
@@ -72,6 +77,16 @@ class EventService:
         notes = (data.get("notes") or "").strip() or None
         done = bool(data.get("done", False))
 
+        subject_id = data.get("subject_id")
+        if subject_id:
+            sub = db.session.get(Subject, subject_id)
+            if not sub:
+                subject_id = None
+            elif not color and sub.color:
+                color = sub.color
+        else:
+            subject_id = None
+
         course_id = data.get("course_id")
         if course_id:
             course = db.session.get(Course, course_id)
@@ -88,6 +103,7 @@ class EventService:
             color=color,
             notes=notes,
             done=done,
+            subject_id=subject_id,
             course_id=course_id,
         )
         db.session.add(event)
@@ -129,6 +145,16 @@ class EventService:
 
         if "done" in data:
             event.done = bool(data["done"])
+
+        if "subject_id" in data:
+            s_id = data["subject_id"]
+            if s_id:
+                sub = db.session.get(Subject, s_id)
+                event.subject_id = sub.id if sub else None
+                if not event.color and sub and sub.color:
+                    event.color = sub.color
+            else:
+                event.subject_id = None
 
         if "course_id" in data:
             c_id = data["course_id"]
@@ -195,8 +221,12 @@ class EventService:
                 .replace(",", "\\,")
                 .replace("\n", "\\n")
             )
-            course_text = f"Curso: {ev.course.name}" if ev.course else ""
-            desc = f"{course_text}\\n{clean_notes}".strip("\\n")
+            subj_text = (
+                f"Matéria: {ev.subject.name}"
+                if ev.subject
+                else (f"Curso: {ev.course.name}" if ev.course else "")
+            )
+            desc = f"{subj_text}\\n{clean_notes}".strip("\\n")
 
             date_digits = ev.date.replace("-", "")
 
