@@ -10,8 +10,9 @@ def get_heatmap():
     days = request.args.get("days", 180, type=int)
     course_id = request.args.get("course_id", type=int)
     subject_id = request.args.get("subject_id", type=int)
+    year = request.args.get("year", type=int)
     data = StatsService.get_heatmap_data(
-        days=days, course_id=course_id, subject_id=subject_id
+        days=days, course_id=course_id, subject_id=subject_id, year=year
     )
     return jsonify(data)
 

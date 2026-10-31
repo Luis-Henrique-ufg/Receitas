@@ -102,11 +102,19 @@ function resolveUrl(apiUrl?: string, path: string = ""): string {
 export const statsApi = {
   async getHeatmap(
     apiUrl?: string,
-    days: number = 180,
+    days?: number | null,
     courseId?: number | null,
-    subjectId?: number | null
+    subjectId?: number | null,
+    year?: number | null
   ): Promise<HeatmapResponse> {
-    const query = new URLSearchParams({ days: days.toString() });
+    const query = new URLSearchParams();
+    if (year !== undefined && year !== null) {
+      query.set("year", year.toString());
+    } else if (days !== undefined && days !== null) {
+      query.set("days", days.toString());
+    } else {
+      query.set("days", "180");
+    }
     if (courseId !== undefined && courseId !== null) {
       query.set("course_id", courseId.toString());
     }

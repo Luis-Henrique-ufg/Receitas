@@ -64,14 +64,13 @@ export default function ActivityHeatmap() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // View mode: compact 14 weeks (~98 days) vs full year (~364 days)
-  const [viewMode, setViewMode] = useState<"compact" | "full">("compact");
+  // Subject filter
   const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
 
   // Dynamic cell sizing and scroll refs
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [cellSize, setCellSize] = useState<number>(18);
+  const [cellSize, setCellSize] = useState<number>(14);
   const cellGap = 3;
   const monthHeaderHeight = 22;
 
@@ -80,8 +79,14 @@ export default function ActivityHeatmap() {
       try {
         if (showLoading) setIsLoading(true);
         setHasError(false);
-        const daysToLoad = viewMode === "compact" ? 98 : 364;
-        const res = await statsApi.getHeatmap(apiUrl, daysToLoad, null, selectedSubjectId);
+        const currentYear = new Date().getFullYear();
+        const res = await statsApi.getHeatmap(
+          apiUrl,
+          null,
+          null,
+          selectedSubjectId,
+          currentYear
+        );
         setData(res);
       } catch (err) {
         console.error("Erro ao carregar dados do heatmap:", err);
@@ -90,7 +95,7 @@ export default function ActivityHeatmap() {
         if (showLoading) setIsLoading(false);
       }
     },
-    [apiUrl, viewMode, selectedSubjectId]
+    [apiUrl, selectedSubjectId]
   );
 
   useEffect(() => {
@@ -116,23 +121,34 @@ export default function ActivityHeatmap() {
   }, []);
 
   // Organize days into calendar columns (Monday = 0, Sunday = 6)
-  // Time flows left to right (oldest on left, present on far right)
+  // Time flows left to right (January on left, December on right)
+  // All columns strictly contain 7 squares
   const { weeks, monthLabels } = useMemo(() => {
     if (!data?.days || data.days.length === 0) {
       return { weeks: [], monthLabels: [] };
     }
 
-    const cols: (HeatmapDay | null)[][] = [];
-    let currentCol: (HeatmapDay | null)[] = [];
+    const cols: HeatmapDay[][] = [];
+    let currentCol: HeatmapDay[] = [];
 
     // The first day in dataset determines initial day-of-week padding
     const firstDay = data.days[0];
     const firstDateObj = new Date(firstDay.date + "T00:00:00");
     const firstDayOfWeek = (firstDateObj.getDay() + 6) % 7; // 0 = Mon, 6 = Sun
 
-    // Pad beginning of the first week so Monday is always row 0
+    // If first day is not Monday, pad initial days backwards so Monday is always row 0
+    // and every column has exactly 7 squares
     for (let i = 0; i < firstDayOfWeek; i++) {
-      currentCol.push(null);
+      const padDate = new Date(firstDateObj);
+      padDate.setDate(firstDateObj.getDate() - (firstDayOfWeek - i));
+      const padIso = padDate.toISOString().split("T")[0];
+      currentCol.push({
+        date: padIso,
+        study_seconds: 0,
+        pomodoros: 0,
+        lessons: 0,
+        level: 0,
+      });
     }
 
     data.days.forEach((day) => {
@@ -144,34 +160,49 @@ export default function ActivityHeatmap() {
     });
 
     if (currentCol.length > 0) {
+      // Pad remaining days of the last week so every column has exactly 7 squares
+      const lastDay = currentCol[currentCol.length - 1];
+      const lastDateObj = new Date(lastDay.date + "T00:00:00");
+      let count = 1;
       while (currentCol.length < 7) {
-        currentCol.push(null);
+        const padDate = new Date(lastDateObj);
+        padDate.setDate(lastDateObj.getDate() + count);
+        const padIso = padDate.toISOString().split("T")[0];
+        currentCol.push({
+          date: padIso,
+          study_seconds: 0,
+          pomodoros: 0,
+          lessons: 0,
+          level: 0,
+        });
+        count++;
       }
       cols.push(currentCol);
     }
 
     // Detect month labels
     const rawLabels: Array<{ weekIndex: number; month: string }> = [];
-    let lastMonth = -1;
+    const seenMonths = new Set<number>();
 
     cols.forEach((col, wIdx) => {
-      const validDay = col.find((d) => d !== null);
-      if (validDay) {
-        const m = parseInt(validDay.date.split("-")[1], 10) - 1;
-        if (m !== lastMonth) {
+      // Find if this week contains the 1st of a month
+      const firstOfMonthDay = col.find((d) => d.date.endsWith("-01"));
+      if (firstOfMonthDay) {
+        const m = parseInt(firstOfMonthDay.date.split("-")[1], 10) - 1;
+        if (!seenMonths.has(m)) {
+          seenMonths.add(m);
           rawLabels.push({ weekIndex: wIdx, month: MONTH_NAMES[m] });
-          lastMonth = m;
         }
       }
     });
 
-    // Drop the first month label if it has fewer than 3 columns before next month to avoid "utNov" overlap
-    let finalLabels = rawLabels;
-    if (rawLabels.length >= 2 && rawLabels[1].weekIndex - rawLabels[0].weekIndex < 3) {
-      finalLabels = rawLabels.slice(1);
+    // Fallback if no day was "-01" (e.g. in short mock tests)
+    if (rawLabels.length === 0 && cols.length > 0 && cols[0][0]) {
+      const m = parseInt(cols[0][0].date.split("-")[1], 10) - 1;
+      rawLabels.push({ weekIndex: 0, month: MONTH_NAMES[m] });
     }
 
-    return { weeks: cols, monthLabels: finalLabels };
+    return { weeks: cols, monthLabels: rawLabels };
   }, [data]);
 
   // Dynamic cell sizing via ResizeObserver
@@ -183,18 +214,13 @@ export default function ActivityHeatmap() {
       const containerWidth = el.clientWidth;
       if (containerWidth <= 0) return;
 
-      const numWeeks = weeks.length || (viewMode === "compact" ? 14 : 52);
-      // Available width subtracting 32px for day labels and padding
-      const availableWidth = containerWidth - 32;
+      const numWeeks = weeks.length || 53;
+      // Available width subtracting 36px for day labels and padding
+      const availableWidth = containerWidth - 36;
       const totalGaps = (numWeeks - 1) * cellGap;
       const calculated = Math.floor((availableWidth - totalGaps) / numWeeks);
 
-      if (viewMode === "compact") {
-        setCellSize(Math.max(14, Math.min(22, calculated)));
-      } else {
-        // Full year: clamp to fit without scrolling on desktop, allow horizontal scroll on mobile
-        setCellSize(Math.max(11, Math.min(16, calculated)));
-      }
+      setCellSize(Math.max(10, Math.min(16, calculated)));
     };
 
     updateCellSize();
@@ -206,14 +232,14 @@ export default function ActivityHeatmap() {
         observer.disconnect();
       };
     }
-  }, [weeks.length, viewMode, cellGap]);
+  }, [weeks.length, cellGap]);
 
-  // Keep scroll position to the rightmost (most recent days) on view mode change or resize
+  // Keep scroll position on the leftmost (January) so year flows from start to end
   useEffect(() => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+      scrollContainerRef.current.scrollLeft = 0;
     }
-  }, [viewMode, weeks.length, cellSize]);
+  }, [weeks.length]);
 
   const activeDetailDay = hoveredDay || selectedDay;
   const availableSubjects: AvailableSubject[] = data?.available_subjects || [];
@@ -298,7 +324,7 @@ export default function ActivityHeatmap() {
 
   return (
     <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
-      {/* Header: Title and Aligned Segmented Controls */}
+      {/* Header: Title and Aligned Subject Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/30 border border-blue-500/30 flex items-center justify-center shrink-0">
@@ -309,64 +335,34 @@ export default function ActivityHeatmap() {
           </h2>
         </div>
 
-        {/* Controls: Course Select with Content Width + Segmented Period Switcher */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          {availableSubjects.length > 0 && (
-            <div className="relative max-w-[170px] sm:max-w-[210px]">
-              <select
-                value={selectedSubjectId ?? ""}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setSelectedSubjectId(val === "" ? null : Number(val));
-                }}
-                className="w-full truncate appearance-none bg-white/[0.04] hover:bg-white/[0.08] text-xs text-zinc-200 border border-white/10 rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer font-medium transition-colors"
-                aria-label="Filtrar heatmap por matéria"
-              >
-                <option value="" className="bg-[#050a14] text-white">
-                  Todas as matérias
+        {/* Controls: Subject Select with Content Width */}
+        {availableSubjects.length > 0 && (
+          <div className="relative max-w-[170px] sm:max-w-[210px] self-start sm:self-center">
+            <select
+              value={selectedSubjectId ?? ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedSubjectId(val === "" ? null : Number(val));
+              }}
+              className="w-full truncate appearance-none bg-white/[0.04] hover:bg-white/[0.08] text-xs text-zinc-200 border border-white/10 rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer font-medium transition-colors"
+              aria-label="Filtrar heatmap por matéria"
+            >
+              <option value="" className="bg-[#050a14] text-white">
+                Todas as matérias
+              </option>
+              {availableSubjects.map((s) => (
+                <option
+                  key={s.id ?? -1}
+                  value={s.id ?? -1}
+                  className="bg-[#050a14] text-white"
+                >
+                  {s.name}
                 </option>
-                {availableSubjects.map((s) => (
-                  <option
-                    key={s.id ?? -1}
-                    value={s.id ?? -1}
-                    className="bg-[#050a14] text-white"
-                  >
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2 top-2 pointer-events-none" />
-            </div>
-          )}
-
-          {/* Segmented Period Switcher (14 sem / Ano) */}
-          <div className="inline-flex items-center p-0.5 rounded-lg bg-white/[0.04] border border-white/10 shrink-0">
-            <button
-              type="button"
-              onClick={() => setViewMode("compact")}
-              className={cn(
-                "px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer",
-                viewMode === "compact"
-                  ? "bg-[#007bff]/30 text-white shadow-sm border border-blue-500/30"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              14 sem
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("full")}
-              className={cn(
-                "px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer",
-                viewMode === "full"
-                  ? "bg-[#007bff]/30 text-white shadow-sm border border-blue-500/30"
-                  : "text-zinc-400 hover:text-zinc-200"
-              )}
-            >
-              Ano
-            </button>
+              ))}
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2 top-2 pointer-events-none" />
           </div>
-        </div>
+        )}
       </div>
 
       {/* Two Column Layout: Left = Heatmap Grid, Right = 3 Indicators */}
@@ -422,30 +418,20 @@ export default function ActivityHeatmap() {
                   })}
                 </div>
 
-                {/* Weeks Columns */}
+                {/* Weeks Columns: All columns strictly contain 7 squares */}
                 <div className="flex" style={{ gap: `${cellGap}px` }}>
                   {weeks.map((week, wIndex) => (
                     <div key={wIndex} className="flex flex-col" style={{ gap: `${cellGap}px` }}>
-                      {week.map((day, dIndex) => {
-                        if (!day) {
-                          return (
-                            <div
-                              key={`empty-${wIndex}-${dIndex}`}
-                              style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
-                              className="rounded-[2px] opacity-0 pointer-events-none"
-                            />
-                          );
-                        }
-
+                      {week.map((day) => {
                         const isSelected = selectedDay?.date === day.date;
-                        const isToday = day.date === todayIso;
+                        const isFuture = day.date > todayIso;
 
                         return (
                           <div
                             key={day.date}
                             tabIndex={0}
                             role="button"
-                            aria-label={`Dia ${formatDateBr(day.date)}: ${formatDuration(day.study_seconds)}`}
+                            aria-label={`Dia ${formatDateBr(day.date)}: ${isFuture ? "A ser alcançado" : formatDuration(day.study_seconds)}`}
                             onMouseEnter={() => setHoveredDay(day)}
                             onMouseLeave={() => setHoveredDay(null)}
                             onFocus={() => setHoveredDay(day)}
@@ -462,11 +448,7 @@ export default function ActivityHeatmap() {
                               "relative rounded-[2px] border transition-all duration-150 cursor-pointer focus:outline-none",
                               levelColors[day.level],
                               "hover:z-20 hover:ring-1 hover:ring-white/80",
-                              isSelected
-                                ? "ring-2 ring-white border-white scale-110 z-30 shadow-lg"
-                                : isToday
-                                ? "ring-2 ring-[#007bff] ring-offset-1 ring-offset-[#080d1a] z-10"
-                                : ""
+                              isSelected && "ring-2 ring-white border-white scale-110 z-30 shadow-lg"
                             )}
                           />
                         );
@@ -485,31 +467,37 @@ export default function ActivityHeatmap() {
                 <span className="text-cyan-400 font-semibold tabular-nums">
                   {formatDateBr(activeDetailDay.date)}:
                 </span>{" "}
-                <span className="font-medium text-white tabular-nums">
-                  {formatDuration(activeDetailDay.study_seconds)}
-                </span>
-                {activeDetailDay.subjects && activeDetailDay.subjects.length > 0 ? (
-                  <span className="text-zinc-300">
-                    · {activeDetailDay.subjects.map((s) => `${s.name} (${formatDuration(s.seconds)})`).join(", ")}
-                  </span>
-                ) : activeDetailDay.courses && activeDetailDay.courses.length > 0 ? (
-                  <span className="text-zinc-300">
-                    · {activeDetailDay.courses.map((c) => c.name).join(", ")}
-                  </span>
-                ) : activeDetailDay.study_seconds > 0 ? (
-                  <span className="text-zinc-400">· Atividade geral</span>
+                {activeDetailDay.date > todayIso ? (
+                  <span className="text-zinc-500 italic">A ser alcançado</span>
                 ) : (
-                  <span className="text-zinc-500">· Sem registros</span>
-                )}
-                {activeDetailDay.pomodoros > 0 && (
-                  <span className="text-rose-300 tabular-nums">
-                    • {activeDetailDay.pomodoros} {activeDetailDay.pomodoros === 1 ? "pomodoro" : "pomodoros"}
-                  </span>
-                )}
-                {activeDetailDay.lessons > 0 && (
-                  <span className="text-blue-300 tabular-nums">
-                    • {activeDetailDay.lessons} {activeDetailDay.lessons === 1 ? "aula concluída" : "aulas concluídas"}
-                  </span>
+                  <>
+                    <span className="font-medium text-white tabular-nums">
+                      {formatDuration(activeDetailDay.study_seconds)}
+                    </span>
+                    {activeDetailDay.subjects && activeDetailDay.subjects.length > 0 ? (
+                      <span className="text-zinc-300">
+                        · {activeDetailDay.subjects.map((s) => `${s.name} (${formatDuration(s.seconds)})`).join(", ")}
+                      </span>
+                    ) : activeDetailDay.courses && activeDetailDay.courses.length > 0 ? (
+                      <span className="text-zinc-300">
+                        · {activeDetailDay.courses.map((c) => c.name).join(", ")}
+                      </span>
+                    ) : activeDetailDay.study_seconds > 0 ? (
+                      <span className="text-zinc-400">· Atividade geral</span>
+                    ) : (
+                      <span className="text-zinc-500">· Sem registros</span>
+                    )}
+                    {activeDetailDay.pomodoros > 0 && (
+                      <span className="text-rose-300 tabular-nums">
+                        • {activeDetailDay.pomodoros} {activeDetailDay.pomodoros === 1 ? "pomodoro" : "pomodoros"}
+                      </span>
+                    )}
+                    {activeDetailDay.lessons > 0 && (
+                      <span className="text-blue-300 tabular-nums">
+                        • {activeDetailDay.lessons} {activeDetailDay.lessons === 1 ? "aula concluída" : "aulas concluídas"}
+                      </span>
+                    )}
+                  </>
                 )}
                 {selectedDay?.date === activeDetailDay.date && (
                   <button

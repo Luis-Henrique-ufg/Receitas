@@ -320,11 +320,21 @@ class StatsService:
         reference_date: date | None = None,
         course_id: int | None = None,
         subject_id: int | None = None,
+        year: int | None = None,
     ) -> dict:
         ref = reference_date or cls._get_today_date()
-        start_date = ref - timedelta(days=days - 1)
+        if year is not None:
+            # Full calendar year aligned to full Monday..Sunday weeks
+            jan1 = date(year, 1, 1)
+            start_date = jan1 - timedelta(days=jan1.weekday())
+            dec31 = date(year, 12, 31)
+            end_date = dec31 + timedelta(days=6 - dec31.weekday())
+        else:
+            start_date = ref - timedelta(days=days - 1)
+            end_date = ref
+
         start_str = start_date.isoformat()
-        end_str = ref.isoformat()
+        end_str = end_date.isoformat()
 
         all_records = DailyActivity.query.order_by(DailyActivity.date.asc()).all()
         all_dca = DailyCourseActivity.query.all()
@@ -473,7 +483,7 @@ class StatsService:
         # Build day grid
         days_data = []
         cur = start_date
-        while cur <= ref:
+        while cur <= end_date:
             ds = cur.isoformat()
             act = record_map.get(ds)
             if act:
@@ -644,7 +654,9 @@ class StatsService:
         # Current calendar week (Monday to today)
         week_start = ref - timedelta(days=ref.weekday())
         week_records = [
-            r for r in all_records if week_start.isoformat() <= r.date <= end_str
+            r
+            for r in all_records
+            if week_start.isoformat() <= r.date <= ref.isoformat()
         ]
         week_seconds = sum(get_record_stats(r)[0] for r in week_records)
         week_active_days = len(

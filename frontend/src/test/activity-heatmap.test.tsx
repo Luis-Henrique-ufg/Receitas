@@ -54,8 +54,6 @@ describe("ActivityHeatmap", () => {
       expect(screen.getByText("+30 min")).toBeInTheDocument();
       expect(screen.getByText("5 dias")).toBeInTheDocument();
       expect(screen.getByText("(recorde: 12)")).toBeInTheDocument();
-      expect(screen.getByText("14 sem")).toBeInTheDocument();
-      expect(screen.getByText("Ano")).toBeInTheDocument();
       expect(screen.getByText("Todas as matérias")).toBeInTheDocument();
       expect(screen.getByText("Estatística")).toBeInTheDocument();
     });

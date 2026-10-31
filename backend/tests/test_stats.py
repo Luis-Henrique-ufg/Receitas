@@ -32,6 +32,20 @@ class TestStatsService:
             assert len(heatmap["days"]) == 7
             assert "delta_week_seconds" in heatmap
 
+            # Test full calendar year (Jan to Dec full week alignment)
+            year_heat = StatsService.get_heatmap_data(
+                year=2026, reference_date=date(2026, 10, 22)
+            )
+            # Days must be divisible by 7 (full weeks Monday through Sunday)
+            assert len(year_heat["days"]) % 7 == 0
+            assert (
+                year_heat["days"][0]["date"] == "2025-12-29"
+            )  # Monday of week containing Jan 1
+            assert (
+                year_heat["days"][-1]["date"] == "2027-01-03"
+            )  # Sunday of week containing Dec 31
+            assert year_heat["current_streak"] == 3
+
     def test_course_linking_and_filtering(self, app):
         with app.app_context():
             StatsService.record_study_seconds(
