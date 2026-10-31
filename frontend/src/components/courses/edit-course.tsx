@@ -1,3 +1,4 @@
+import React, { useRef, useState, useEffect } from "react";
 import { Course } from "@/models/models";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -17,11 +18,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { useRef, useState, useEffect } from "react";
-
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi } from "@/services/coursesApi";
+import { X } from "lucide-react";
 
 type Props = {
   course: Course;
@@ -41,14 +41,25 @@ export default function EditCourse({
   const fileInputRefEdit = useRef<HTMLInputElement>(null);
 
   const [currentCourse, setCurrentCourse] = useState<Course>(course);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [internalIsOpen, setInternalIsOpen] = useState(false);
 
   const isControlled = controlledIsOpen !== undefined;
   const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
 
+  const { apiUrl } = useApiUrl();
+
+  const handleClearFile = () => {
+    if (fileInputRefEdit.current) {
+      fileInputRefEdit.current.value = "";
+    }
+    setFilePreview(null);
+  };
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
+      handleClearFile();
       if (isControlled) {
         onClose?.();
       } else {
@@ -62,13 +73,36 @@ export default function EditCourse({
   useEffect(() => {
     if (isOpen) {
       setCurrentCourse(course);
-      if (fileInputRefEdit.current) {
-        fileInputRefEdit.current.value = "";
-      }
+      handleClearFile();
     }
   }, [course, isOpen]);
 
-  const { apiUrl } = useApiUrl();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (typeof URL.createObjectURL === "function") {
+        setFilePreview(URL.createObjectURL(file));
+      }
+      // When attaching a local file, clear urlCover
+      setCurrentCourse((prev) => ({
+        ...prev,
+        urlCover: "",
+      }));
+    } else {
+      setFilePreview(null);
+    }
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCurrentCourse((prev) => ({
+      ...prev,
+      urlCover: value,
+    }));
+    if (value.trim()) {
+      handleClearFile();
+    }
+  };
 
   const handleEdit = async () => {
     setIsLoading(true);
@@ -79,7 +113,7 @@ export default function EditCourse({
         name: currentCourse.name,
         path: currentCourse.path,
         imageFile,
-        imageUrl: currentCourse.urlCover || undefined,
+        imageUrl: imageFile ? undefined : (currentCourse.urlCover?.trim() || undefined),
       });
 
       toast.success("Curso atualizado com sucesso!", {
@@ -113,6 +147,13 @@ export default function EditCourse({
     );
   };
 
+  // Determine current active cover on the server for preview
+  const currentCoverSrc = course.isCoverUrl
+    ? course.urlCover
+    : course.fileCover
+    ? `${apiUrl}/uploads/${course.fileCover}`
+    : null;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       {(!isControlled || trigger) && (
@@ -136,87 +177,137 @@ export default function EditCourse({
         className="md:max-w-[700px] max-w-80 glass-panel border-white/15 bg-zinc-950/95 text-white"
       >
         <DialogHeader>
-          <DialogTitle className="mb-6">
+          <DialogTitle className="mb-4">
             Editando - {course?.name || ""}
           </DialogTitle>
         </DialogHeader>
-        <div className="my-2 flex items-center gap-4">
-          <Label htmlFor="name" className="text-right">
-            Nome do curso
-          </Label>
-        </div>
-        <Input
-          type="text"
-          id="name"
-          name="name"
-          value={currentCourse?.name || ""}
-          onChange={handleInputChange}
-          className="bg-white/5 border-white/10 text-white"
-        />
-        <div>
-          <h3 className="text-sm font-medium text-zinc-300 mt-2">Quer colocar alguma capa? se sim, só escolher...</h3>
-          <Card className="w-full my-4 bg-white/[0.02] border-white/10">
-            <CardContent>
-              <div>
-                <div className="my-2">
-                  <Label htmlFor="capaUrl" className="text-right">
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name" className="text-xs text-zinc-300 font-medium block mb-1.5">
+              Nome do curso
+            </Label>
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              value={currentCourse?.name || ""}
+              onChange={handleInputChange}
+              className="bg-white/5 border-white/10 text-white"
+            />
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-zinc-300 mb-2">
+              Capa do curso (URL ou arquivo local):
+            </h3>
+            <Card className="w-full bg-white/[0.02] border-white/10">
+              <CardContent className="pt-4 space-y-3">
+                <div>
+                  <Label htmlFor="capaUrl" className="text-xs text-zinc-300 font-medium block mb-1">
                     URL da imagem
                   </Label>
+                  <Input
+                    type="url"
+                    id="capaUrl"
+                    name="urlCover"
+                    value={currentCourse?.urlCover || ""}
+                    onChange={handleUrlChange}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="bg-white/5 border-white/10 text-white"
+                  />
                 </div>
-                <Input
-                  type="url"
-                  id="capaUrl"
-                  name="urlCover"
-                  value={currentCourse?.urlCover || ""}
-                  onChange={handleInputChange}
-                  placeholder="https://exemplo.com/imagem.jpg"
-                  className="bg-white/5 border-white/10 text-white"
-                />
-              </div>
-              <p className="my-2 text-xs text-zinc-400">Ou</p>
-              <div>
-                <div className="my-2">
-                  <Label htmlFor="capaFile" className="text-right">
-                    Anexo
+
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 border-t border-white/10"></div>
+                  <span className="text-[11px] text-zinc-500 uppercase tracking-wider">ou</span>
+                  <div className="flex-1 border-t border-white/10"></div>
+                </div>
+
+                <div>
+                  <Label htmlFor="capaFile" className="text-xs text-zinc-300 font-medium block mb-1">
+                    Anexar nova imagem local
                   </Label>
+                  <Input
+                    type="file"
+                    id="capaFile"
+                    ref={fileInputRefEdit}
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="bg-white/5 border-white/10 text-white file:text-white file:bg-white/10 file:border-0 file:rounded-md file:mr-2 file:px-2 file:py-1 cursor-pointer"
+                  />
                 </div>
-                <Input
-                  type="file"
-                  id="capaFile"
-                  ref={fileInputRefEdit}
-                  className="bg-white/5 border-white/10 text-white file:text-white file:bg-white/10"
-                />
-              </div>
-            </CardContent>
-          </Card>
-          <h3 className="text-sm font-medium text-zinc-300">Agora, atualize o diretório do curso.</h3>
-          <div className="my-2 flex items-center gap-4">
-            <Label htmlFor="path" className="text-right">
-              PATH do curso
-            </Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-red-500 cursor-pointer underline text-xs">Aviso</p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    Por motivos de segurança, os navegadores não permitem a
-                    coleta do path por input, deve ser adicionado manualmente.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+
+                {filePreview ? (
+                  <div className="flex items-center gap-3 p-2 bg-white/5 rounded-lg border border-white/10">
+                    <img
+                      src={filePreview}
+                      alt="Prévia do novo anexo"
+                      className="w-16 h-10 object-cover rounded border border-white/20"
+                    />
+                    <div className="flex-1 text-xs text-zinc-300 truncate">
+                      <span className="text-emerald-400 font-medium block">Nova capa selecionada</span>
+                      <span className="text-zinc-500 text-[10px]">Será salva ao confirmar</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleClearFile}
+                      className="h-7 w-7 text-zinc-400 hover:text-white"
+                      title="Descartar anexo"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : currentCoverSrc ? (
+                  <div className="flex items-center gap-3 p-2 bg-white/[0.03] rounded-lg border border-white/5">
+                    <img
+                      src={currentCoverSrc}
+                      alt="Capa atual"
+                      className="w-16 h-10 object-cover rounded border border-white/10 opacity-80"
+                    />
+                    <div className="flex-1 text-xs text-zinc-400">
+                      <span className="font-medium text-zinc-300 block">Capa atual do curso</span>
+                      <span className="text-[10px] text-zinc-500">
+                        {course.isCoverUrl ? "Link externo" : "Arquivo local no servidor"}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+              </CardContent>
+            </Card>
           </div>
-          <Input
-            type="text"
-            id="path"
-            name="path"
-            value={currentCourse?.path || ""}
-            onChange={handleInputChange}
-            className="bg-white/5 border-white/10 text-white font-mono text-xs"
-          />
+
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Label htmlFor="path" className="text-xs text-zinc-300 font-medium">
+                Diretório (PATH) do curso
+              </Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="text-red-400 cursor-pointer underline text-[10px]">
+                      Aviso de segurança
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-zinc-900 border-white/15 text-white text-xs max-w-xs">
+                    Por motivos de segurança do navegador, o caminho absoluto do sistema deve ser inserido manualmente.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <Input
+              type="text"
+              id="path"
+              name="path"
+              value={currentCourse?.path || ""}
+              onChange={handleInputChange}
+              className="bg-white/5 border-white/10 text-white font-mono text-xs"
+            />
+          </div>
         </div>
+
         <DialogFooter className="mt-4">
           <Button
             type="button"
@@ -230,7 +321,7 @@ export default function EditCourse({
             type="button"
             onClick={handleEdit}
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-500 text-white"
+            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold"
           >
             {isLoading ? "Salvando..." : "Confirmar"}
           </Button>

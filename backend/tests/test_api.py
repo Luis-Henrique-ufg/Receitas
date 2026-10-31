@@ -17,6 +17,28 @@ class TestCoursesAPI:
         assert res_data["name"] == "Curso Upload Teste"
         assert "id" in res_data
 
+    def test_update_course_with_file_upload(self, client, app):
+        with app.app_context():
+            course = Course(name="Course Before Update", path="/p/before", position=0)
+            db.session.add(course)
+            db.session.commit()
+            cid = course.id
+
+        data = {
+            "name": "Course After Update",
+            "path": "/p/before",
+            "imageFile": (io.BytesIO(b"updated cover bytes"), "nova_capa.png"),
+        }
+        res = client.put(
+            f"/api/courses/{cid}", data=data, content_type="multipart/form-data"
+        )
+        assert res.status_code == 200
+        res_data = res.get_json()
+        assert res_data["name"] == "Course After Update"
+        assert res_data["fileCover"] is not None
+        assert "nova_capa.png" in res_data["fileCover"]
+        assert res_data["isCoverUrl"] is False
+
     def test_list_and_get_courses(self, client, app):
         with app.app_context():
             course = Course(name="API Course", path="/api/c1", position=0)

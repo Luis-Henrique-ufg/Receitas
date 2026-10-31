@@ -1,11 +1,13 @@
 import logging
 import os
+import time
 from datetime import date, timedelta
 
 from werkzeug.utils import secure_filename
 
 from database import db
 from models import Course, Lesson
+from models.daily_activity import DailyActivity, DailyCourseActivity
 from utils import list_and_register_lessons, scan_data_directory_and_register_courses
 
 logger = logging.getLogger(__name__)
@@ -31,21 +33,35 @@ class CourseService:
 
     @staticmethod
     def create(name, path, image_url=None, image_file=None, upload_folder=None):
-        is_cover_url = 1 if image_url else 0
         file_cover = None
+        has_file = bool(image_file and getattr(image_file, "filename", None))
 
-        if not is_cover_url and image_file and upload_folder:
-            filename = secure_filename(image_file.filename)
+        if has_file and upload_folder:
+            raw_filename = secure_filename(image_file.filename)
+            ext = os.path.splitext(image_file.filename)[1].lower()
+            if not raw_filename or raw_filename == ext.lstrip("."):
+                raw_filename = f"cover{ext if ext else '.jpg'}"
+            filename = f"{int(time.time())}_{raw_filename}"
             file_cover = filename
             os.makedirs(upload_folder, exist_ok=True)
             image_file.save(os.path.join(upload_folder, filename))
+            is_cover_url = 0
+            url_cover = None
+        elif image_url and str(image_url).strip():
+            is_cover_url = 1
+            url_cover = str(image_url).strip()
+            file_cover = None
+        else:
+            is_cover_url = 0
+            url_cover = None
+            file_cover = None
 
         course = Course(
             name=name,
             path=path,
             is_cover_url=is_cover_url,
             file_cover=file_cover,
-            url_cover=image_url if is_cover_url else None,
+            url_cover=url_cover,
         )
         logger.info("Saving course with file cover: %s", course.file_cover)
         db.session.add(course)
@@ -62,20 +78,40 @@ class CourseService:
         old_path = course.path
         course.name = name
         course.path = path
-        is_cover_url = 1 if image_url else 0
 
-        if is_cover_url:
-            course.url_cover = image_url
+        has_file = bool(image_file and getattr(image_file, "filename", None))
+
+        if has_file and upload_folder:
+            # Clean up old uploaded file if replacing
+            if course.file_cover:
+                old_file = os.path.join(upload_folder, course.file_cover)
+                try:
+                    if os.path.exists(old_file):
+                        os.remove(old_file)
+                except Exception as e:
+                    logger.warning("Erro ao remover capa antiga: %s", e)
+
+            raw_filename = secure_filename(image_file.filename)
+            ext = os.path.splitext(image_file.filename)[1].lower()
+            if not raw_filename or raw_filename == ext.lstrip("."):
+                raw_filename = f"cover{ext if ext else '.jpg'}"
+            filename = f"{int(time.time())}_{raw_filename}"
+            course.file_cover = filename
+            course.is_cover_url = 0
+            course.url_cover = None
+            os.makedirs(upload_folder, exist_ok=True)
+            image_file.save(os.path.join(upload_folder, filename))
+        elif image_url and str(image_url).strip():
+            if course.file_cover and upload_folder:
+                old_file = os.path.join(upload_folder, course.file_cover)
+                try:
+                    if os.path.exists(old_file):
+                        os.remove(old_file)
+                except Exception as e:
+                    logger.warning("Erro ao remover capa antiga: %s", e)
+            course.url_cover = str(image_url).strip()
             course.is_cover_url = 1
             course.file_cover = None
-        else:
-            if image_file and upload_folder:
-                filename = secure_filename(image_file.filename)
-                course.file_cover = filename
-                course.is_cover_url = 0
-                course.url_cover = None
-                os.makedirs(upload_folder, exist_ok=True)
-                image_file.save(os.path.join(upload_folder, filename))
 
         logger.info("Updating course with file cover: %s", course.file_cover)
         db.session.commit()
@@ -179,8 +215,6 @@ class CourseService:
         estimated_finish_month = None
         if remaining_seconds > 0:
             # Check how many active study days exist in the system
-            from models.daily_activity import DailyActivity
-
             active_days_count = DailyActivity.query.filter(
                 (DailyActivity.study_seconds > 0)
                 | (DailyActivity.pomodoros_completed > 0)
@@ -203,8 +237,6 @@ class CourseService:
                     estimated_finish_month = month_names_br[finish_date.month - 1]
 
         # Determine last studied date from DailyCourseActivity or DailyActivity
-        from models.daily_activity import DailyCourseActivity
-
         last_studied_date = None
         dca = (
             DailyCourseActivity.query.filter(
