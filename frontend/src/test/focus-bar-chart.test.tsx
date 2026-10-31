@@ -16,6 +16,7 @@ vi.mock("@/hooks/useApiUrl", () => ({
 describe("FocusBarChart Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   it("renders focus bar chart header, metrics, period switcher and legend", async () => {
@@ -130,5 +131,128 @@ describe("FocusBarChart Component", () => {
         undefined
       );
     });
+  });
+
+  it("toggles goal and average lines on and off", async () => {
+    vi.mocked(statsApi.getFocusBars).mockResolvedValue({
+      period: "day",
+      offset: 0,
+      range_label: "Hoje",
+      start_date: "2026-10-26",
+      end_date: "2026-10-26",
+      total_study_seconds: 3600,
+      total_pomodoros: 1,
+      subjects: [],
+      bars: [
+        {
+          key: "2026-10-26",
+          label: "26 Out",
+          sublabel: "Seg",
+          start_date: "2026-10-26",
+          end_date: "2026-10-26",
+          total_seconds: 3600,
+          total_pomodoros: 1,
+          breakdown: [
+            {
+              subject_id: 1,
+              name: "Estatística UFG",
+              color: "#f59e0b",
+              seconds: 3600,
+              pomodoros: 1,
+            },
+          ],
+        },
+      ],
+    });
+
+    render(<FocusBarChart />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Meta: 2h")).toBeInTheDocument();
+      expect(screen.getByText("Média: 1h")).toBeInTheDocument();
+    });
+
+    // Toggle Goal Line off
+    const toggleGoalBtn = screen.getByTitle("Ocultar linha de meta");
+    fireEvent.click(toggleGoalBtn);
+    expect(screen.queryByText("Meta: 2h")).not.toBeInTheDocument();
+
+    // Toggle Goal Line back on
+    const showGoalBtn = screen.getByTitle("Exibir linha de meta");
+    fireEvent.click(showGoalBtn);
+    expect(screen.getByText("Meta: 2h")).toBeInTheDocument();
+
+    // Toggle Average Line off
+    const toggleAvgBtn = screen.getByTitle("Ocultar linha de média");
+    fireEvent.click(toggleAvgBtn);
+    expect(screen.queryByText("Média: 1h")).not.toBeInTheDocument();
+
+    // Toggle Average Line back on
+    const showAvgBtn = screen.getByTitle("Exibir linha de média");
+    fireEvent.click(showAvgBtn);
+    expect(screen.getByText("Média: 1h")).toBeInTheDocument();
+  });
+
+  it("opens goal edit dialog and updates goal value", async () => {
+    vi.mocked(statsApi.getFocusBars).mockResolvedValue({
+      period: "day",
+      offset: 0,
+      range_label: "Hoje",
+      start_date: "2026-10-26",
+      end_date: "2026-10-26",
+      total_study_seconds: 3600,
+      total_pomodoros: 1,
+      subjects: [],
+      bars: [
+        {
+          key: "2026-10-26",
+          label: "26 Out",
+          sublabel: "Seg",
+          start_date: "2026-10-26",
+          end_date: "2026-10-26",
+          total_seconds: 3600,
+          total_pomodoros: 1,
+          breakdown: [
+            {
+              subject_id: 1,
+              name: "Estatística UFG",
+              color: "#f59e0b",
+              seconds: 3600,
+              pomodoros: 1,
+            },
+          ],
+        },
+      ],
+    });
+
+    render(<FocusBarChart />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Meta: 2h")).toBeInTheDocument();
+    });
+
+    // Click edit pencil button
+    const editBtn = screen.getByLabelText("Editar meta de estudo");
+    fireEvent.click(editBtn);
+
+    // Dialog should open
+    expect(screen.getByText(/Editar Meta de Estudo/i)).toBeInTheDocument();
+
+    // Select 4h preset
+    const preset4h = screen.getByText("4h");
+    fireEvent.click(preset4h);
+
+    // Save
+    const saveBtn = screen.getByText("Salvar");
+    fireEvent.click(saveBtn);
+
+    // Dialog closes and new goal is displayed
+    await waitFor(() => {
+      expect(screen.getByText("Meta: 4h")).toBeInTheDocument();
+    });
+
+    // Verify localStorage persistence
+    const savedGoals = JSON.parse(localStorage.getItem("receitas_focus_goals") || "{}");
+    expect(savedGoals.day).toBe(4 * 3600);
   });
 });

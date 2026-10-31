@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -7,6 +7,9 @@ import {
   Clock,
   Sparkles,
   RotateCcw,
+  TrendingUp,
+  Pencil,
+  Check,
 } from "lucide-react";
 import {
   statsApi,
@@ -16,8 +19,57 @@ import {
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export type PeriodType = "day" | "week" | "month" | "year";
+
+const DEFAULT_GOALS: Record<PeriodType, number> = {
+  day: 2 * 3600, // 2h
+  week: 10 * 3600, // 10h
+  month: 40 * 3600, // 40h
+  year: 400 * 3600, // 400h
+};
+
+const PERIOD_LABELS: Record<PeriodType, string> = {
+  day: "Dia",
+  week: "Semana",
+  month: "Mês",
+  year: "Ano",
+};
+
+const PRESET_HOURS: Record<PeriodType, number[]> = {
+  day: [1, 2, 3, 4, 6],
+  week: [5, 10, 15, 20, 30],
+  month: [20, 40, 60, 80, 100],
+  year: [100, 200, 400, 600, 800],
+};
+
+function getStoredGoals(): Record<PeriodType, number> {
+  try {
+    const saved = localStorage.getItem("receitas_focus_goals");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        day: Number(parsed.day) > 0 ? Number(parsed.day) : DEFAULT_GOALS.day,
+        week: Number(parsed.week) > 0 ? Number(parsed.week) : DEFAULT_GOALS.week,
+        month: Number(parsed.month) > 0 ? Number(parsed.month) : DEFAULT_GOALS.month,
+        year: Number(parsed.year) > 0 ? Number(parsed.year) : DEFAULT_GOALS.year,
+      };
+    }
+  } catch {
+    // fallback to defaults
+  }
+  return DEFAULT_GOALS;
+}
 
 function formatDuration(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / 3600);
@@ -53,7 +105,6 @@ function getStackedSegmentPath(
   }
 
   // Round ONLY top-left and top-right; bottom corners remain completely flat
-  // so that segments stack seamlessly without rounded bottom gaps between colors
   return `M ${x + r} ${y} H ${x + w - r} A ${r} ${r} 0 0 1 ${x + w} ${y + r} V ${y + h} H ${x} V ${y + r} A ${r} ${r} 0 0 1 ${x + r} ${y} Z`;
 }
 
@@ -67,19 +118,83 @@ export default function FocusBarChart() {
   const [hoveredBar, setHoveredBar] = useState<FocusBar | null>(null);
 
   // Hidden subjects set for interactive legend (toggle on/off)
-  // Value stored as string: "id" or "none"
   const [hiddenSubjects, setHiddenSubjects] = useState<Set<string>>(new Set());
 
-  // Goal (in seconds): Default 2h (7200s) for day, 10h (36000s) for week, 40h for month
-  const defaultGoals: Record<PeriodType, number> = {
-    day: 2 * 3600,
-    week: 10 * 3600,
-    month: 40 * 3600,
-    year: 400 * 3600,
-  };
-  const [showGoalLine, setShowGoalLine] = useState<boolean>(true);
+  // Goals customization state (persisted in localStorage)
+  const [goals, setGoals] = useState<Record<PeriodType, number>>(getStoredGoals);
+  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
+  const [goalHoursInput, setGoalHoursInput] = useState<number>(2);
+  const [goalMinutesInput, setGoalMinutesInput] = useState<number>(0);
 
-  const goalSeconds = defaultGoals[period];
+  // Line display toggles (persisted in localStorage)
+  const [showGoalLine, setShowGoalLine] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem("receitas_focus_show_goal");
+      return saved !== null ? saved === "true" : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [showAverageLine, setShowAverageLine] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem("receitas_focus_show_avg");
+      return saved !== null ? saved === "true" : true;
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("receitas_focus_show_goal", String(showGoalLine));
+    } catch {
+      // ignore
+    }
+  }, [showGoalLine]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("receitas_focus_show_avg", String(showAverageLine));
+    } catch {
+      // ignore
+    }
+  }, [showAverageLine]);
+
+  const currentGoalSeconds = goals[period] || DEFAULT_GOALS[period];
+
+  const handleOpenGoalDialog = () => {
+    const sec = goals[period] || DEFAULT_GOALS[period];
+    setGoalHoursInput(Math.floor(sec / 3600));
+    setGoalMinutesInput(Math.floor((sec % 3600) / 60));
+    setIsGoalDialogOpen(true);
+  };
+
+  const handleSaveGoal = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const h = Math.max(0, Math.floor(Number(goalHoursInput) || 0));
+    const m = Math.max(0, Math.min(59, Math.floor(Number(goalMinutesInput) || 0)));
+    // Minimum goal: 5 minutes if 0 entered
+    const totalSec = Math.max(300, h * 3600 + m * 60);
+
+    const updated = {
+      ...goals,
+      [period]: totalSec,
+    };
+    setGoals(updated);
+    try {
+      localStorage.setItem("receitas_focus_goals", JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+    setIsGoalDialogOpen(false);
+  };
+
+  const handleResetDefaultGoal = () => {
+    const def = DEFAULT_GOALS[period];
+    setGoalHoursInput(Math.floor(def / 3600));
+    setGoalMinutesInput(Math.floor((def % 3600) / 60));
+  };
 
   const fetchData = useCallback(
     async (showLoading = false) => {
@@ -135,9 +250,9 @@ export default function FocusBarChart() {
   }
 
   // Filtered bars according to visible subjects
-  const { filteredBars, maxSeconds, visibleTotalSeconds } = useMemo(() => {
+  const { filteredBars, maxSeconds, visibleTotalSeconds, averageSeconds } = useMemo(() => {
     if (!data?.bars) {
-      return { filteredBars: [], maxSeconds: 3600, visibleTotalSeconds: 0 };
+      return { filteredBars: [], maxSeconds: 3600, visibleTotalSeconds: 0, averageSeconds: 0 };
     }
 
     let highest = 0;
@@ -166,8 +281,14 @@ export default function FocusBarChart() {
       };
     });
 
-    // Ensure ceiling considers goal line so goal line doesn't overflow
-    const effectiveCeiling = Math.max(highest, showGoalLine ? goalSeconds : 0);
+    const avg = computed.length > 0 ? Math.round(sumVisible / computed.length) : 0;
+
+    // Ensure ceiling considers both goal line and average line so neither line overflows
+    const effectiveCeiling = Math.max(
+      highest,
+      showGoalLine ? currentGoalSeconds : 0,
+      showAverageLine ? avg : 0
+    );
     // Round ceiling up to nearest 1h or 2h step
     const step = effectiveCeiling > 14400 ? 7200 : 3600;
     const roundedMax = Math.max(step * 2, Math.ceil(effectiveCeiling / step) * step);
@@ -176,8 +297,9 @@ export default function FocusBarChart() {
       filteredBars: computed,
       maxSeconds: roundedMax,
       visibleTotalSeconds: sumVisible,
+      averageSeconds: avg,
     };
-  }, [data?.bars, hiddenSubjects, showGoalLine, goalSeconds]);
+  }, [data?.bars, hiddenSubjects, showGoalLine, currentGoalSeconds, showAverageLine]);
 
   // Y-Axis tick intervals (4 to 5 ticks)
   const yTicks = useMemo(() => {
@@ -206,13 +328,18 @@ export default function FocusBarChart() {
   const barWidth = Math.max(6, Math.min(36, slotWidth * (isDense ? 0.72 : 0.65)));
 
   const goalY =
-    showGoalLine && goalSeconds <= maxSeconds
-      ? paddingTop + plotHeight - (goalSeconds / maxSeconds) * plotHeight
+    showGoalLine && currentGoalSeconds <= maxSeconds
+      ? paddingTop + plotHeight - (currentGoalSeconds / maxSeconds) * plotHeight
+      : null;
+
+  const avgY =
+    showAverageLine && averageSeconds > 0 && averageSeconds <= maxSeconds
+      ? paddingTop + plotHeight - (averageSeconds / maxSeconds) * plotHeight
       : null;
 
   return (
     <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
-      {/* Top Header: Title, Total, Period Segmented Buttons, Time Navigator */}
+      {/* Top Header: Title, Total, Controls Toolbar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-blue-500/30 border border-indigo-500/30 flex items-center justify-center shrink-0">
@@ -234,7 +361,7 @@ export default function FocusBarChart() {
         </div>
 
         {/* Action Controls Toolbar */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Day count switcher (14 vs 30 days) if in day mode */}
           {period === "day" && (
             <div className="inline-flex items-center p-0.5 rounded-lg bg-white/[0.04] border border-white/10 text-xs">
@@ -333,21 +460,56 @@ export default function FocusBarChart() {
             </Button>
           )}
 
-          {/* Toggle Goal Line */}
+          {/* Toggle Average Line Button */}
           <button
             type="button"
-            onClick={() => setShowGoalLine(!showGoalLine)}
-            title={showGoalLine ? "Ocultar linha de meta" : "Exibir linha de meta"}
+            onClick={() => setShowAverageLine(!showAverageLine)}
+            title={showAverageLine ? "Ocultar linha de média" : "Exibir linha de média"}
             className={cn(
-              "p-1.5 rounded-lg border text-xs transition-colors flex items-center gap-1",
-              showGoalLine
-                ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
+              "px-2 py-1 rounded-lg border text-xs transition-colors flex items-center gap-1.5",
+              showAverageLine
+                ? "bg-purple-500/15 border-purple-500/40 text-purple-300 font-medium"
                 : "bg-white/[0.02] border-white/10 text-zinc-400 hover:text-white"
             )}
           >
-            <Target className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Meta</span>
+            <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
+            <span>Média</span>
+            {averageSeconds > 0 && (
+              <span className="font-mono text-[10px] opacity-80 tabular-nums hidden sm:inline">
+                ({formatDuration(averageSeconds)})
+              </span>
+            )}
           </button>
+
+          {/* Goal Line Toggle & Edit Button */}
+          <div className="inline-flex items-center rounded-lg border border-white/10 bg-white/[0.02] overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowGoalLine(!showGoalLine)}
+              title={showGoalLine ? "Ocultar linha de meta" : "Exibir linha de meta"}
+              className={cn(
+                "px-2 py-1 text-xs transition-colors flex items-center gap-1.5",
+                showGoalLine
+                  ? "bg-amber-500/15 text-amber-300 font-medium"
+                  : "text-zinc-400 hover:text-white"
+              )}
+            >
+              <Target className="w-3.5 h-3.5 text-amber-400" />
+              <span>Meta</span>
+              <span className="font-mono text-[10px] opacity-80 tabular-nums hidden sm:inline">
+                ({formatDuration(currentGoalSeconds)})
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenGoalDialog}
+              title="Editar meta de estudo"
+              aria-label="Editar meta de estudo"
+              className="px-1.5 py-1 border-l border-white/10 text-zinc-400 hover:text-amber-300 hover:bg-white/10 transition-colors"
+            >
+              <Pencil className="w-3 h-3" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -391,7 +553,31 @@ export default function FocusBarChart() {
                 );
               })}
 
-              {/* Goal Line */}
+              {/* Study Average Line (Purple Dashed, Left-aligned label) */}
+              {avgY !== null && (
+                <g>
+                  <line
+                    x1={paddingLeft}
+                    y1={avgY}
+                    x2={svgWidth - paddingRight}
+                    y2={avgY}
+                    stroke="#c084fc"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                    opacity="0.85"
+                  />
+                  <text
+                    x={paddingLeft + 6}
+                    y={avgY - 5}
+                    textAnchor="start"
+                    className="text-[10px] fill-purple-300 font-sans font-medium select-none"
+                  >
+                    Média: {formatDuration(averageSeconds)}
+                  </text>
+                </g>
+              )}
+
+              {/* Goal Line (Amber Dashed, Right-aligned label) */}
               {goalY !== null && (
                 <g>
                   <line
@@ -408,9 +594,9 @@ export default function FocusBarChart() {
                     x={svgWidth - paddingRight - 4}
                     y={goalY - 5}
                     textAnchor="end"
-                    className="text-[10px] fill-amber-400 font-sans font-medium"
+                    className="text-[10px] fill-amber-400 font-sans font-medium select-none"
                   >
-                    Meta: {formatDuration(goalSeconds)}
+                    Meta: {formatDuration(currentGoalSeconds)}
                   </text>
                 </g>
               )}
@@ -484,8 +670,6 @@ export default function FocusBarChart() {
 
                     {/* X-Axis Bar Label */}
                     {(() => {
-                      // In dense view (e.g. 30 days), showing "26 Out" in every 30px slot causes overlap.
-                      // Instead, display only the day number (e.g. "26") or "1 Out" on the 1st of month.
                       let labelText = bar.label;
                       let isMonthMarker = false;
 
@@ -644,6 +828,129 @@ export default function FocusBarChart() {
           </div>
         )}
       </div>
+
+      {/* Goal Edit Modal Dialog */}
+      <Dialog open={isGoalDialogOpen} onOpenChange={setIsGoalDialogOpen}>
+        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <Target className="w-5 h-5 text-amber-400" />
+              Editar Meta de Estudo ({PERIOD_LABELS[period]})
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400 text-xs">
+              Defina a quantidade de tempo de foco que você pretende atingir por{" "}
+              {period === "day"
+                ? "dia"
+                : period === "week"
+                ? "semana"
+                : period === "month"
+                ? "mês"
+                : "ano"}
+              . A meta será destacada na linha dourada do gráfico.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSaveGoal} className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="goal-hours" className="text-xs text-zinc-300 font-medium">
+                  Horas
+                </Label>
+                <Input
+                  id="goal-hours"
+                  type="number"
+                  min="0"
+                  max="999"
+                  value={goalHoursInput}
+                  onChange={(e) => setGoalHoursInput(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                  className="bg-white/5 border-white/10 text-white font-mono"
+                  placeholder="2"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="goal-minutes" className="text-xs text-zinc-300 font-medium">
+                  Minutos
+                </Label>
+                <Input
+                  id="goal-minutes"
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={goalMinutesInput}
+                  onChange={(e) =>
+                    setGoalMinutesInput(
+                      Math.max(0, Math.min(59, parseInt(e.target.value, 10) || 0))
+                    )
+                  }
+                  className="bg-white/5 border-white/10 text-white font-mono"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            {/* Quick Preset Buttons */}
+            <div className="space-y-1.5 pt-1">
+              <span className="text-[11px] text-zinc-400 font-medium block">
+                Sugestões rápidas:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {PRESET_HOURS[period].map((h) => (
+                  <button
+                    key={h}
+                    type="button"
+                    onClick={() => {
+                      setGoalHoursInput(h);
+                      setGoalMinutesInput(0);
+                    }}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-xs font-mono border transition-all",
+                      goalHoursInput === h && goalMinutesInput === 0
+                        ? "bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold"
+                        : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10"
+                    )}
+                  >
+                    {h}h
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <DialogFooter className="flex flex-row justify-between items-center sm:justify-between pt-3 border-t border-white/10">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleResetDefaultGoal}
+                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1.5 px-2"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Padrão ({formatDuration(DEFAULT_GOALS[period])})
+              </Button>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsGoalDialogOpen(false)}
+                  className="text-xs border-white/15 text-zinc-300 hover:bg-white/10"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  Salvar
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

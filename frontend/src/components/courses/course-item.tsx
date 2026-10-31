@@ -33,6 +33,8 @@ export default function CourseItem({
 }: Props) {
   const { apiUrl } = useApiUrl();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -121,39 +123,29 @@ export default function CourseItem({
 
               {isMenuOpen && (
                 <div className="absolute right-0 top-10 w-44 rounded-xl glass-panel border border-white/15 shadow-2xl backdrop-blur-2xl p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 z-40 bg-[#050a14]/95">
-                  <EditCourse
-                    course={course}
-                    onUpdate={() => {
+                  <button
+                    type="button"
+                    onClick={() => {
                       setIsMenuOpen(false);
-                      onUpdate();
+                      setIsEditDialogOpen(true);
                     }}
-                    trigger={
-                      <button
-                        type="button"
-                        className="w-full text-left px-3 py-2 text-xs text-zinc-200 hover:text-white hover:bg-white/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <Edit3 className="w-3.5 h-3.5 text-blue-400" />
-                        <span>Editar dados</span>
-                      </button>
-                    }
-                  />
+                    className="w-full text-left px-3 py-2 text-xs text-zinc-200 hover:text-white hover:bg-white/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Editar dados</span>
+                  </button>
 
-                  <DeleteCourse
-                    course={course}
-                    onUpdate={() => {
+                  <button
+                    type="button"
+                    onClick={() => {
                       setIsMenuOpen(false);
-                      onUpdate();
+                      setIsDeleteDialogOpen(true);
                     }}
-                    trigger={
-                      <button
-                        type="button"
-                        className="w-full text-left px-3 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer mt-0.5"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Excluir curso</span>
-                      </button>
-                    }
-                  />
+                    className="w-full text-left px-3 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer mt-0.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Excluir curso</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -185,8 +177,27 @@ export default function CourseItem({
           <span>{ctaLabel}</span>
         </Button>
       </CardFooter>
+
+      {/* Controlled Dialogs mounted outside the menu so click-outside does not close them prematurely */}
+      <EditCourse
+        course={course}
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onUpdate={() => {
+          setIsEditDialogOpen(false);
+          onUpdate();
+        }}
+      />
+
+      <DeleteCourse
+        course={course}
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onUpdate={() => {
+          setIsDeleteDialogOpen(false);
+          onUpdate();
+        }}
+      />
     </Card>
   );
 }
-
-
