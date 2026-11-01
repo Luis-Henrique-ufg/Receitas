@@ -129,7 +129,7 @@ export default function DashboardDeadlinesWidget() {
 
                   <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-white/5 border-white/10 text-zinc-300 inline-flex items-center gap-1.5">
                     {countdown.urgent && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_#f43f5e] shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
                     )}
                     {countdown.text}
                   </span>

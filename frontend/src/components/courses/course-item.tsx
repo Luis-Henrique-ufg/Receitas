@@ -98,8 +98,8 @@ export default function CourseItem({
 
           {isHeroCourse && (
             <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-              <span className="glass-panel px-2.5 py-1 rounded text-[10px] font-semibold uppercase tracking-widest text-white backdrop-blur-md border border-white/20 shadow-md inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shadow-[0_0_8px_#007bff] animate-pulse" />
+              <span className="glass-panel px-2.5 py-1 rounded text-[11px] font-medium text-white backdrop-blur-md border border-white/20 shadow-md inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                 Em foco
               </span>
             </div>

@@ -176,8 +176,8 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
         <div className="flex-1 min-w-0 space-y-2.5 text-left w-full">
           {/* Status line: Clean typography with luminous indicator dot instead of monochromatic pills */}
           <div className="flex flex-wrap items-center gap-2.5 text-xs">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-300">
-              <span className="w-2 h-2 rounded-full bg-[#007bff] shadow-[0_0_10px_#007bff] animate-pulse shrink-0" />
+            <div className="inline-flex items-center gap-2 text-xs font-medium text-zinc-300">
+              <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
               <span>{isResume ? "Continuar de onde parei" : "Comece a estudar"}</span>
             </div>
 
@@ -236,7 +236,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
         <div className="shrink-0 w-full md:w-auto">
           <Button
             onClick={() => onPlay(course.id, lesson || undefined)}
-            className="w-full md:w-auto h-11 px-7 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest cursor-pointer"
+            className="w-full md:w-auto h-11 px-7 rounded-xl flex items-center justify-center gap-2 text-xs font-medium cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 fill-current shrink-0" />
             <span>{isResume ? "Continuar" : "Iniciar Curso"}</span>

@@ -350,7 +350,7 @@ export default function FocusBarChart() {
                 Tempo de foco
               </h2>
               <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-200 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full tabular-nums">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shadow-[0_0_8px_#007bff]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                 {formatDuration(visibleTotalSeconds)}
               </div>
             </div>
@@ -476,7 +476,7 @@ export default function FocusBarChart() {
               className={cn(
                 "w-2 h-2 rounded-full transition-all shrink-0",
                 showAverageLine
-                  ? "bg-purple-400 shadow-[0_0_8px_#c084fc]"
+                  ? "bg-purple-400"
                   : "bg-white/20"
               )}
             />
@@ -507,7 +507,7 @@ export default function FocusBarChart() {
                 className={cn(
                   "w-2 h-2 rounded-full transition-all shrink-0",
                   showGoalLine
-                    ? "bg-amber-400 shadow-[0_0_8px_#fbbf24]"
+                    ? "bg-amber-400"
                     : "bg-white/20"
                 )}
               />

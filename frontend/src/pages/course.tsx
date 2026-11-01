@@ -192,8 +192,8 @@ export default function CoursePage() {
             className="w-full flex items-center justify-between px-5 py-2.5 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 text-white z-20 transition-opacity opacity-75 hover:opacity-100 shrink-0"
           >
             <div className="flex items-center gap-3">
-              <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-widest text-white backdrop-blur-md border border-white/15 inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shadow-[0_0_8px_#007bff]" />
+              <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-mono tracking-normal font-medium text-white backdrop-blur-md border border-white/15 inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                 Modo Zen
               </span>
               <span className="text-sm font-heading font-medium truncate max-w-[200px] sm:max-w-md">
@@ -279,7 +279,7 @@ export default function CoursePage() {
             className="py-2.5 px-3 sm:px-4 border-t border-white/10 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 min-w-0 bg-black/20"
           >
             <div className="flex-1 min-w-0 pr-2">
-              <div className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/50 mb-0.5 truncate">
+              <div className="text-[10px] sm:text-xs font-mono tracking-normal font-medium text-white/50 mb-0.5 truncate">
                 {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
               </div>
               <h3 className="text-left font-heading font-medium text-sm sm:text-base lg:text-lg tracking-tight text-white truncate" title={selectedLesson?.title}>

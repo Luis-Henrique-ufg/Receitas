@@ -38,7 +38,7 @@ export default function ProgressCard({
     if (roundedValue === 100) {
       return (
         <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-zinc-200 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
           Concluído
         </span>
       );
