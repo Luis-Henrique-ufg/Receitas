@@ -178,14 +178,10 @@ export default function UpcomingDeadlines({
                           {conf.label}
                         </span>
 
-                        <span
-                          className={cn(
-                            "text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border",
-                            countdown.urgent
-                              ? "bg-rose-500/10 border-rose-500/25 text-rose-300"
-                              : "bg-white/5 border-white/10 text-zinc-400"
+                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-white/5 border-white/10 text-zinc-300 inline-flex items-center gap-1.5">
+                          {countdown.urgent && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_#f43f5e] shrink-0" />
                           )}
-                        >
                           {countdown.text}
                         </span>
 

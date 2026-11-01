@@ -7,7 +7,6 @@ import {
   Clock,
   Sparkles,
   RotateCcw,
-  TrendingUp,
   Pencil,
   Check,
 } from "lucide-react";
@@ -346,13 +345,14 @@ export default function FocusBarChart() {
             <BarChart3 className="w-4 h-4 text-blue-400" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <h2 className="text-base font-heading font-semibold text-white tracking-tight">
                 Tempo de foco
               </h2>
-              <span className="text-xs font-mono font-medium text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full tabular-nums">
+              <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-200 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full tabular-nums">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shadow-[0_0_8px_#007bff]" />
                 {formatDuration(visibleTotalSeconds)}
-              </span>
+              </div>
             </div>
             <p className="text-xs text-zinc-400 mt-0.5 font-sans">
               Distribuição de horas estudadas por matéria via sessões de Pomodoro
@@ -364,15 +364,15 @@ export default function FocusBarChart() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Day count switcher (14 vs 30 days) if in day mode */}
           {period === "day" && (
-            <div className="inline-flex items-center p-0.5 rounded-lg bg-white/[0.04] border border-white/10 text-xs">
+            <div className="inline-flex items-center p-0.5 rounded-full bg-white/[0.04] border border-white/10 text-xs">
               <button
                 type="button"
                 onClick={() => setDayLimit(14)}
                 className={cn(
-                  "px-2 py-1 rounded-md transition-all font-medium",
+                  "px-2.5 py-1 rounded-full transition-all text-xs font-medium",
                   dayLimit === 14
-                    ? "bg-blue-600/30 text-white border border-blue-500/30 font-semibold"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-white/10 text-white border border-white/15 font-semibold shadow-inner"
+                    : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"
                 )}
               >
                 14d
@@ -381,10 +381,10 @@ export default function FocusBarChart() {
                 type="button"
                 onClick={() => setDayLimit(30)}
                 className={cn(
-                  "px-2 py-1 rounded-md transition-all font-medium",
+                  "px-2.5 py-1 rounded-full transition-all text-xs font-medium",
                   dayLimit === 30
-                    ? "bg-blue-600/30 text-white border border-blue-500/30 font-semibold"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-white/10 text-white border border-white/15 font-semibold shadow-inner"
+                    : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"
                 )}
               >
                 30d
@@ -407,10 +407,10 @@ export default function FocusBarChart() {
                   type="button"
                   onClick={() => handlePeriodChange(p)}
                   className={cn(
-                    "px-2.5 py-1 rounded-md transition-all font-medium",
+                    "px-2.5 py-1 rounded-md transition-all font-medium text-xs",
                     period === p
-                      ? "bg-blue-600/30 text-white border border-blue-500/30 font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white"
+                      ? "bg-[#007bff]/80 backdrop-blur-md text-white shadow-lg shadow-blue-900/20 font-semibold"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
                   )}
                 >
                   {labelMap[p]}
@@ -460,43 +460,59 @@ export default function FocusBarChart() {
             </Button>
           )}
 
-          {/* Toggle Average Line Button */}
+          {/* Toggle Average Line Button (Design System Filter Button) */}
           <button
             type="button"
             onClick={() => setShowAverageLine(!showAverageLine)}
             title={showAverageLine ? "Ocultar linha de média" : "Exibir linha de média"}
             className={cn(
-              "px-2 py-1 rounded-lg border text-xs transition-colors flex items-center gap-1.5",
+              "cursor-pointer px-3 py-1.5 rounded-full text-xs transition-all duration-300 flex items-center gap-2 select-none",
               showAverageLine
-                ? "bg-purple-500/15 border-purple-500/40 text-purple-300 font-medium"
-                : "bg-white/[0.02] border-white/10 text-zinc-400 hover:text-white"
+                ? "bg-white/10 text-white border border-white/15 shadow-inner font-medium"
+                : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"
             )}
           >
-            <TrendingUp className="w-3.5 h-3.5 text-purple-400" />
+            <span
+              className={cn(
+                "w-2 h-2 rounded-full transition-all shrink-0",
+                showAverageLine
+                  ? "bg-purple-400 shadow-[0_0_8px_#c084fc]"
+                  : "bg-white/20"
+              )}
+            />
             <span>Média</span>
             {averageSeconds > 0 && (
-              <span className="font-mono text-[10px] opacity-80 tabular-nums hidden sm:inline">
+              <span className="font-mono text-[10px] text-zinc-400 tabular-nums hidden sm:inline">
                 ({formatDuration(averageSeconds)})
               </span>
             )}
           </button>
 
-          {/* Goal Line Toggle & Edit Button */}
-          <div className="inline-flex items-center rounded-lg border border-white/10 bg-white/[0.02] overflow-hidden">
+          {/* Goal Line Toggle & Edit Button (Design System Filter Button) */}
+          <div
+            className={cn(
+              "inline-flex items-center rounded-full transition-all duration-300",
+              showGoalLine
+                ? "bg-white/10 text-white border border-white/15 shadow-inner"
+                : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"
+            )}
+          >
             <button
               type="button"
               onClick={() => setShowGoalLine(!showGoalLine)}
               title={showGoalLine ? "Ocultar linha de meta" : "Exibir linha de meta"}
-              className={cn(
-                "px-2 py-1 text-xs transition-colors flex items-center gap-1.5",
-                showGoalLine
-                  ? "bg-amber-500/15 text-amber-300 font-medium"
-                  : "text-zinc-400 hover:text-white"
-              )}
+              className="cursor-pointer px-3 py-1.5 text-xs transition-colors flex items-center gap-2 select-none font-medium"
             >
-              <Target className="w-3.5 h-3.5 text-amber-400" />
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full transition-all shrink-0",
+                  showGoalLine
+                    ? "bg-amber-400 shadow-[0_0_8px_#fbbf24]"
+                    : "bg-white/20"
+                )}
+              />
               <span>Meta</span>
-              <span className="font-mono text-[10px] opacity-80 tabular-nums hidden sm:inline">
+              <span className="font-mono text-[10px] text-zinc-400 tabular-nums hidden sm:inline">
                 ({formatDuration(currentGoalSeconds)})
               </span>
             </button>
@@ -505,7 +521,7 @@ export default function FocusBarChart() {
               onClick={handleOpenGoalDialog}
               title="Editar meta de estudo"
               aria-label="Editar meta de estudo"
-              className="px-1.5 py-1 border-l border-white/10 text-zinc-400 hover:text-amber-300 hover:bg-white/10 transition-colors"
+              className="pr-2.5 pl-1 py-1 text-zinc-400 hover:text-white transition-colors"
             >
               <Pencil className="w-3 h-3" />
             </button>
@@ -905,9 +921,7 @@ export default function FocusBarChart() {
                     }}
                     className={cn(
                       "px-2.5 py-1 rounded-md text-xs font-mono border transition-all",
-                      goalHoursInput === h && goalMinutesInput === 0
-                        ? "bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold"
-                        : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10"
+                      goalHoursInput === h && goalMinutesInput === 0 ? "bg-white/15 border-white/30 text-white font-semibold shadow-inner" : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10"
                     )}
                   >
                     {h}h

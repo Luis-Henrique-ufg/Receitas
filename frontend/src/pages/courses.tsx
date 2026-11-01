@@ -64,19 +64,19 @@ export default function CoursesPage() {
       <Tabs defaultValue="courses" className="w-full">
         {/* Navigation Tabs Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
-          <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl self-start">
+          <TabsList className="bg-white/[0.04] border border-white/10 p-1 rounded-xl self-start backdrop-blur-md">
             <TabsTrigger
               value="courses"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              className="cursor-hover flex items-center gap-2 data-[state=active]:bg-[#007bff]/80 data-[state=active]:backdrop-blur-md data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-900/20 text-gray-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-300"
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-3.5 h-3.5" />
               Cursos & Estudos
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
-              className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              className="cursor-hover flex items-center gap-2 data-[state=active]:bg-[#007bff]/80 data-[state=active]:backdrop-blur-md data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-900/20 text-gray-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-300"
             >
-              <BarChart3 className="w-4 h-4" />
+              <BarChart3 className="w-3.5 h-3.5" />
               Tempo de Foco & Prazos
             </TabsTrigger>
           </TabsList>

@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { Play, Sparkles, BookOpen, Clock } from "lucide-react";
+import { Play, BookOpen, Clock } from "lucide-react";
 import { Course, Lesson } from "@/models/models";
 import { Button } from "@/components/ui/button";
 import { getMostRecentActiveCourse } from "@/utils/utils";
@@ -42,7 +42,6 @@ export function extractLessonIndex(title?: string, hierarchyPath?: string): numb
   return null;
 }
 
-
 export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps) {
   const { apiUrl } = useApiUrl();
   const [totalLessons, setTotalLessons] = useState<number | null>(null);
@@ -68,7 +67,6 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
     void updateTick;
     return getMostRecentActiveCourse(courses);
   }, [courses, updateTick]);
-
 
   useEffect(() => {
     if (!activeItem?.course) return;
@@ -175,24 +173,28 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
         </div>
 
         {/* Content Info */}
-        <div className="flex-1 min-w-0 space-y-2 text-left w-full">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              {isResume ? "Continuar de onde parei" : "Comece a estudar"}
-            </span>
+        <div className="flex-1 min-w-0 space-y-2.5 text-left w-full">
+          {/* Status line: Clean typography with luminous indicator dot instead of monochromatic pills */}
+          <div className="flex flex-wrap items-center gap-2.5 text-xs">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-300">
+              <span className="w-2 h-2 rounded-full bg-[#007bff] shadow-[0_0_10px_#007bff] animate-pulse shrink-0" />
+              <span>{isResume ? "Continuar de onde parei" : "Comece a estudar"}</span>
+            </div>
 
-            {/* Position Display: only show 'Retomar em MM:SS' when time_elapsed > 0 */}
+            {/* Position Display: clean inline editorial timestamp */}
             {isResume && hasSavedPosition && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs text-cyan-200 bg-cyan-950/40 border border-cyan-500/30">
-                <Clock className="w-3 h-3 text-cyan-400 shrink-0" />
-                <span>
-                  Retomar em{" "}
-                  <span className="font-mono tabular-nums text-white font-medium">
-                    {formatSeconds(lessonElapsed)}
+              <>
+                <span className="text-zinc-600 select-none">•</span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
+                  <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>
+                    Retomar em{" "}
+                    <span className="font-mono tabular-nums text-white font-semibold">
+                      {formatSeconds(lessonElapsed)}
+                    </span>
                   </span>
                 </span>
-              </span>
+              </>
             )}
           </div>
 
@@ -230,13 +232,13 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
           </div>
         </div>
 
-        {/* Action Button: Hover keeps text legible, clean 'Continuar' */}
+        {/* Action Button: Design System Primary Button */}
         <div className="shrink-0 w-full md:w-auto">
           <Button
             onClick={() => onPlay(course.id, lesson || undefined)}
-            className="w-full md:w-auto h-11 px-7 rounded-xl bg-gradient-to-r from-blue-600 to-[#007bff] hover:from-blue-500 hover:to-blue-600 text-white hover:text-white font-semibold shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 text-sm sm:text-base transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+            className="w-full md:w-auto h-11 px-7 rounded-xl flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-widest cursor-pointer"
           >
-            <Play className="w-4 h-4 fill-white shrink-0" />
+            <Play className="w-3.5 h-3.5 fill-current shrink-0" />
             <span>{isResume ? "Continuar" : "Iniciar Curso"}</span>
           </Button>
         </div>

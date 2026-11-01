@@ -192,7 +192,8 @@ export default function CoursePage() {
             className="w-full flex items-center justify-between px-5 py-2.5 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 text-white z-20 transition-opacity opacity-75 hover:opacity-100 shrink-0"
           >
             <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+              <span className="glass-panel px-2.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-widest text-white backdrop-blur-md border border-white/15 inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shadow-[0_0_8px_#007bff]" />
                 Modo Zen
               </span>
               <span className="text-sm font-heading font-medium truncate max-w-[200px] sm:max-w-md">

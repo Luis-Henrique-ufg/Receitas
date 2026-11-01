@@ -81,7 +81,7 @@ export default function CourseItem({
       style={style}
       {...(isEditable ? attributes : {})}
       {...(isEditable ? listeners : {})}
-      className={`group relative overflow-hidden transition-all duration-300 flex flex-col justify-between h-full ${isDragging ? "shadow-2xl ring-2 ring-[#007bff] z-50 opacity-80" : "shadow-md hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,123,255,0.15)]"} ${isEditable ? "cursor-grab active:cursor-grabbing" : ""}`}
+      className={`group relative overflow-hidden transition-all duration-500 flex flex-col justify-between h-full ${isDragging ? "shadow-2xl ring-2 ring-[#007bff] z-50 opacity-80" : "hover:-translate-y-1.5 hover:border-white/30 hover:shadow-[0_15px_40px_rgba(0,123,255,0.15)]"} ${isEditable ? "cursor-grab active:cursor-grabbing" : ""}`}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-[#007bff]/10 to-purple-900/20 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       
@@ -98,7 +98,8 @@ export default function CourseItem({
 
           {isHeroCourse && (
             <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-600/90 text-white backdrop-blur-md shadow-md border border-blue-400/40">
+              <span className="glass-panel px-2.5 py-1 rounded text-[10px] font-semibold uppercase tracking-widest text-white backdrop-blur-md border border-white/20 shadow-md inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#007bff] shadow-[0_0_8px_#007bff] animate-pulse" />
                 Em foco
               </span>
             </div>
