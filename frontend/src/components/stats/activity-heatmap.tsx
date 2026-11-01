@@ -36,13 +36,13 @@ const MONTH_NAMES = [
   "Dez",
 ];
 
-// Distinct, high-contrast levels: Level 1 is clearly distinguished from empty Level 0
+// Natural Liquid Glass levels (no neon shadows or saturated cyan)
 const levelColors = [
-  "bg-white/[0.04] border-white/[0.08] hover:border-white/30",
-  "bg-blue-800/80 border-blue-600/70 hover:border-blue-400",
-  "bg-blue-600/90 border-blue-500/80 hover:border-blue-300",
-  "bg-[#007bff] border-blue-400 shadow-[0_0_8px_rgba(0,123,255,0.4)] hover:border-blue-200",
-  "bg-cyan-400 border-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.6)] hover:border-white",
+  "bg-white/[0.04] border-white/[0.06] hover:border-white/20",
+  "bg-blue-900/60 border-blue-700/40 hover:border-blue-500/60",
+  "bg-blue-700/75 border-blue-600/50 hover:border-blue-400/70",
+  "bg-blue-600 border-blue-500/60 hover:border-blue-300/80",
+  "bg-[#007bff] border-blue-400/80 hover:border-white/90",
 ];
 
 // Row index 0 = Monday, Row 2 = Wednesday, Row 4 = Friday
@@ -70,8 +70,8 @@ export default function ActivityHeatmap() {
   // Dynamic cell sizing and scroll refs
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [cellSize, setCellSize] = useState<number>(14);
-  const cellGap = 3;
+  const [cellSize, setCellSize] = useState<number>(16);
+  const cellGap = 3.5;
   const monthHeaderHeight = 22;
 
   const loadStats = useCallback(
@@ -215,12 +215,12 @@ export default function ActivityHeatmap() {
       if (containerWidth <= 0) return;
 
       const numWeeks = weeks.length || 53;
-      // Available width subtracting 36px for day labels and padding
-      const availableWidth = containerWidth - 36;
+      // Available width subtracting 32px for day labels and padding
+      const availableWidth = containerWidth - 32;
       const totalGaps = (numWeeks - 1) * cellGap;
       const calculated = Math.floor((availableWidth - totalGaps) / numWeeks);
 
-      setCellSize(Math.max(10, Math.min(16, calculated)));
+      setCellSize(Math.max(16, Math.min(22, calculated)));
     };
 
     updateCellSize();
@@ -368,7 +368,7 @@ export default function ActivityHeatmap() {
       {/* Two Column Layout: Left = Heatmap Grid, Right = 3 Indicators */}
       <div className="pt-3.5 flex flex-col lg:flex-row items-start gap-8">
         {/* Left Column: Fixed Day Labels + Heatmap Grid Scroller */}
-        <div className="flex flex-col min-w-0" ref={gridContainerRef}>
+        <div className="flex flex-col flex-1 min-w-0" ref={gridContainerRef}>
           <div className="flex items-start gap-1.5 w-full">
             {/* Day of Week Labels (Seg, Qua, Sex) placed OUTSIDE scroller, strictly aligned with cells */}
             <div
@@ -445,7 +445,7 @@ export default function ActivityHeatmap() {
                             }}
                             style={{ width: `${cellSize}px`, height: `${cellSize}px` }}
                             className={cn(
-                              "relative rounded-[2px] border transition-all duration-150 cursor-pointer focus:outline-none",
+                              "relative rounded-[3px] border transition-all duration-150 cursor-pointer focus:outline-none",
                               levelColors[day.level],
                               "hover:z-20 hover:ring-1 hover:ring-white/80",
                               isSelected && "ring-2 ring-white border-white scale-110 z-30 shadow-lg"
@@ -464,7 +464,7 @@ export default function ActivityHeatmap() {
           <div className="min-h-[22px] flex items-center text-xs text-zinc-300 pt-3">
             {activeDetailDay ? (
               <span className="text-white font-normal flex items-center gap-1.5 animate-in fade-in duration-150 flex-wrap">
-                <span className="text-cyan-400 font-semibold tabular-nums">
+                <span className="text-white font-semibold tabular-nums">
                   {formatDateBr(activeDetailDay.date)}:
                 </span>{" "}
                 {activeDetailDay.date > todayIso ? (
@@ -576,7 +576,7 @@ export default function ActivityHeatmap() {
             <span>Menos</span>
             <div className="flex items-center gap-1">
               {levelColors.map((cls, idx) => (
-                <div key={idx} className={cn("w-2.5 h-2.5 rounded-[2px] border", cls)} />
+                <div key={idx} className={cn("w-3 h-3 rounded-[2.5px] border", cls)} />
               ))}
             </div>
             <span>Mais</span>
