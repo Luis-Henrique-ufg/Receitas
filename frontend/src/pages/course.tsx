@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronLeft, ChevronRight, Bookmark, Sparkles, Minimize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Bookmark, Maximize2, Minimize2 } from "lucide-react";
 import LessonAttachments from "@/components/lesson/lesson-attachments";
 import LessonNotes from "@/components/lesson/lesson-notes";
 import CoursePercentage from "@/components/course-percentage";
@@ -206,10 +206,10 @@ export default function CoursePage() {
                 variant="ghost"
                 onClick={() => lessonResources.addQuickMarker()}
                 className="text-xs gap-1.5 text-zinc-300 hover:text-white h-8"
-                title="Marcar Timestamp (B)"
+                title="Marcar Timestamp"
               >
-                <Bookmark className="w-3.5 h-3.5 fill-[#007bff] text-[#007bff]" />
-                <span className="hidden sm:inline">Marcar (B)</span>
+                <Bookmark className="w-3.5 h-3.5 text-zinc-400" />
+                <span className="hidden sm:inline">Marcar</span>
               </Button>
               <Button
                 size="sm"
@@ -217,7 +217,7 @@ export default function CoursePage() {
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
                 className="h-8 text-xs px-2.5 bg-white/5 border-white/10 text-white"
-                title="Aula Anterior (Shift+P)"
+                title="Aula Anterior"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </Button>
@@ -227,7 +227,7 @@ export default function CoursePage() {
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
                 className="h-8 text-xs px-2.5 bg-white/5 border-white/10 text-white"
-                title="Próxima Aula (Shift+N)"
+                title="Próxima Aula"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </Button>
@@ -236,10 +236,10 @@ export default function CoursePage() {
                 variant="ghost"
                 onClick={() => toggleZenMode(false)}
                 className="text-xs text-zinc-300 hover:text-white h-8 px-3 gap-1.5 bg-white/5 hover:bg-white/10"
-                title="Sair do Modo Zen (ESC ou Z)"
+                title="Sair do Modo Zen"
               >
                 <Minimize2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sair (Z)</span>
+                <span className="hidden sm:inline">Sair</span>
               </Button>
             </div>
           </div>
@@ -297,13 +297,13 @@ export default function CoursePage() {
                       onClick={() => lessonResources.addQuickMarker()}
                       className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white/80 hover:text-white transition-all duration-300"
                     >
-                      <Bookmark className="w-3.5 h-3.5 fill-[#007bff] text-[#007bff]" />
-                      <span className="hidden sm:inline">Marcar (B)</span>
+                      <Bookmark className="w-3.5 h-3.5 text-zinc-400" />
+                      <span className="hidden sm:inline">Marcar</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    <p className="font-semibold text-xs">Marcar ponto no vídeo (B)</p>
-                    <p className="text-[10px] opacity-75">Salva um marcador rápido no segundo atual</p>
+                    <p className="font-semibold text-xs">Marcar ponto no vídeo</p>
+                    <p className="text-[10px] opacity-75">Salva um marcador no segundo atual</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -315,14 +315,14 @@ export default function CoursePage() {
                       variant="outline"
                       size="sm"
                       onClick={() => toggleZenMode(true)}
-                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-cyan-300 hover:text-cyan-200 transition-all duration-300"
+                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white/80 hover:text-white transition-all duration-300"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                      <span className="hidden sm:inline">Modo Zen (Z)</span>
+                      <Maximize2 className="w-3.5 h-3.5 text-zinc-400" />
+                      <span className="hidden sm:inline">Modo Zen</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    <p className="font-semibold text-xs">Ativar Modo Zen (Z)</p>
+                    <p className="font-semibold text-xs">Modo Zen</p>
                     <p className="text-[10px] opacity-75">Visualização maximizada sem distrações</p>
                   </TooltipContent>
                 </Tooltip>

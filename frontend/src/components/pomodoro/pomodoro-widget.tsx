@@ -8,7 +8,6 @@ import {
   Volume2,
   VolumeX,
   ChevronDown,
-  Maximize2,
   Settings2,
   Check,
   BookOpen,
@@ -16,6 +15,9 @@ import {
   Coffee,
   Sparkles,
   AlertTriangle,
+  Timer,
+  Zap,
+  X,
 } from "lucide-react";
 import { usePomodoroStore, PomodoroMode } from "@/store/usePomodoroStore";
 import { subjectsApi } from "@/services/subjectsApi";
@@ -23,7 +25,6 @@ import { Subject } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { TomatoIcon } from "@/components/icons/tomato-icon";
 import {
   Dialog,
   DialogContent,
@@ -90,6 +91,23 @@ export default function PomodoroWidget() {
   } | null>(null);
 
   const originalTitleRef = useRef<string>("Receitas");
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isMinimized) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(target) &&
+        !target.closest("#header-pomodoro-btn")
+      ) {
+        toggleMinimized();
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isMinimized, toggleMinimized]);
 
   // Keep track of original title
   useEffect(() => {
@@ -109,12 +127,12 @@ export default function PomodoroWidget() {
 
     if (mode === "focus") {
       if (isOvertime) {
-        document.title = `(+${formatSeconds(overtimeSeconds)}) 🍅 Receitas (Prolongamento)`;
+        document.title = `(+${formatSeconds(overtimeSeconds)}) Receitas (Prolongamento)`;
       } else {
-        document.title = `(${formatSeconds(timeLeft)}) 🍅 Receitas`;
+        document.title = `(${formatSeconds(timeLeft)}) Receitas`;
       }
     } else {
-      document.title = `(${formatSeconds(timeLeft)}) ☕ Pausa · Receitas`;
+      document.title = `(${formatSeconds(timeLeft)}) Pausa · Receitas`;
     }
 
     return () => {
@@ -193,22 +211,22 @@ export default function PomodoroWidget() {
     focus: {
       label: isOvertime ? "Prolongamento" : "Foco",
       icon: isOvertime ? (
-        <span>⚡</span>
+        <Zap className="w-4 h-4 text-cyan-400 shrink-0 inline-block align-middle" />
       ) : (
-        <TomatoIcon className="w-5 h-5 shrink-0 inline-block align-middle" />
+        <Timer className="w-4 h-4 text-[#007bff] shrink-0 inline-block align-middle" />
       ),
       color: isOvertime
         ? "from-cyan-400 to-emerald-500"
-        : "from-rose-500 to-red-600",
+        : "from-blue-600 to-indigo-600",
     },
     short_break: {
       label: "Pausa Curta",
-      icon: <span>☕</span>,
+      icon: <Coffee className="w-4 h-4 text-amber-400 shrink-0 inline-block align-middle" />,
       color: "from-amber-500 to-emerald-600",
     },
     long_break: {
       label: "Pausa Longa",
-      icon: <span>🌴</span>,
+      icon: <Coffee className="w-4 h-4 text-sky-400 shrink-0 inline-block align-middle" />,
       color: "from-sky-500 to-indigo-600",
     },
   };
@@ -274,107 +292,63 @@ export default function PomodoroWidget() {
   }
 
   const widgetContent = isMinimized ? (
-    <>
-      <div
-        onClick={toggleMinimized}
-        style={{
-          position: "fixed",
-          bottom: "1.5rem",
-          right: "1.5rem",
-          zIndex: 9990,
-        }}
-        className={cn(
-          "flex items-center gap-2 sm:gap-2.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full glass-panel border shadow-2xl cursor-pointer select-none transition-all duration-300 hover:scale-105 hover:bg-white/10 hover:border-white/30 backdrop-blur-xl",
-          isOvertime
-            ? "border-cyan-400/50 bg-[#06182c]/95 ring-2 ring-cyan-500/30"
-            : "border-white/20 bg-[#050a14]/90"
-        )}
-        title={
-          currentSubjectId
-            ? `Matéria: ${subjectDisplayName}`
-            : isOvertime
-            ? "Modo Prolongamento"
-            : "Pomodoro"
-        }
+    inactivityModalData ? (
+      <Dialog
+        open={!!inactivityModalData}
+        onOpenChange={() => setInactivityModalData(null)}
       >
-        <span className="flex items-center text-lg">{currentModeInfo.icon}</span>
-        <span
-          className={cn(
-            "font-mono font-bold text-sm tracking-wider tabular-nums",
-            isOvertime ? "text-cyan-300" : "text-white"
-          )}
-        >
-          {isOvertime
-            ? `+${formatSeconds(overtimeSeconds)}`
-            : formatSeconds(timeLeft)}
-        </span>
-        <div
-          className="w-2 h-2 rounded-full flex-shrink-0"
-          style={{
-            backgroundColor: isRunning ? "#10b981" : subjectDisplayColor,
-          }}
-        />
-        <Maximize2 className="w-3.5 h-3.5 text-zinc-400 hover:text-white ml-1" />
-      </div>
-
-      {/* Inactivity Modal if triggered while minimized */}
-      {inactivityModalData && (
-        <Dialog
-          open={!!inactivityModalData}
-          onOpenChange={() => setInactivityModalData(null)}
-        >
-          <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
-            <DialogHeader>
-              <DialogTitle className="text-base font-heading font-bold flex items-center gap-2 text-amber-400">
-                <AlertTriangle className="w-5 h-5" />
-                Inatividade Detectada
-              </DialogTitle>
-              <DialogDescription className="text-zinc-300 text-xs pt-1 leading-relaxed">
-                Você ficou sem interação e sem vídeo tocando desde as{" "}
-                <strong className="text-white">
-                  {inactivityModalData.idleSince}
-                </strong>{" "}
-                (cerca de{" "}
-                {Math.round(inactivityModalData.idleSeconds / 60)} minutos).
-                Deseja descontar esse tempo para manter suas estatísticas
-                precisas?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter className="gap-2 sm:gap-0 pt-3 border-t border-white/10">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleConfirmInactivityDiscount(false)}
-                className="text-xs"
-              >
-                Manter tempo integral
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => handleConfirmInactivityDiscount(true)}
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs"
-              >
-                Descontar {Math.round(inactivityModalData.idleSeconds / 60)}{" "}
-                min
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-base font-heading font-bold flex items-center gap-2 text-amber-400">
+              <AlertTriangle className="w-5 h-5" />
+              Inatividade Detectada
+            </DialogTitle>
+            <DialogDescription className="text-zinc-300 text-xs pt-1 leading-relaxed">
+              Você ficou sem interação e sem vídeo tocando desde as{" "}
+              <strong className="text-white">
+                {inactivityModalData.idleSince}
+              </strong>{" "}
+              (cerca de{" "}
+              {Math.round(inactivityModalData.idleSeconds / 60)} minutos).
+              Deseja descontar esse tempo para manter suas estatísticas
+              precisas?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 pt-3 border-t border-white/10">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleConfirmInactivityDiscount(false)}
+              className="text-xs"
+            >
+              Manter tempo integral
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => handleConfirmInactivityDiscount(true)}
+              className="bg-blue-600 hover:bg-blue-500 text-white text-xs"
+            >
+              Descontar {Math.round(inactivityModalData.idleSeconds / 60)}{" "}
+              min
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    ) : null
   ) : (
     <>
       <div
+        ref={panelRef}
         style={{
           position: "fixed",
-          bottom: "1.5rem",
+          top: "4.5rem",
           right: "1.5rem",
           zIndex: 9990,
         }}
         className={cn(
-          "w-[calc(100vw-2rem)] max-w-[320px] rounded-2xl glass-panel border p-3.5 sm:p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-bottom-4 duration-200 transition-colors",
+          "w-[calc(100vw-2rem)] max-w-[320px] rounded-2xl glass-panel border p-3.5 sm:p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200 transition-colors",
           isOvertime
-            ? "border-cyan-400/40 bg-[#06182c]/95 shadow-[0_0_25px_rgba(6,182,212,0.15)]"
+            ? "border-cyan-400/40 bg-[#06182c]/95"
             : "border-white/20 bg-[#050a14]/95"
         )}
       >
@@ -423,10 +397,10 @@ export default function PomodoroWidget() {
             </button>
             <button
               onClick={toggleMinimized}
-              title="Minimizar Widget"
+              title="Fechar painel"
               className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
             >
-              <ChevronDown className="w-4 h-4" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -750,7 +724,7 @@ export default function PomodoroWidget() {
               </div>
               <div className="flex items-center justify-center gap-2 text-xs text-zinc-300">
                 <span className="bg-white/10 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
-                  <TomatoIcon className="w-3.5 h-3.5 shrink-0" />
+                  <Timer className="w-3.5 h-3.5 shrink-0 text-[#007bff]" />
                   {sessionSummary.pomodorosCount}{" "}
                   {sessionSummary.pomodorosCount === 1
                     ? "pomodoro"

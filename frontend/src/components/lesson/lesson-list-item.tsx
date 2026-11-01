@@ -133,25 +133,25 @@ export default function LessonListItem({
       className={cn(
         `relative flex justify-between items-center w-full h-16 my-2 border shadow-sm rounded-xl transition-all duration-300 overflow-hidden group/item cursor-pointer glass-panel-brighten`,
         isActive
-          ? "bg-gradient-to-r from-blue-900/40 to-purple-900/20 border-[#007bff]/50 shadow-[0_0_20px_rgba(0,123,255,0.15)] scale-[1.01]"
+          ? "bg-white/10 border-white/25 shadow-sm"
           : isCompleted
-          ? "border-emerald-500/20 bg-emerald-950/15 hover:border-emerald-500/30 hover:bg-emerald-950/25 hover:scale-[1.01]"
-          : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:scale-[1.01]"
+          ? "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.07]"
+          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.06]"
       )}
     >
       {isActive && (
-        <div className="absolute top-1/2 left-4 w-12 h-12 bg-[#007bff]/30 rounded-full blur-xl -translate-y-1/2 animate-pulse liquid-blob pointer-events-none z-0" />
+        <span className="absolute left-0 top-3 bottom-3 w-1 bg-[#007bff] rounded-r-full z-20" />
       )}
       <div
         className="flex-1 flex gap-3 items-center relative z-10 pl-4 py-2 h-full min-w-0 pr-4"
         onClick={onSelect}
       >
         {isActive ? (
-          <div className="w-8 h-8 flex items-center justify-center bg-[#007bff] rounded-full shadow-[0_0_15px_rgba(0,123,255,0.6)] animate-pulse">
+          <div className="w-8 h-8 flex items-center justify-center bg-[#007bff] text-white rounded-full shrink-0">
             <Play className="w-4 h-4 text-white fill-white ml-0.5" />
           </div>
         ) : isCompleted ? (
-          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-heading font-medium">
+          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-heading font-medium">
             {index.toString().padStart(2, "0")}
           </span>
         ) : (
@@ -188,15 +188,9 @@ export default function LessonListItem({
           }
         </span>
         {lesson.duration != "0" && (
-          isCompleted ? (
-            <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
-              {formatDuration(Number(lesson.duration))}
-            </span>
-          ) : (
-            <span className="bg-white/5 border border-white/10 text-white/70 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
-              {formatDuration(Number(lesson.duration))}
-            </span>
-          )
+          <span className="bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
+            {formatDuration(Number(lesson.duration))}
+          </span>
         )}
       </div>
       <div className="shrink-0 flex items-center justify-center relative z-10 pr-6 pl-2">
