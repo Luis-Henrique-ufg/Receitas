@@ -139,9 +139,6 @@ export default function LessonListItem({
           : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.06]"
       )}
     >
-      {isActive && (
-        <span className="absolute left-0 top-3 bottom-3 w-1 bg-[#007bff] rounded-r-full z-20" />
-      )}
       <div
         className="flex-1 flex gap-3 items-center relative z-10 pl-4 py-2 h-full min-w-0 pr-4"
         onClick={onSelect}

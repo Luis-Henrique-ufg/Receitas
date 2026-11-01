@@ -64,20 +64,22 @@ export default function CoursesPage() {
       <Tabs defaultValue="courses" className="w-full">
         {/* Navigation Tabs Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
-          <TabsList className="bg-white/[0.04] border border-white/10 p-1 rounded-xl self-start backdrop-blur-md">
+          <TabsList className="bg-white/[0.04] border border-white/10 p-1 rounded-xl self-start backdrop-blur-md flex items-center gap-1">
             <TabsTrigger
               value="courses"
-              className="cursor-hover flex items-center gap-2 data-[state=active]:bg-[#007bff]/80 data-[state=active]:backdrop-blur-md data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-900/20 text-gray-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300"
+              title="Cursos & Estudos"
+              className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent select-none"
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              Cursos & Estudos
+              <BookOpen className="w-4 h-4 shrink-0" />
+              <span>Cursos</span>
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
-              className="cursor-hover flex items-center gap-2 data-[state=active]:bg-[#007bff]/80 data-[state=active]:backdrop-blur-md data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-900/20 text-gray-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-lg text-xs font-medium transition-all duration-300"
+              title="Tempo de Foco & Prazos"
+              className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent select-none"
             >
-              <BarChart3 className="w-3.5 h-3.5" />
-              Tempo de Foco & Prazos
+              <BarChart3 className="w-4 h-4 shrink-0" />
+              <span>Foco</span>
             </TabsTrigger>
           </TabsList>
         </div>

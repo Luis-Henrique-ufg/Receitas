@@ -488,12 +488,12 @@ export default function ActivityHeatmap() {
                       <span className="text-zinc-500">· Sem registros</span>
                     )}
                     {activeDetailDay.pomodoros > 0 && (
-                      <span className="text-rose-300 tabular-nums">
+                      <span className="text-zinc-400 tabular-nums">
                         • {activeDetailDay.pomodoros} {activeDetailDay.pomodoros === 1 ? "pomodoro" : "pomodoros"}
                       </span>
                     )}
                     {activeDetailDay.lessons > 0 && (
-                      <span className="text-blue-300 tabular-nums">
+                      <span className="text-zinc-400 tabular-nums">
                         • {activeDetailDay.lessons} {activeDetailDay.lessons === 1 ? "aula concluída" : "aulas concluídas"}
                       </span>
                     )}
@@ -509,11 +509,7 @@ export default function ActivityHeatmap() {
                   </button>
                 )}
               </span>
-            ) : (
-              <span className="text-zinc-400 text-[11px]">
-                Passe o cursor ou toque nos dias para ver detalhes e cursos estudados
-              </span>
-            )}
+            ) : null}
           </div>
         </div>
 

@@ -345,28 +345,21 @@ export default function PomodoroWidget() {
           right: "1.5rem",
           zIndex: 9990,
         }}
-        className={cn(
-          "w-[calc(100vw-2rem)] max-w-[320px] rounded-2xl glass-panel border p-3.5 sm:p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200 transition-colors",
-          isOvertime
-            ? "border-cyan-400/40 bg-[#06182c]/95"
-            : "border-white/20 bg-[#050a14]/95"
-        )}
+        className="w-[calc(100vw-2rem)] max-w-[320px] rounded-2xl glass-panel border border-white/10 bg-[#080d1a]/95 p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200"
       >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
-          <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-lg">
+          <div className="flex items-center gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/5">
             {(["focus", "short_break", "long_break"] as PomodoroMode[]).map(
               (m) => (
                 <button
                   key={m}
                   onClick={() => setMode(m)}
                   className={cn(
-                    "px-2.5 py-1 rounded-md text-xs font-medium transition-all",
+                    "px-2.5 py-1 rounded-lg text-xs font-medium transition-all border",
                     mode === m
-                      ? isOvertime && m === "focus"
-                        ? "bg-cyan-500/30 text-cyan-200 shadow-sm font-semibold border border-cyan-400/40"
-                        : "bg-white/20 text-white shadow-sm font-semibold"
-                      : "text-zinc-400 hover:text-zinc-200 hover:bg-white/5"
+                      ? "bg-white/15 text-white shadow-sm font-semibold border-white/15"
+                      : "text-zinc-400 hover:text-white border-transparent hover:bg-white/5"
                   )}
                 >
                   {m === "focus" && isOvertime
@@ -419,7 +412,7 @@ export default function PomodoroWidget() {
                   max={120}
                   value={customFocus}
                   onChange={(e) => setCustomFocus(Number(e.target.value))}
-                  className="w-full bg-black/40 border border-white/15 rounded-lg px-2.5 py-1.5 text-white"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-white/30"
                 />
               </div>
               <div>
@@ -430,7 +423,7 @@ export default function PomodoroWidget() {
                   max={60}
                   value={customBreak}
                   onChange={(e) => setCustomBreak(Number(e.target.value))}
-                  className="w-full bg-black/40 border border-white/15 rounded-lg px-2.5 py-1.5 text-white"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-white/30"
                 />
               </div>
             </div>
@@ -446,7 +439,7 @@ export default function PomodoroWidget() {
               <Button
                 size="sm"
                 onClick={handleSaveSettings}
-                className="text-xs h-8 bg-blue-600 hover:bg-blue-500 text-white gap-1"
+                className="text-xs h-8 bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] font-semibold rounded-lg gap-1 transition-colors"
               >
                 <Check className="w-3.5 h-3.5" /> Salvar
               </Button>
@@ -459,8 +452,7 @@ export default function PomodoroWidget() {
             <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mb-4 relative">
               <div
                 className={cn(
-                  "h-full transition-all duration-500 bg-gradient-to-r",
-                  currentModeInfo.color,
+                  "h-full transition-all duration-500 bg-[#007bff]",
                   isOvertime && "animate-pulse"
                 )}
                 style={{ width: `${progressPercent}%` }}
@@ -468,22 +460,17 @@ export default function PomodoroWidget() {
             </div>
 
             {/* Main Clock */}
-            <div
-              className={cn(
-                "text-5xl font-mono font-black tracking-tight mb-2 drop-shadow-md tabular-nums transition-colors",
-                isOvertime ? "text-cyan-300" : "text-white"
-              )}
-            >
+            <div className="text-5xl font-mono font-bold tracking-tight mb-2 tabular-nums text-white">
               {isOvertime
                 ? `+${formatSeconds(overtimeSeconds)}`
                 : formatSeconds(timeLeft)}
             </div>
 
             {/* Status indicator */}
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-3">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-4">
               {isOvertime ? (
-                <span className="text-cyan-400 font-medium flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5" /> Foco cumprido · Em
+                <span className="text-zinc-300 font-medium flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Foco cumprido · Em
                   prolongamento
                 </span>
               ) : (
@@ -522,7 +509,7 @@ export default function PomodoroWidget() {
               </button>
 
               {isSubjectDropdownOpen && (
-                <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#0c1222] border border-white/20 rounded-xl shadow-2xl p-1 z-30 max-h-48 overflow-y-auto space-y-0.5">
+                <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#080d1a]/98 border border-white/15 rounded-xl shadow-2xl backdrop-blur-xl p-1 z-30 max-h-48 overflow-y-auto space-y-0.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -532,7 +519,7 @@ export default function PomodoroWidget() {
                     className={cn(
                       "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors",
                       currentSubjectId === null
-                        ? "bg-blue-600/30 text-white font-medium"
+                        ? "bg-white/15 text-white font-medium"
                         : "text-zinc-300 hover:bg-white/10"
                     )}
                   >
@@ -556,7 +543,7 @@ export default function PomodoroWidget() {
                       className={cn(
                         "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors",
                         currentSubjectId === sub.id
-                          ? "bg-blue-600/30 text-white font-medium"
+                          ? "bg-white/15 text-white font-medium"
                           : "text-zinc-300 hover:bg-white/10"
                       )}
                     >
@@ -602,19 +589,13 @@ export default function PomodoroWidget() {
               {/* Play / Pause Primary Button */}
               <Button
                 onClick={isRunning ? pause : start}
-                className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105 active:scale-95",
-                  isOvertime
-                    ? "bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 shadow-cyan-500/25"
-                    : isRunning
-                    ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/25"
-                    : "bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow-rose-500/25"
-                )}
+                title={isRunning ? "Pausar" : "Iniciar"}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] [&:hover_svg]:text-[#007bff] shadow-lg shadow-blue-500/20 transition-all duration-200 active:scale-95"
               >
                 {isRunning ? (
-                  <Pause className="w-5 h-5 fill-white" />
+                  <Pause className="w-5 h-5 fill-current transition-colors" />
                 ) : (
-                  <Play className="w-5 h-5 fill-white ml-0.5" />
+                  <Play className="w-5 h-5 fill-current ml-0.5 transition-colors" />
                 )}
               </Button>
 
@@ -625,9 +606,9 @@ export default function PomodoroWidget() {
                   size="sm"
                   onClick={handleTransitionToBreak}
                   title="Fazer Pausa"
-                  className="h-9 px-3 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-1.5"
+                  className="h-9 px-3 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white gap-1.5"
                 >
-                  <Coffee className="w-3.5 h-3.5 text-amber-400" />
+                  <Coffee className="w-3.5 h-3.5 text-zinc-400" />
                   <span>Pausa</span>
                 </Button>
               ) : (

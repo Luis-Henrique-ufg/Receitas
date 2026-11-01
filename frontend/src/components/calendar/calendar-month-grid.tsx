@@ -261,7 +261,7 @@ export default function CalendarMonthGrid({
                 cell.isCurrentMonth
                   ? "bg-white/[0.02] hover:bg-white/[0.06] border-white/10"
                   : "bg-black/30 border-white/5 opacity-40 hover:opacity-75",
-                cell.isToday && "ring-1 ring-blue-400/60 border-blue-400/40 bg-blue-500/[0.03]"
+                cell.isToday && "ring-1 ring-white/25 border-white/25 bg-white/[0.04]"
               )}
             >
               {/* Day header: Day number + Study Indicator */}
@@ -270,7 +270,7 @@ export default function CalendarMonthGrid({
                   className={cn(
                     "text-xs font-mono tabular-nums leading-none",
                     cell.isToday
-                      ? "w-5 h-5 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center shadow-sm"
+                      ? "px-1.5 py-0.5 rounded-md bg-white/15 border border-white/20 text-white font-semibold"
                       : cell.isCurrentMonth
                       ? "text-zinc-200 group-hover:text-white"
                       : "text-zinc-500"
@@ -282,10 +282,10 @@ export default function CalendarMonthGrid({
                 {/* Subtle Study indicator badge */}
                 {hasStudied && (
                   <span
-                    className="inline-flex items-center gap-1 text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20"
+                    className="inline-flex items-center gap-1 text-[9px] font-mono text-zinc-300 bg-white/5 px-1.5 py-0.5 rounded border border-white/10"
                     title={`Estudo registrado: ${Math.round(studiedSeconds / 60)} min`}
                   >
-                    <Sparkles className="w-2.5 h-2.5" />
+                    <Sparkles className="w-2.5 h-2.5 text-zinc-400" />
                     <span className="hidden sm:inline">
                       {Math.round(studiedSeconds / 60)}m
                     </span>

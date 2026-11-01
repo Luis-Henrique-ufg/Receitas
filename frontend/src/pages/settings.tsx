@@ -101,34 +101,38 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="subjects" className="w-full">
-        <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl mb-6 flex-wrap">
+        <TabsList className="bg-white/[0.04] border border-white/10 p-1 rounded-xl mb-6 flex flex-wrap items-center gap-1 backdrop-blur-md">
           <TabsTrigger
             value="subjects"
-            className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            title="Matérias Acadêmicas"
+            className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
           >
-            <BookOpen className="w-4 h-4" />
-            Matérias Acadêmicas
+            <BookOpen className="w-4 h-4 shrink-0" />
+            <span>Matérias</span>
           </TabsTrigger>
           <TabsTrigger
             value="pomodoro"
-            className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            title="Sessões de Foco & Pomodoro"
+            className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
           >
-            <Timer className="w-4 h-4" />
-            Sessões de Foco & Flow
+            <Timer className="w-4 h-4 shrink-0" />
+            <span>Foco</span>
           </TabsTrigger>
           <TabsTrigger
             value="sync"
-            className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            title="Sincronização & Backup"
+            className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
           >
-            <ArrowRightLeft className="w-4 h-4" />
-            Sincronização & Backup
+            <ArrowRightLeft className="w-4 h-4 shrink-0" />
+            <span>Backup</span>
           </TabsTrigger>
           <TabsTrigger
             value="connection"
-            className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-zinc-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            title="Conexão & API"
+            className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
           >
-            <Server className="w-4 h-4" />
-            Conexão & API
+            <Server className="w-4 h-4 shrink-0" />
+            <span>API</span>
           </TabsTrigger>
         </TabsList>
 

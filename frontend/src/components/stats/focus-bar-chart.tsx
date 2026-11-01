@@ -5,7 +5,6 @@ import {
   BarChart3,
   Target,
   Clock,
-  Sparkles,
   RotateCcw,
   Pencil,
   Check,
@@ -454,7 +453,7 @@ export default function FocusBarChart() {
               size="icon"
               onClick={() => setOffset(0)}
               title="Voltar ao período atual"
-              className="h-7 w-7 text-zinc-400 hover:text-cyan-400 hover:bg-white/10"
+              className="h-7 w-7 text-zinc-400 hover:text-white hover:bg-white/10"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </Button>
@@ -476,7 +475,7 @@ export default function FocusBarChart() {
               className={cn(
                 "w-2 h-2 rounded-full transition-all shrink-0",
                 showAverageLine
-                  ? "bg-purple-400"
+                  ? "bg-white/80"
                   : "bg-white/20"
               )}
             />
@@ -507,7 +506,7 @@ export default function FocusBarChart() {
                 className={cn(
                   "w-2 h-2 rounded-full transition-all shrink-0",
                   showGoalLine
-                    ? "bg-amber-400"
+                    ? "bg-white/80"
                     : "bg-white/20"
                 )}
               />
@@ -577,7 +576,7 @@ export default function FocusBarChart() {
                     y1={avgY}
                     x2={svgWidth - paddingRight}
                     y2={avgY}
-                    stroke="#c084fc"
+                    stroke="rgba(255, 255, 255, 0.4)"
                     strokeWidth="1.5"
                     strokeDasharray="4 3"
                     opacity="0.85"
@@ -586,7 +585,7 @@ export default function FocusBarChart() {
                     x={paddingLeft + 6}
                     y={avgY - 5}
                     textAnchor="start"
-                    className="text-[10px] fill-purple-300 font-sans font-medium select-none"
+                    className="text-[10px] fill-zinc-300 font-sans font-medium select-none"
                   >
                     Média: {formatDuration(averageSeconds)}
                   </text>
@@ -601,7 +600,7 @@ export default function FocusBarChart() {
                     y1={goalY}
                     x2={svgWidth - paddingRight}
                     y2={goalY}
-                    stroke="#f59e0b"
+                    stroke="rgba(255, 255, 255, 0.4)"
                     strokeWidth="1.5"
                     strokeDasharray="5 4"
                     opacity="0.8"
@@ -610,7 +609,7 @@ export default function FocusBarChart() {
                     x={svgWidth - paddingRight - 4}
                     y={goalY - 5}
                     textAnchor="end"
-                    className="text-[10px] fill-amber-400 font-sans font-medium select-none"
+                    className="text-[10px] fill-zinc-300 font-sans font-medium select-none"
                   >
                     Meta: {formatDuration(currentGoalSeconds)}
                   </text>
@@ -714,7 +713,7 @@ export default function FocusBarChart() {
                             isHovered
                               ? "fill-white font-bold"
                               : isMonthMarker
-                              ? "fill-cyan-400 font-semibold"
+                              ? "fill-white font-semibold"
                               : "fill-zinc-400 font-medium"
                           )}
                         >
@@ -748,18 +747,18 @@ export default function FocusBarChart() {
         )}
 
         {/* Hovered Bar Interactive Popover / Tooltip */}
-        <div className="min-h-[44px] mt-2 p-2.5 rounded-xl border border-white/10 bg-white/[0.03] flex items-center justify-between text-xs text-zinc-300">
-          {hoveredBar ? (
-            <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2 animate-in fade-in duration-150">
+        {hoveredBar && (
+          <div className="min-h-[44px] mt-2 p-2.5 rounded-xl border border-white/10 bg-white/[0.03] flex items-center justify-between text-xs text-zinc-300 animate-in fade-in duration-150">
+            <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-white">
                   {hoveredBar.label} {hoveredBar.sublabel ? `(${hoveredBar.sublabel})` : ""}:
                 </span>
-                <span className="font-mono font-bold text-cyan-400 tabular-nums">
+                <span className="font-mono font-bold text-white tabular-nums">
                   {formatDuration(hoveredBar.total_seconds)}
                 </span>
                 {hoveredBar.total_pomodoros > 0 && (
-                  <span className="text-rose-300 tabular-nums">
+                  <span className="text-zinc-400 tabular-nums">
                     • {hoveredBar.total_pomodoros}{" "}
                     {hoveredBar.total_pomodoros === 1 ? "pomodoro" : "pomodoros"}
                   </span>
@@ -789,15 +788,8 @@ export default function FocusBarChart() {
                 )}
               </div>
             </div>
-          ) : (
-            <div className="flex items-center gap-2 text-zinc-400 text-xs">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>
-                Passe o cursor sobre as barras para ver os detalhes discriminados por matéria.
-              </span>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Interactive Legend: Click to toggle subject visibility */}
         {data?.subjects && data.subjects.length > 0 && (
@@ -850,7 +842,7 @@ export default function FocusBarChart() {
         <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-white">
-              <Target className="w-5 h-5 text-amber-400" />
+              <Target className="w-5 h-5 text-blue-400" />
               Editar Meta de Estudo ({PERIOD_LABELS[period]})
             </DialogTitle>
             <DialogDescription className="text-zinc-400 text-xs">
@@ -955,7 +947,7 @@ export default function FocusBarChart() {
                 <Button
                   type="submit"
                   size="sm"
-                  className="text-xs bg-amber-600 hover:bg-amber-500 text-white font-semibold flex items-center gap-1.5"
+                  className="text-xs bg-[#007bff] hover:bg-blue-600 text-white font-semibold flex items-center gap-1.5"
                 >
                   <Check className="w-3.5 h-3.5" />
                   Salvar
