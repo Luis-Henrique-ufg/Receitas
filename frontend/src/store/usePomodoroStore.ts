@@ -338,9 +338,10 @@ export const usePomodoroStore = create<PomodoroState>()(
           sessionsCompleted: newSessions,
           sessionSummary: summary,
           pendingInactivityNotice: null,
+          isMinimized: true,
         });
 
-        toast.success("🍅 Sessão de Foco Gravada!", {
+        toast.success("Sessão de Foco Gravada!", {
           description: `${summary.durationMinutes} min · ${summary.pomodorosCount} ${
             summary.pomodorosCount === 1 ? "pomodoro" : "pomodoros"
           } · ${summary.subjectName}`,
@@ -395,7 +396,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             if (soundEnabled) {
               playChimeSound("break");
             }
-            toast.info("☕ Pausa Concluída!", {
+            toast.info("Pausa Concluída!", {
               description: "Pronto para o próximo ciclo de foco?",
               duration: 4000,
             });
@@ -445,7 +446,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             Notification.permission === "granted"
           ) {
             try {
-              new Notification("🍅 Pomodoro Cumprido!", {
+              new Notification("Pomodoro Cumprido!", {
                 body: "25 minutos atingidos! Continuando em modo prolongamento contínuo.",
                 icon: "/cookie.svg",
               });
@@ -479,7 +480,7 @@ export const usePomodoroStore = create<PomodoroState>()(
             const nextMode: PomodoroMode =
               newSessions % 4 === 0 ? "long_break" : "short_break";
 
-            toast.success("🍅 Ciclo de Foco Concluído!", {
+            toast.success("Ciclo de Foco Concluído!", {
               description: `Muito bem! Hora de descansar (${durations[nextMode]} min).`,
               duration: 5000,
             });
@@ -497,7 +498,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           }
 
           // Default "flow" mode: video does NOT pause!
-          toast.success("🍅 Pomodoro Cumprido!", {
+          toast.success("Pomodoro Cumprido!", {
             description:
               "25 minutos de foco atingidos! Continuando em modo prolongamento (+MM:SS).",
             duration: 4000,
@@ -522,7 +523,7 @@ export const usePomodoroStore = create<PomodoroState>()(
 
         // Gentle break reminders at 50 min and 90 min
         if (totalElapsedSeconds >= 50 * 60 && !reminded50Min) {
-          toast.info("☕ 50 minutos de foco contínuo!", {
+          toast.info("50 minutos de foco contínuo!", {
             description:
               "Você está em ótimo ritmo. Que tal planejar uma pausa de 5 min quando terminar?",
             duration: 5000,
@@ -531,7 +532,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         }
 
         if (totalElapsedSeconds >= 90 * 60 && !reminded90Min) {
-          toast.info("🌴 90 minutos de estudo intenso!", {
+          toast.info("90 minutos de estudo intenso!", {
             description:
               "Pausas restauram o foco e auxiliam na consolidação da memória.",
             duration: 6000,

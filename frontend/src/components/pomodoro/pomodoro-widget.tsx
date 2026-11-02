@@ -97,6 +97,14 @@ export default function PomodoroWidget() {
     if (isMinimized) return;
     const handleOutsideClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      // Do not toggle minimized state when clicking inside any Dialog, modal or toast portal
+      if (
+        target.closest("[role='dialog']") ||
+        target.closest("[data-radix-portal]") ||
+        target.closest("[data-sonner-toaster]")
+      ) {
+        return;
+      }
       if (
         panelRef.current &&
         !panelRef.current.contains(target) &&
@@ -291,62 +299,20 @@ export default function PomodoroWidget() {
     });
   }
 
-  const widgetContent = isMinimized ? (
-    inactivityModalData ? (
-      <Dialog
-        open={!!inactivityModalData}
-        onOpenChange={() => setInactivityModalData(null)}
-      >
-        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-base font-heading font-bold flex items-center gap-2 text-amber-400">
-              <AlertTriangle className="w-5 h-5" />
-              Inatividade Detectada
-            </DialogTitle>
-            <DialogDescription className="text-zinc-300 text-xs pt-1 leading-relaxed">
-              Você ficou sem interação e sem vídeo tocando desde as{" "}
-              <strong className="text-white">
-                {inactivityModalData.idleSince}
-              </strong>{" "}
-              (cerca de{" "}
-              {Math.round(inactivityModalData.idleSeconds / 60)} minutos).
-              Deseja descontar esse tempo para manter suas estatísticas
-              precisas?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0 pt-3 border-t border-white/10">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleConfirmInactivityDiscount(false)}
-              className="text-xs"
-            >
-              Manter tempo integral
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => handleConfirmInactivityDiscount(true)}
-              className="bg-blue-600 hover:bg-blue-500 text-white text-xs"
-            >
-              Descontar {Math.round(inactivityModalData.idleSeconds / 60)}{" "}
-              min
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    ) : null
-  ) : (
+  const widgetContent = (
     <>
-      <div
-        ref={panelRef}
-        style={{
-          position: "fixed",
-          top: "4.5rem",
-          right: "1.5rem",
-          zIndex: 9990,
-        }}
-        className="w-[calc(100vw-2rem)] max-w-[320px] rounded-2xl glass-panel border border-white/10 bg-[#080d1a]/95 p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200"
-      >
+      {/* Suspended Pomodoro Popover Panel */}
+      {!isMinimized && (
+        <div
+          ref={panelRef}
+          style={{
+            position: "fixed",
+            top: "4.5rem",
+            right: "1.5rem",
+            zIndex: 9990,
+          }}
+          className="w-[calc(100vw-2rem)] max-w-[320px] rounded-2xl glass-panel border border-white/10 bg-[#080d1a]/95 p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200"
+        >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/5">
@@ -638,18 +604,21 @@ export default function PomodoroWidget() {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      )}
 
       {/* Inactivity (Ghost Time) Confirmation Dialog */}
       {inactivityModalData && (
         <Dialog
           open={!!inactivityModalData}
-          onOpenChange={() => setInactivityModalData(null)}
+          onOpenChange={(open) => {
+            if (!open) setInactivityModalData(null);
+          }}
         >
-          <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+          <DialogContent className="max-w-md glass-panel bg-[#080d1a]/95 border border-white/10 text-white rounded-2xl p-6 shadow-2xl backdrop-blur-2xl">
             <DialogHeader>
-              <DialogTitle className="text-base font-heading font-bold flex items-center gap-2 text-amber-400">
-                <AlertTriangle className="w-5 h-5" />
+              <DialogTitle className="text-base font-heading font-bold flex items-center gap-2 text-white">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
                 Inatividade Detectada
               </DialogTitle>
               <DialogDescription className="text-zinc-300 text-xs pt-1 leading-relaxed">
@@ -662,19 +631,19 @@ export default function PomodoroWidget() {
                 precisas?
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="gap-2 sm:gap-0 pt-3 border-t border-white/10">
+            <DialogFooter className="gap-2 sm:gap-2 pt-3 border-t border-white/10 flex-col sm:flex-row">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleConfirmInactivityDiscount(false)}
-                className="text-xs"
+                className="w-full sm:w-auto text-xs rounded-xl bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300 hover:text-white"
               >
                 Manter tempo integral
               </Button>
               <Button
                 size="sm"
                 onClick={() => handleConfirmInactivityDiscount(true)}
-                className="bg-blue-600 hover:bg-blue-500 text-white text-xs"
+                className="w-full sm:w-auto bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] font-semibold text-xs rounded-xl transition-all duration-200"
               >
                 Descontar {Math.round(inactivityModalData.idleSeconds / 60)} min
               </Button>
@@ -685,27 +654,32 @@ export default function PomodoroWidget() {
 
       {/* Post-Session Summary Celebratory Modal */}
       {sessionSummary && (
-        <Dialog open={!!sessionSummary} onOpenChange={dismissSummary}>
-          <DialogContent className="max-w-sm bg-[#090d16] border-white/15 text-white text-center">
+        <Dialog
+          open={!!sessionSummary}
+          onOpenChange={(open) => {
+            if (!open) dismissSummary();
+          }}
+        >
+          <DialogContent className="max-w-sm glass-panel bg-[#080d1a]/95 border border-white/10 text-white text-center rounded-2xl p-6 shadow-2xl backdrop-blur-2xl">
             <DialogHeader className="items-center">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-2">
-                <Sparkles className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-200 mb-2">
+                <Timer className="w-5 h-5 text-white" />
               </div>
-              <DialogTitle className="text-lg font-heading font-bold text-white">
-                Foco Concluído!
+              <DialogTitle className="text-base font-heading font-bold text-white tracking-tight">
+                Foco Concluído
               </DialogTitle>
               <DialogDescription className="text-zinc-400 text-xs">
-                Excelente sessão de estudos registrada com sucesso.
+                Sessão de estudos registrada com sucesso.
               </DialogDescription>
             </DialogHeader>
 
             <div className="py-4 space-y-2.5">
-              <div className="text-3xl font-mono font-bold text-cyan-300 tabular-nums">
+              <div className="text-3xl font-mono font-bold text-white tabular-nums">
                 {sessionSummary.durationMinutes} min
               </div>
               <div className="flex items-center justify-center gap-2 text-xs text-zinc-300">
-                <span className="bg-white/10 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
-                  <Timer className="w-3.5 h-3.5 shrink-0 text-[#007bff]" />
+                <span className="bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-lg font-mono text-[11px] inline-flex items-center gap-1.5 text-zinc-300">
+                  <Timer className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
                   {sessionSummary.pomodorosCount}{" "}
                   {sessionSummary.pomodorosCount === 1
                     ? "pomodoro"
@@ -718,12 +692,12 @@ export default function PomodoroWidget() {
               </div>
             </div>
 
-            <DialogFooter className="flex-col sm:flex-row gap-2 pt-2 border-t border-white/10">
+            <DialogFooter className="flex-col sm:flex-row gap-2 pt-3 border-t border-white/10">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={dismissSummary}
-                className="w-full sm:w-auto text-xs"
+                className="w-full sm:w-auto text-xs rounded-xl bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300 hover:text-white"
               >
                 Fechar
               </Button>
@@ -734,9 +708,9 @@ export default function PomodoroWidget() {
                   setMode("short_break");
                   start();
                 }}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white text-xs gap-1.5"
+                className="w-full sm:w-auto bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:text-[#007bff] font-semibold text-xs rounded-xl transition-all duration-200 gap-1.5 shadow-sm"
               >
-                <Coffee className="w-3.5 h-3.5" /> Fazer Pausa (5 min)
+                <Coffee className="w-3.5 h-3.5 transition-colors" /> Fazer Pausa (5 min)
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -87,9 +87,7 @@ export default function SettingsPage() {
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6 pb-20">
       <div className="flex items-center gap-3 pb-2 border-b border-white/10">
-        <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-          <Settings className="w-6 h-6" />
-        </div>
+        <Settings className="w-5 h-5 text-zinc-400 shrink-0" />
         <div>
           <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
             Configurações

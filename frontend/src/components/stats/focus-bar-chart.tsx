@@ -339,10 +339,8 @@ export default function FocusBarChart() {
     <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
       {/* Top Header: Title, Total, Controls Toolbar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-blue-500/30 border border-indigo-500/30 flex items-center justify-center shrink-0">
-            <BarChart3 className="w-4 h-4 text-blue-400" />
-          </div>
+        <div className="flex items-center gap-2.5">
+          <BarChart3 className="w-4 h-4 text-zinc-400 shrink-0" />
           <div>
             <div className="flex items-center gap-2.5">
               <h2 className="text-base font-heading font-semibold text-white tracking-tight">

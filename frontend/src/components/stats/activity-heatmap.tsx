@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import { Flame, Sparkles, ChevronDown, AlertCircle, RotateCcw } from "lucide-react";
+import { Flame, Calendar, ChevronDown, AlertCircle, RotateCcw } from "lucide-react";
 import { statsApi, HeatmapResponse, HeatmapDay, AvailableSubject } from "@/services/statsApi";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
@@ -327,9 +327,7 @@ export default function ActivityHeatmap() {
       {/* Header: Title and Aligned Subject Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/30 border border-blue-500/30 flex items-center justify-center shrink-0">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-          </div>
+          <Calendar className="w-4 h-4 text-zinc-400 shrink-0" />
           <h2 className="text-base font-heading font-semibold text-white tracking-tight">
             Constância de estudo
           </h2>
