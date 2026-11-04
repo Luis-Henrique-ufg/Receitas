@@ -178,9 +178,7 @@ export default function CalendarPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
-              <Calendar className="w-5 h-5" />
-            </div>
+            <Calendar className="w-6 h-6 text-zinc-400 shrink-0" />
             <div>
               <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
                 Agenda de Estudos
@@ -194,10 +192,10 @@ export default function CalendarPage() {
 
         <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleEnableNotifications}
-            className="h-9 px-3 text-xs bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300 gap-1.5"
+            className="h-9 px-3 text-xs bg-white/5 border border-white/10 hover:bg-white/15 text-zinc-300 hover:text-white gap-1.5 rounded-xl transition-all duration-200"
             title="Ativar lembretes do navegador para os prazos"
           >
             <Bell className="w-3.5 h-3.5 text-zinc-400" />
@@ -207,9 +205,9 @@ export default function CalendarPage() {
           <Button
             size="sm"
             onClick={() => handleOpenNewDialog()}
-            className="h-9 px-4 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold gap-1.5 shadow-lg shadow-blue-500/20"
+            className="h-9 px-4 text-xs bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:text-[#007bff] font-semibold gap-1.5 rounded-xl transition-all duration-200 shadow-md shadow-blue-500/20"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 transition-colors" />
             <span>Novo evento</span>
           </Button>
         </div>

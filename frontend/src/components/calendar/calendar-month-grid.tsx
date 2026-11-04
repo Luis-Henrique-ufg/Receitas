@@ -3,7 +3,7 @@ import { StudyEvent, EventCategory, CATEGORY_CONFIGS } from "@/models/event";
 import { HeatmapDay } from "@/services/statsApi";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 
 interface CalendarMonthGridProps {
   currentDate: Date;
@@ -285,7 +285,7 @@ export default function CalendarMonthGrid({
                     className="inline-flex items-center gap-1 text-[9px] font-mono text-zinc-300 bg-white/5 px-1.5 py-0.5 rounded border border-white/10"
                     title={`Estudo registrado: ${Math.round(studiedSeconds / 60)} min`}
                   >
-                    <Sparkles className="w-2.5 h-2.5 text-zinc-400" />
+                    <BookOpen className="w-2.5 h-2.5 text-zinc-400 shrink-0" />
                     <span className="hidden sm:inline">
                       {Math.round(studiedSeconds / 60)}m
                     </span>

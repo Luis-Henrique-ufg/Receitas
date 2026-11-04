@@ -16,7 +16,6 @@ import {
   Sparkles,
   AlertTriangle,
   Timer,
-  Zap,
   X,
 } from "lucide-react";
 import { usePomodoroStore, PomodoroMode } from "@/store/usePomodoroStore";
@@ -218,23 +217,19 @@ export default function PomodoroWidget() {
   > = {
     focus: {
       label: isOvertime ? "Prolongamento" : "Foco",
-      icon: isOvertime ? (
-        <Zap className="w-4 h-4 text-cyan-400 shrink-0 inline-block align-middle" />
-      ) : (
-        <Timer className="w-4 h-4 text-[#007bff] shrink-0 inline-block align-middle" />
+      icon: (
+        <Timer className="w-4 h-4 text-zinc-300 shrink-0 inline-block align-middle" />
       ),
-      color: isOvertime
-        ? "from-cyan-400 to-emerald-500"
-        : "from-blue-600 to-indigo-600",
+      color: "from-blue-600 to-indigo-600",
     },
     short_break: {
       label: "Pausa Curta",
-      icon: <Coffee className="w-4 h-4 text-amber-400 shrink-0 inline-block align-middle" />,
+      icon: <Coffee className="w-4 h-4 text-zinc-300 shrink-0 inline-block align-middle" />,
       color: "from-amber-500 to-emerald-600",
     },
     long_break: {
       label: "Pausa Longa",
-      icon: <Coffee className="w-4 h-4 text-sky-400 shrink-0 inline-block align-middle" />,
+      icon: <Coffee className="w-4 h-4 text-zinc-300 shrink-0 inline-block align-middle" />,
       color: "from-sky-500 to-indigo-600",
     },
   };

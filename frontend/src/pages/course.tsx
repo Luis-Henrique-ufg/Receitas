@@ -312,10 +312,10 @@ export default function CoursePage() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => toggleZenMode(true)}
-                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white/80 hover:text-white transition-all duration-300"
+                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white transition-all duration-200"
                     >
                       <Maximize2 className="w-3.5 h-3.5 text-zinc-400" />
                       <span className="hidden sm:inline">Modo Zen</span>
@@ -332,13 +332,13 @@ export default function CoursePage() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={handlePrevLesson}
                       disabled={!prevLesson}
-                      className="gap-1.5 h-8 sm:h-9 px-3 sm:px-3.5 text-xs font-medium bg-white/5 hover:bg-white/15 border-white/10 text-white disabled:opacity-30 disabled:pointer-events-none transition-all duration-300"
+                      className="gap-1.5 h-8 sm:h-9 px-3 sm:px-3.5 text-xs font-medium bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-200 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all duration-200"
                     >
-                      <ChevronLeft className="w-4 h-4 text-white/80" />
+                      <ChevronLeft className="w-4 h-4 text-zinc-300" />
                       <span>Anterior</span>
                     </Button>
                   </TooltipTrigger>

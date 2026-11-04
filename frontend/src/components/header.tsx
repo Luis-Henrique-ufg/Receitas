@@ -1,4 +1,4 @@
-import { Calendar, Cookie, Search, Timer, Coffee, Zap } from "lucide-react";
+import { Calendar, Cookie, Search, Timer, Coffee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { usePomodoroStore } from "@/store/usePomodoroStore";
 import { cn } from "@/lib/utils";
@@ -30,14 +30,14 @@ function Header({ onOpenSearch }: HeaderProps) {
   }
 
   return (
-    <nav className="fixed w-full z-[60] top-0 transition-all duration-300 py-3 px-3 sm:px-4">
+    <nav className="fixed w-full z-[60] top-0 py-3 px-3 sm:px-4">
       <div className="max-w-7xl mx-auto glass-panel rounded-full px-5 sm:px-6 py-2.5 flex items-center justify-between gap-4">
         {/* Brand Logo - pure typography + gradient icon */}
         <div
           onClick={() => handleNavigate("/")}
-          className="cursor-hover group flex items-center gap-2.5 cursor-pointer select-none py-0.5"
+          className="flex items-center gap-2.5 cursor-pointer select-none py-0.5"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#29C5F6] to-[#3a4b9f] flex items-center justify-center shadow-[0_4px_10px_rgba(41,197,246,0.3)] group-hover:scale-105 transition-transform duration-300">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#29C5F6] to-[#3a4b9f] flex items-center justify-center shrink-0">
             <Cookie className="w-4 h-4 text-white" />
           </div>
           <span className="font-heading font-bold text-xl tracking-tight text-white">Receitas</span>
@@ -61,13 +61,9 @@ function Header({ onOpenSearch }: HeaderProps) {
             title={isRunning ? "Pomodoro em andamento (clique para abrir opções)" : "Abrir Pomodoro"}
           >
             {mode === "focus" ? (
-              isOvertime ? (
-                <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              ) : (
-                <Timer className="w-3.5 h-3.5 text-[#007bff] shrink-0" />
-              )
+              <Timer className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
             ) : (
-              <Coffee className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <Coffee className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
             )}
             <span className="font-mono tabular-nums text-xs font-medium text-white">
               {isOvertime ? `+${formatSeconds(overtimeSeconds)}` : formatSeconds(timeLeft)}
@@ -75,7 +71,7 @@ function Header({ onOpenSearch }: HeaderProps) {
             <span
               className={cn(
                 "w-1.5 h-1.5 rounded-full shrink-0",
-                isRunning ? "bg-emerald-400" : isOvertime ? "bg-cyan-400" : "bg-white/20"
+                isRunning ? "bg-emerald-400" : isOvertime ? "bg-white/80" : "bg-white/20"
               )}
             />
           </button>

@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Clock,
   Download,
-  Plus,
   BookOpen,
 } from "lucide-react";
 
@@ -105,15 +104,6 @@ export default function UpcomingDeadlines({
           >
             <Download className="w-3.5 h-3.5 text-zinc-400" />
             <span className="hidden sm:inline">Exportar .ics</span>
-          </Button>
-
-          <Button
-            size="sm"
-            onClick={onNewEvent}
-            className="h-8 px-3 text-xs bg-blue-600 hover:bg-blue-500 text-white font-medium gap-1"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Novo</span>
           </Button>
         </div>
       </div>
