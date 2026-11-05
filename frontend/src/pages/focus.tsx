@@ -478,9 +478,7 @@ export default function FocusPage() {
                   )}
                 >
                   {m === "focus"
-                    ? isOvertime
-                      ? "Prolongamento"
-                      : "Foco"
+                    ? "Foco"
                     : m === "short_break"
                     ? "Pausa Curta"
                     : "Pausa Longa"}
@@ -627,88 +625,87 @@ export default function FocusPage() {
               )}
             </div>
 
-            {/* Intention Input ("O que vou estudar agora?") */}
+            {/* Intention Input */}
             <div>
               <input
                 ref={intentionInputRef}
                 type="text"
                 value={intention}
                 onChange={(e) => setIntention(e.target.value)}
-                placeholder="Qual a sua intenção de estudo agora? (ex: 10 questões, resumo do cap. 4)"
+                placeholder="O que vou estudar?"
                 className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
           </div>
 
-          {/* Action Buttons: Parar | Play/Pause | Fazer Intervalo | Reset */}
-          <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
-            {/* Parar & Salvar */}
-            {mode === "focus" && (
+          {/* Action Buttons Toolbar: Symmetrical, equal heights, zero jiggle */}
+          <div className="flex items-center justify-center gap-2.5 mt-6 w-full max-w-md">
+            {/* Left Slot: Stop & Record (when active/overtime) or Reset (when idle) */}
+            {isRunning || isOvertime ? (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleStopAndRecord}
-                className="h-11 px-4 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-2 font-medium cursor-pointer"
+                className="flex-1 h-11 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-2 font-medium cursor-pointer transition-all active:scale-95"
                 title="Parar e Gravar Sessão (S)"
               >
-                <Square className="w-3.5 h-3.5 fill-current text-rose-400" />
-                <span>Parar & Gravar</span>
+                <Square className="w-3.5 h-3.5 fill-current text-rose-400 shrink-0" />
+                <span className="truncate">Parar</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={reset}
+                className="flex-1 h-11 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-400 hover:text-white gap-2 font-medium cursor-pointer transition-all active:scale-95"
+                title="Reiniciar Ciclo"
+              >
+                <RotateCcw className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">Reiniciar</span>
               </Button>
             )}
 
-            {/* Play / Pause Primary Button */}
+            {/* Center Slot: Play / Pause */}
             <Button
               onClick={isRunning ? pause : start}
-              className="h-12 px-6 rounded-2xl bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] [&:hover_svg]:text-[#007bff] font-semibold text-sm shadow-xl shadow-blue-500/20 flex items-center gap-2.5 transition-all duration-200 active:scale-95 cursor-pointer"
+              className="flex-1 h-11 rounded-xl bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] [&:hover_svg]:text-[#007bff] font-semibold text-xs shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
               title={isRunning ? "Pausar Timer (Espaço)" : "Iniciar Timer (Espaço)"}
             >
               {isRunning ? (
                 <>
-                  <Pause className="w-4 h-4 fill-current transition-colors" />
-                  <span>Pausar</span>
+                  <Pause className="w-3.5 h-3.5 fill-current transition-colors shrink-0" />
+                  <span className="truncate">Pausar</span>
                 </>
               ) : (
                 <>
-                  <Play className="w-4 h-4 fill-current ml-0.5 transition-colors" />
-                  <span>Iniciar Foco</span>
+                  <Play className="w-3.5 h-3.5 fill-current transition-colors shrink-0" />
+                  <span className="truncate">Iniciar</span>
                 </>
               )}
             </Button>
 
-            {/* Fazer Intervalo (Distinct from Pause!) */}
+            {/* Right Slot: Mode Switch (Fazer Intervalo / Voltar ao Foco) */}
             {mode === "focus" ? (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleStartBreak}
-                className="h-11 px-4 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-2 font-medium cursor-pointer"
+                className="flex-1 h-11 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-2 font-medium cursor-pointer transition-all active:scale-95"
                 title="Fazer Intervalo de Descanso (B)"
               >
-                <Coffee className="w-3.5 h-3.5 text-zinc-300" />
-                <span>Fazer Intervalo</span>
+                <Coffee className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                <span className="truncate">Intervalo</span>
               </Button>
             ) : (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setMode("focus")}
-                className="h-11 px-4 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-2 font-medium cursor-pointer"
+                className="flex-1 h-11 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white gap-2 font-medium cursor-pointer transition-all active:scale-95"
+                title="Voltar ao Modo Foco"
               >
-                <Clock className="w-3.5 h-3.5 text-zinc-300" />
-                <span>Voltar ao Foco</span>
-              </Button>
-            )}
-
-            {/* Reset */}
-            {!isRunning && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={reset}
-                title="Reiniciar Ciclo"
-                className="w-10 h-10 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4" />
+                <Clock className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                <span className="truncate">Foco</span>
               </Button>
             )}
           </div>
@@ -732,9 +729,9 @@ export default function FocusPage() {
             <div className="glass-panel p-5 rounded-2xl border border-white/10 bg-[#080d1a]/80 backdrop-blur-xl">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Target className="w-4 h-4 text-amber-400" /> Meta Diária
+                  <Target className="w-4 h-4 text-blue-400" /> Meta Diária
                 </span>
-                <span className="text-xs font-mono font-medium text-amber-300 tabular-nums">
+                <span className="text-xs font-mono font-medium text-blue-400 tabular-nums">
                   {dailyGoalPercent}% concluído
                 </span>
               </div>
@@ -751,7 +748,7 @@ export default function FocusPage() {
 
                 <div className="w-14 h-14 rounded-full border-4 border-white/10 flex items-center justify-center relative">
                   <div
-                    className="absolute inset-0 rounded-full border-4 border-amber-400 transition-all duration-500"
+                    className="absolute inset-0 rounded-full border-4 border-blue-500 transition-all duration-500"
                     style={{
                       clipPath: `polygon(50% 50%, 50% 0%, ${
                         dailyGoalPercent >= 25 ? "100% 0%," : ""
@@ -760,14 +757,14 @@ export default function FocusPage() {
                       }${dailyGoalPercent >= 100 ? "0% 0%," : ""}50% 0%)`,
                     }}
                   />
-                  <Flame className="w-5 h-5 text-amber-400" />
+                  <Flame className="w-5 h-5 text-blue-400" />
                 </div>
               </div>
 
               {/* Progress bar */}
               <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden mt-4">
                 <div
-                  className="h-full bg-amber-400 transition-all duration-500 rounded-full"
+                  className="h-full bg-[#007bff] transition-all duration-500 rounded-full"
                   style={{ width: `${dailyGoalPercent}%` }}
                 />
               </div>
@@ -797,13 +794,10 @@ export default function FocusPage() {
                     ))}
                   </div>
                 ) : todaySessions.length === 0 ? (
-                  <div className="p-8 text-center rounded-xl border border-dashed border-white/10 bg-white/[0.02]">
-                    <Clock className="w-8 h-8 text-zinc-500 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm font-medium text-zinc-300">
+                  <div className="p-6 text-center rounded-xl border border-dashed border-white/10 bg-white/[0.02]">
+                    <Clock className="w-6 h-6 text-zinc-500 mx-auto mb-2 opacity-40" />
+                    <p className="text-xs font-medium text-zinc-400">
                       Nenhuma sessão concluída hoje
-                    </p>
-                    <p className="text-xs text-zinc-500 mt-1">
-                      Inicie o timer para começar a registrar seu foco.
                     </p>
                   </div>
                 ) : (

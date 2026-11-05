@@ -282,47 +282,57 @@ export default function PomodoroWidget() {
             )}
           </div>
 
-          {/* Action Controls: Iniciar/Pausar | Parar | Fazer Intervalo */}
+          {/* Action Controls: Symmetrical, equal heights, zero jiggle */}
           <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-white/10">
-            {/* Play / Pause */}
+            {/* Left Slot: Stop (if active) or Reset (if idle) */}
+            {isRunning || isOvertime ? (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleStopSession}
+                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white shrink-0 cursor-pointer"
+                title="Parar e Gravar"
+              >
+                <Square className="w-3.5 h-3.5 fill-current text-rose-400" />
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={reset}
+                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-400 hover:text-white shrink-0 cursor-pointer"
+                title="Reiniciar"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </Button>
+            )}
+
+            {/* Center Slot: Play / Pause */}
             <Button
               size="sm"
               onClick={isRunning ? pause : start}
-              className="flex-1 h-9 rounded-xl bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] font-semibold text-xs gap-1.5 transition-all cursor-pointer"
+              className="flex-1 h-9 rounded-xl bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] font-semibold text-xs gap-1.5 transition-all cursor-pointer flex items-center justify-center"
             >
               {isRunning ? (
                 <>
-                  <Pause className="w-3.5 h-3.5 fill-current" />
+                  <Pause className="w-3.5 h-3.5 fill-current shrink-0" />
                   <span>Pausar</span>
                 </>
               ) : (
                 <>
-                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                  <Play className="w-3.5 h-3.5 fill-current shrink-0" />
                   <span>Iniciar</span>
                 </>
               )}
             </Button>
 
-            {/* Parar & Salvar */}
-            {mode === "focus" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleStopSession}
-                className="h-9 px-2.5 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white cursor-pointer"
-                title="Parar e Gravar"
-              >
-                <Square className="w-3 h-3 fill-current text-rose-400" />
-              </Button>
-            )}
-
-            {/* Fazer Intervalo (Explicitly named, never confused with pause!) */}
+            {/* Right Slot: Break / Focus Switch */}
             {mode === "focus" ? (
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
                 onClick={handleStartBreak}
-                className="h-9 px-2.5 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white cursor-pointer"
+                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white shrink-0 cursor-pointer"
                 title="Fazer Intervalo de Descanso"
               >
                 <Coffee className="w-3.5 h-3.5 text-zinc-300" />
@@ -330,24 +340,12 @@ export default function PomodoroWidget() {
             ) : (
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
                 onClick={() => setMode("focus")}
-                className="h-9 px-2.5 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white cursor-pointer"
+                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white shrink-0 cursor-pointer"
                 title="Voltar ao Foco"
               >
                 <Timer className="w-3.5 h-3.5 text-zinc-300" />
-              </Button>
-            )}
-
-            {!isRunning && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={reset}
-                className="h-9 w-9 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 cursor-pointer"
-                title="Reiniciar"
-              >
-                <RotateCcw className="w-3 h-3" />
               </Button>
             )}
           </div>
@@ -374,7 +372,7 @@ export default function PomodoroWidget() {
         <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-white">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
+              <AlertTriangle className="w-5 h-5 text-blue-400" />
               Inatividade Detectada
             </DialogTitle>
             <DialogDescription className="text-zinc-400 text-xs">
