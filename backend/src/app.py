@@ -8,6 +8,7 @@ from blueprints import (
     events_bp,
     lessons_bp,
     media_bp,
+    pomodoro_bp,
     search_bp,
     stats_bp,
     subjects_bp,
@@ -23,6 +24,7 @@ from models import (
     DailySubjectActivity,
     Lesson,
     Note,
+    PomodoroSession,
     StudyEvent,
     Subject,
 )
@@ -46,6 +48,7 @@ app.register_blueprint(search_bp)
 app.register_blueprint(stats_bp)
 app.register_blueprint(subjects_bp)
 app.register_blueprint(sync_bp)
+app.register_blueprint(pomodoro_bp)
 
 __all__ = [
     "app",
@@ -56,6 +59,7 @@ __all__ = [
     "DailyActivity",
     "DailyCourseActivity",
     "DailySubjectActivity",
+    "PomodoroSession",
     "StudyEvent",
     "Subject",
 ]

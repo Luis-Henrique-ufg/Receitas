@@ -149,7 +149,10 @@ export const statsApi = {
     courseName?: string,
     subjectId?: number | null,
     subjectName?: string | null,
-    pomodoros: number = 1
+    pomodoros: number = 1,
+    intention?: string | null,
+    startTime?: string | null,
+    endTime?: string | null
   ): Promise<void> {
     const d = new Date();
     const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -162,6 +165,9 @@ export const statsApi = {
       subject_name: subjectName,
       pomodoros: Math.max(1, pomodoros),
       date: localDate,
+      intention: intention || undefined,
+      start_time: startTime || undefined,
+      end_time: endTime || undefined,
     });
   },
 

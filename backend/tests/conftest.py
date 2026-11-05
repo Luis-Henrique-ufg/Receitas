@@ -8,6 +8,7 @@ from blueprints import (
     events_bp,
     lessons_bp,
     media_bp,
+    pomodoro_bp,
     search_bp,
     stats_bp,
     subjects_bp,
@@ -38,6 +39,7 @@ def app():
     test_app.register_blueprint(stats_bp)
     test_app.register_blueprint(subjects_bp)
     test_app.register_blueprint(sync_bp)
+    test_app.register_blueprint(pomodoro_bp)
 
     with test_app.app_context():
         db.create_all()

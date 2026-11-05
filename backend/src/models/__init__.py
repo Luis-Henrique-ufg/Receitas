@@ -6,6 +6,7 @@ from models.daily_activity import (
 )
 from models.lesson import Lesson
 from models.note import Note
+from models.pomodoro_session import PomodoroSession
 from models.study_event import StudyEvent
 from models.subject import Subject
 
@@ -16,6 +17,7 @@ __all__ = [
     "DailyActivity",
     "DailyCourseActivity",
     "DailySubjectActivity",
+    "PomodoroSession",
     "StudyEvent",
     "Subject",
 ]

@@ -36,6 +36,9 @@ def record_pomodoro():
     subject_name = payload.get("subject_name")
     pomodoros = payload.get("pomodoros", 1)
     date_str = payload.get("date")
+    intention = payload.get("intention")
+    start_time = payload.get("start_time")
+    end_time = payload.get("end_time")
 
     activity = StatsService.record_pomodoro_completed(
         study_seconds=study_seconds,
@@ -45,6 +48,9 @@ def record_pomodoro():
         subject_name=subject_name,
         date_str=date_str,
         pomodoros=pomodoros,
+        intention=intention,
+        start_time=start_time,
+        end_time=end_time,
     )
     return jsonify({"message": "Pomodoro registrado", "activity": activity.to_dict()})
 

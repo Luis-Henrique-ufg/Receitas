@@ -211,6 +211,9 @@ class StatsService:
         subject_name: str | None = None,
         date_str: str | None = None,
         pomodoros: int = 1,
+        intention: str | None = None,
+        start_time: str | None = None,
+        end_time: str | None = None,
     ) -> DailyActivity:
         activity = cls.get_or_create_activity(date_str)
         today_str = cls._get_today_str(date_str)
@@ -309,6 +312,30 @@ class StatsService:
         if resolved_subject_name:
             sb[s_key]["name"] = resolved_subject_name
         activity.set_subject_breakdown(sb)
+
+        # 3. Create PomodoroSession individual entry
+        from models.pomodoro_session import PomodoroSession
+
+        now = datetime.now()
+        e_time = end_time or now.strftime("%H:%M")
+        s_time = start_time
+        if not s_time:
+            s_dt = now.timestamp() - int(study_seconds)
+            s_time = datetime.fromtimestamp(s_dt).strftime("%H:%M")
+
+        session_entry = PomodoroSession(
+            date=today_str,
+            start_time=s_time,
+            end_time=e_time,
+            duration_seconds=int(study_seconds),
+            pomodoros=pomodoros_to_add,
+            subject_id=subject_id,
+            subject_name=resolved_subject_name,
+            intention=intention,
+            course_id=course_id,
+            course_name=course_name,
+        )
+        db.session.add(session_entry)
 
         db.session.commit()
         return activity

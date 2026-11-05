@@ -264,6 +264,38 @@ def run_migrations(engine):
                             )
                         conn.commit()
 
+            # 7. Check or create pomodoro_sessions table
+            if "pomodoro_sessions" not in tables:
+                logger.info("Creating pomodoro_sessions table")
+                conn.execute(
+                    text(
+                        """
+                        CREATE TABLE IF NOT EXISTS pomodoro_sessions (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            date VARCHAR(10) NOT NULL,
+                            start_time VARCHAR(5) NULL,
+                            end_time VARCHAR(5) NULL,
+                            duration_seconds INTEGER NOT NULL DEFAULT 0,
+                            pomodoros INTEGER NOT NULL DEFAULT 1,
+                            subject_id INTEGER NULL,
+                            subject_name VARCHAR(150) NULL,
+                            intention VARCHAR(255) NULL,
+                            course_id INTEGER NULL,
+                            course_name VARCHAR(255) NULL,
+                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL,
+                            FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE SET NULL
+                        )
+                        """
+                    )
+                )
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS idx_pomodoro_sessions_date ON pomodoro_sessions(date)"
+                    )
+                )
+                conn.commit()
+
         logger.info("Database migrations executed successfully.")
     except Exception as e:
         logger.error("Error running database migrations: %s", e)

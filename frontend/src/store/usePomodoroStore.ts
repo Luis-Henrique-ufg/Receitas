@@ -46,6 +46,7 @@ export interface PomodoroState {
   currentCourseName?: string | null;
   currentSubjectId?: number | null;
   currentSubjectName?: string | null;
+  intention: string;
 
   // Inactivity tracking
   lastActiveAt: number;
@@ -70,6 +71,7 @@ export interface PomodoroState {
   setCompletionBehavior: (behavior: CompletionBehavior) => void;
   setCurrentCourse: (courseId?: number | null, courseName?: string | null) => void;
   setCurrentSubject: (subjectId?: number | null, subjectName?: string | null) => void;
+  setIntention: (intention: string) => void;
   recordUserActivity: () => void;
   stopAndRecord: (apiUrl?: string, discountSeconds?: number) => Promise<void>;
   dismissSummary: () => void;
@@ -102,6 +104,11 @@ export const usePomodoroStore = create<PomodoroState>()(
       currentCourseName: null,
       currentSubjectId: null,
       currentSubjectName: null,
+      intention: "",
+
+      setIntention: (intention: string) => {
+        set({ intention });
+      },
 
       lastActiveAt: Date.now(),
       idleStartedAt: null,
@@ -278,6 +285,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           currentCourseName,
           currentSubjectId,
           currentSubjectName,
+          intention,
         } = get();
 
         // Total seconds computed
@@ -300,6 +308,12 @@ export const usePomodoroStore = create<PomodoroState>()(
           Math.floor(effectiveSeconds / (durations.focus * 60))
         );
 
+        // Timestamps for session record
+        const nowObj = new Date(now);
+        const end_time = `${String(nowObj.getHours()).padStart(2, "0")}:${String(nowObj.getMinutes()).padStart(2, "0")}`;
+        const startObj = new Date(now - effectiveSeconds * 1000);
+        const start_time = `${String(startObj.getHours()).padStart(2, "0")}:${String(startObj.getMinutes()).padStart(2, "0")}`;
+
         // Record to backend
         try {
           await statsApi.recordPomodoro(
@@ -309,9 +323,13 @@ export const usePomodoroStore = create<PomodoroState>()(
             currentCourseName ?? undefined,
             currentSubjectId ?? undefined,
             currentSubjectName ?? undefined,
-            earnedPomodoros
+            earnedPomodoros,
+            intention || undefined,
+            start_time,
+            end_time
           );
           window.dispatchEvent(new CustomEvent("statsUpdated"));
+          window.dispatchEvent(new CustomEvent("pomodoroSessionCompleted"));
         } catch (err) {
           console.error("Erro ao gravar sessão de foco:", err);
         }

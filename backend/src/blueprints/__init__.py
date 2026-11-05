@@ -2,6 +2,7 @@ from blueprints.courses import courses_bp
 from blueprints.events import events_bp
 from blueprints.lessons import lessons_bp
 from blueprints.media import media_bp
+from blueprints.pomodoro import pomodoro_bp
 from blueprints.search import search_bp
 from blueprints.stats import stats_bp
 from blueprints.subjects import subjects_bp
@@ -12,6 +13,7 @@ __all__ = [
     "events_bp",
     "lessons_bp",
     "media_bp",
+    "pomodoro_bp",
     "search_bp",
     "stats_bp",
     "subjects_bp",
