@@ -215,3 +215,48 @@ class TestFocusBarsAndSubjectStats:
             breakdown_names = [seg["name"] for seg in oct27_bar["breakdown"]]
             assert "Cálculo II" in breakdown_names
             assert "Sem matéria" not in breakdown_names
+
+    def test_reassign_unassigned_activity_flow(self, app, client):
+        with app.app_context():
+            from database import db
+
+            # 1. Complete unassigned pomodoro
+            StatsService.record_pomodoro_completed(
+                study_seconds=3000,
+                subject_id=None,
+                date_str="2026-10-28",
+                pomodoros=2,
+            )
+
+            # 2. Create target subject
+            sub = Subject(name="Direito Constitucional", color="#3b82f6")
+            db.session.add(sub)
+            db.session.commit()
+            sub_id = sub.id
+
+        # 3. Call reassign endpoint
+        res = client.post(
+            "/api/subjects/reassign-unassigned",
+            json={"target_subject_id": sub_id},
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["reassigned_seconds"] == 3000
+        assert data["reassigned_pomodoros"] == 2
+        assert data["target_subject_id"] == sub_id
+
+        # 4. Verify focus bars now show Direito Constitucional and no Sem matéria
+        bars_day = StatsService.get_focus_bars_data(
+            period="day",
+            offset=0,
+            limit=14,
+            reference_date=date(2026, 10, 28),
+        )
+        oct28_bar = next(
+            b for b in bars_day["bars"] if b["start_date"] == "2026-10-28"
+        )
+        assert oct28_bar["total_seconds"] == 3000
+        assert oct28_bar["total_pomodoros"] == 2
+        breakdown_names = [seg["name"] for seg in oct28_bar["breakdown"]]
+        assert "Direito Constitucional" in breakdown_names
+        assert "Sem matéria" not in breakdown_names

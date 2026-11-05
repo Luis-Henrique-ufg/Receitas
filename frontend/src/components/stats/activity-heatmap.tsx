@@ -36,13 +36,13 @@ const MONTH_NAMES = [
   "Dez",
 ];
 
-// Natural Liquid Glass levels (no neon shadows or saturated cyan)
+// Natural Liquid Glass levels (blue saturation strictly proportional to study time)
 const levelColors = [
   "bg-white/[0.04] border-white/[0.06] hover:border-white/20",
-  "bg-blue-900/60 border-blue-700/40 hover:border-blue-500/60",
-  "bg-blue-700/75 border-blue-600/50 hover:border-blue-400/70",
-  "bg-blue-600 border-blue-500/60 hover:border-blue-300/80",
-  "bg-[#007bff] border-blue-400/80 hover:border-white/90",
+  "bg-blue-500/20 border-blue-500/30 hover:border-blue-400/50",
+  "bg-blue-500/45 border-blue-400/40 hover:border-blue-300/60",
+  "bg-blue-600/80 border-blue-400/60 hover:border-blue-300/80",
+  "bg-[#007bff] border-blue-300/80 hover:border-white/90 shadow-[0_0_8px_rgba(0,123,255,0.25)]",
 ];
 
 // Row index 0 = Monday, Row 2 = Wednesday, Row 4 = Friday
@@ -264,10 +264,12 @@ export default function ActivityHeatmap() {
 
   const weekSeconds = data?.week_seconds ?? 0;
   const deltaWeekSeconds = data?.delta_week_seconds ?? 0;
-  // If previous week was 0, delta is not a meaningful comparison
+  // If previous week's corresponding window had 0s, delta is not a meaningful comparison
   const hasMeaningfulDelta =
     deltaWeekSeconds !== 0 &&
-    (data?.last_week_seconds !== undefined
+    (data?.last_week_same_window_seconds !== undefined
+      ? data.last_week_same_window_seconds > 0
+      : data?.last_week_seconds !== undefined
       ? data.last_week_seconds > 0
       : deltaWeekSeconds !== weekSeconds);
 
@@ -537,14 +539,24 @@ export default function ActivityHeatmap() {
               </span>
               {hasMeaningfulDelta && (
                 <span
+                  title={
+                    deltaWeekSeconds >= 0
+                      ? `+${formatDuration(deltaWeekSeconds)} vs. mesmo ponto da semana passada`
+                      : `-${formatDuration(Math.abs(deltaWeekSeconds))} vs. mesmo ponto da semana passada`
+                  }
                   className={cn(
-                    "text-xs font-semibold tabular-nums",
+                    "text-xs font-semibold tabular-nums inline-flex items-baseline gap-1",
                     deltaWeekSeconds > 0 ? "text-emerald-400" : "text-zinc-400"
                   )}
                 >
-                  {deltaWeekSeconds > 0
-                    ? `+${formatDuration(deltaWeekSeconds)}`
-                    : `-${formatDuration(Math.abs(deltaWeekSeconds))}`}
+                  <span>
+                    {deltaWeekSeconds > 0
+                      ? `+${formatDuration(deltaWeekSeconds)}`
+                      : `-${formatDuration(Math.abs(deltaWeekSeconds))}`}
+                  </span>
+                  <span className="text-[10px] font-normal text-zinc-400 font-sans hidden sm:inline">
+                    vs. semana anterior
+                  </span>
                 </span>
               )}
             </div>

@@ -85,7 +85,7 @@ export default function Router() {
           visibleToasts={1}
         />
       </ThemeProvider>
-      <main className={cn(isZenMode ? "p-0 relative z-10" : "p-3 sm:p-4 lg:p-5 pt-20 sm:pt-22 lg:pt-20 xl:pt-24 relative z-10")}>
+      <main className={cn(isZenMode ? "p-0 relative z-10" : "p-2.5 sm:p-3.5 lg:p-4 pt-16 sm:pt-18 lg:pt-18 xl:pt-20 relative z-10")}>
         <Routes>
           <Route path="/" element={<Navigate to="/receitas" replace />} />
           <Route path="/receitas/:courseId" element={<CoursePage />} />

@@ -424,7 +424,6 @@ export default function LessonNotes({
         <div className="space-y-4">
           <div className="flex flex-col gap-2">
             <Textarea
-              placeholder="Digite sua anotação aqui… O tempo do vídeo será registrado automaticamente. Pressione ⌘/⌃+Enter para salvar."
               className="bg-white/5 border-white/10 text-white min-h-24 focus-visible:ring-[#007bff]"
               value={newNote}
               onChange={(e) => onNewNoteChange(e.target.value)}

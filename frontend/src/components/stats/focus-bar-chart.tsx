@@ -8,12 +8,16 @@ import {
   RotateCcw,
   Pencil,
   Check,
+  ArrowRightLeft,
 } from "lucide-react";
 import {
   statsApi,
   FocusBarsResponse,
   FocusBar,
 } from "@/services/statsApi";
+import { subjectsApi } from "@/services/subjectsApi";
+import { Subject } from "@/models/models";
+import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -124,6 +128,16 @@ export default function FocusBarChart() {
   const [goalHoursInput, setGoalHoursInput] = useState<number>(2);
   const [goalMinutesInput, setGoalMinutesInput] = useState<number>(0);
 
+  // Reassign "Sem matéria" modal state
+  const [isReassignOpen, setIsReassignOpen] = useState(false);
+  const [allSubjectsList, setAllSubjectsList] = useState<Subject[]>([]);
+  const [selectedTargetSubjectId, setSelectedTargetSubjectId] = useState<number | null>(null);
+  const [isReassigning, setIsReassigning] = useState(false);
+
+  const unassignedSubject = useMemo(() => {
+    return data?.subjects?.find((s) => s.id === null && s.study_seconds > 0) || null;
+  }, [data?.subjects]);
+
   // Line display toggles (persisted in localStorage)
   const [showGoalLine, setShowGoalLine] = useState<boolean>(() => {
     try {
@@ -224,6 +238,36 @@ export default function FocusBarChart() {
       window.removeEventListener("subjectsUpdated", handleUpdate);
     };
   }, [fetchData]);
+
+  const handleOpenReassign = useCallback(async () => {
+    try {
+      const list = await subjectsApi.getAll(apiUrl, false);
+      setAllSubjectsList(list);
+      if (list.length > 0) {
+        setSelectedTargetSubjectId(list[0].id);
+      }
+      setIsReassignOpen(true);
+    } catch {
+      toast.error("Erro ao carregar matérias.");
+    }
+  }, [apiUrl]);
+
+  const handleConfirmReassign = useCallback(async () => {
+    if (!selectedTargetSubjectId) return;
+    try {
+      setIsReassigning(true);
+      const res = await subjectsApi.reassignUnassigned(apiUrl, selectedTargetSubjectId);
+      toast.success(res.message || "Histórico reatribuído com sucesso!");
+      setIsReassignOpen(false);
+      window.dispatchEvent(new CustomEvent("subjectsUpdated"));
+      window.dispatchEvent(new CustomEvent("statsUpdated"));
+      void fetchData(false);
+    } catch {
+      toast.error("Erro ao reatribuir histórico de foco.");
+    } finally {
+      setIsReassigning(false);
+    }
+  }, [apiUrl, selectedTargetSubjectId, fetchData]);
 
   // Reset offset when changing period
   function handlePeriodChange(newPeriod: PeriodType) {
@@ -798,37 +842,46 @@ export default function FocusBarChart() {
             {data.subjects.map((sub) => {
               const key = sub.id === null ? "none" : String(sub.id);
               const isHidden = hiddenSubjects.has(key);
+              const isUnassigned = sub.id === null;
+
               return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => toggleSubjectVisibility(key)}
-                  title={
-                    isHidden
-                      ? `Clique para exibir ${sub.name}`
-                      : `Clique para ocultar ${sub.name}`
-                  }
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer",
-                    isHidden
-                      ? "bg-white/[0.02] border-white/10 text-zinc-500 line-through opacity-50"
-                      : "bg-white/[0.05] border-white/20 text-zinc-200 hover:border-white/30"
-                  )}
-                >
-                  <div
+                <div key={key} className="inline-flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => toggleSubjectVisibility(key)}
                     className={cn(
-                      "w-2 h-2 rounded-full flex-shrink-0",
-                      isHidden && "grayscale"
+                      "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer",
+                      isHidden
+                        ? "bg-white/[0.02] border-white/10 text-zinc-500 line-through opacity-50"
+                        : "bg-white/[0.05] border-white/20 text-zinc-200 hover:border-white/30"
                     )}
-                    style={{ backgroundColor: sub.color }}
-                  />
-                  <span>{sub.name}</span>
-                  {sub.study_seconds > 0 && (
-                    <span className="text-[10px] font-mono text-zinc-400 tabular-nums">
-                      ({formatDuration(sub.study_seconds)})
-                    </span>
+                  >
+                    <div
+                      className={cn(
+                        "w-2 h-2 rounded-full flex-shrink-0",
+                        isHidden && "grayscale"
+                      )}
+                      style={{ backgroundColor: sub.color }}
+                    />
+                    <span>{sub.name}</span>
+                    {sub.study_seconds > 0 && (
+                      <span className="text-[10px] font-mono text-zinc-400 tabular-nums">
+                        ({formatDuration(sub.study_seconds)})
+                      </span>
+                    )}
+                  </button>
+
+                  {isUnassigned && sub.study_seconds > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleOpenReassign}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-white border border-blue-500/30 transition-all cursor-pointer"
+                    >
+                      <ArrowRightLeft className="w-3 h-3" />
+                      <span>Atribuir matéria</span>
+                    </button>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>
@@ -953,6 +1006,67 @@ export default function FocusBarChart() {
               </div>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reassign "Sem matéria" Dialog */}
+      <Dialog open={isReassignOpen} onOpenChange={setIsReassignOpen}>
+        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <ArrowRightLeft className="w-5 h-5 text-blue-400" />
+              Atribuir Tempo de "Sem matéria"
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400 text-xs">
+              {unassignedSubject
+                ? `Você possui ${formatDuration(unassignedSubject.study_seconds)} de foco registrado sem matéria. Selecione para qual matéria acadêmica deseja transferir esse histórico.`
+                : "Selecione para qual matéria acadêmica deseja transferir o histórico não categorizado."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-4">
+            {allSubjectsList.length === 0 ? (
+              <p className="text-xs text-zinc-400 italic">
+                Nenhuma matéria cadastrada. Crie uma matéria em Configurações para poder atribuir seu tempo.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <Label className="text-xs text-zinc-300">Matéria Destino</Label>
+                <select
+                  value={selectedTargetSubjectId ?? ""}
+                  onChange={(e) => setSelectedTargetSubjectId(Number(e.target.value))}
+                  className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/15 text-white text-sm focus:outline-none focus:border-blue-500 cursor-pointer"
+                >
+                  {allSubjectsList.map((s) => (
+                    <option key={s.id} value={s.id} className="bg-[#0f172a] text-white">
+                      {s.name} {s.code ? `(${s.code})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex justify-end gap-2 pt-2 border-t border-white/10">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsReassignOpen(false)}
+              className="text-xs border-white/15 text-zinc-300 hover:bg-white/10"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleConfirmReassign}
+              disabled={isReassigning || !selectedTargetSubjectId || allSubjectsList.length === 0}
+              className="text-xs bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white font-semibold transition-all duration-200"
+            >
+              {isReassigning ? "Atribuindo..." : "Confirmar Atribuição"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

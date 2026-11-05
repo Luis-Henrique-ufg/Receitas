@@ -67,7 +67,6 @@ export default function CoursesPage() {
           <TabsList className="bg-white/[0.04] border border-white/10 p-1 rounded-xl self-start backdrop-blur-md flex items-center gap-1">
             <TabsTrigger
               value="courses"
-              title="Cursos & Estudos"
               className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent select-none"
             >
               <BookOpen className="w-4 h-4 shrink-0" />
@@ -75,7 +74,6 @@ export default function CoursesPage() {
             </TabsTrigger>
             <TabsTrigger
               value="analytics"
-              title="Tempo de Foco & Prazos"
               className="flex items-center gap-2 data-[state=active]:bg-white/15 data-[state=active]:text-white data-[state=active]:border-white/20 data-[state=active]:shadow-sm text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent select-none"
             >
               <BarChart3 className="w-4 h-4 shrink-0" />

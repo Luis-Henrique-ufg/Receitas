@@ -47,6 +47,7 @@ export interface HeatmapResponse {
   week_seconds?: number;
   week_active_days?: number;
   last_week_seconds?: number;
+  last_week_same_window_seconds?: number;
   delta_week_seconds?: number;
   available_courses?: AvailableCourse[];
   available_subjects?: AvailableSubject[];

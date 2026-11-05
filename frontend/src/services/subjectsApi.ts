@@ -56,4 +56,13 @@ export const subjectsApi = {
     const url = resolveUrl(apiUrl, `/api/subjects/${id}`);
     await axios.delete(url);
   },
+
+  async reassignUnassigned(
+    apiUrl: string | undefined,
+    targetSubjectId: number
+  ): Promise<{ message: string; reassigned_seconds: number; reassigned_pomodoros: number; target_subject_name: string }> {
+    const url = resolveUrl(apiUrl, "/api/subjects/reassign-unassigned");
+    const res = await axios.post(url, { target_subject_id: targetSubjectId });
+    return res.data;
+  },
 };

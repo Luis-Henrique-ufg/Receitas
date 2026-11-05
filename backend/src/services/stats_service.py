@@ -590,14 +590,14 @@ class StatsService:
                 day_courses = []
                 day_subjects = []
 
-            # Level 0 to 4 based on activity
+            # Level 0 to 4 based on activity (monotonically scaled by study volume)
             if sec == 0 and pom == 0 and les == 0:
                 level = 0
-            elif sec < 900 and pom == 0:
+            elif sec < 1800 and pom == 0:
                 level = 1
-            elif sec < 2700 or pom == 1:
+            elif sec < 3600 or pom in (1, 2):
                 level = 2
-            elif sec < 5400 or pom in (2, 3):
+            elif sec < 7200 or pom in (3, 4):
                 level = 3
             else:
                 level = 4
@@ -672,7 +672,19 @@ class StatsService:
             if last_week_start.isoformat() <= r.date <= last_week_end.isoformat()
         ]
         last_week_seconds = sum(get_record_stats(r)[0] for r in last_week_records)
-        delta_week_seconds = week_seconds - last_week_seconds
+
+        # Fair comparison: compare current week-to-date against the same weekday window of last week
+        days_elapsed = max(0, (ref - week_start).days)
+        last_week_same_point = last_week_start + timedelta(days=days_elapsed)
+        last_week_same_window_records = [
+            r
+            for r in last_week_records
+            if last_week_start.isoformat() <= r.date <= last_week_same_point.isoformat()
+        ]
+        last_week_same_window_seconds = sum(
+            get_record_stats(r)[0] for r in last_week_same_window_records
+        )
+        delta_week_seconds = week_seconds - last_week_same_window_seconds
 
         return {
             "current_streak": current_streak,
@@ -684,6 +696,7 @@ class StatsService:
             "week_seconds": week_seconds,
             "week_active_days": week_active_days,
             "last_week_seconds": last_week_seconds,
+            "last_week_same_window_seconds": last_week_same_window_seconds,
             "delta_week_seconds": delta_week_seconds,
             "available_courses": available_courses,
             "available_subjects": available_subjects,

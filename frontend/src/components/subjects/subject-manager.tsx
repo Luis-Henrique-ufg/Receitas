@@ -9,6 +9,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  ArrowRightLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Subject } from "@/models/models";
@@ -51,6 +52,11 @@ export default function SubjectManager() {
   const [formCode, setFormCode] = useState("");
   const [formSemester, setFormSemester] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  // Reassign unassigned focus state
+  const [isReassignOpen, setIsReassignOpen] = useState(false);
+  const [selectedTargetSubjectId, setSelectedTargetSubjectId] = useState<number | null>(null);
+  const [isReassigning, setIsReassigning] = useState(false);
 
   const fetchSubjects = useCallback(async () => {
     try {
@@ -168,6 +174,30 @@ export default function SubjectManager() {
   const activeSubjects = subjects.filter((s) => !s.is_archived);
   const archivedSubjects = subjects.filter((s) => s.is_archived);
 
+  function handleOpenReassign() {
+    if (activeSubjects.length > 0) {
+      setSelectedTargetSubjectId(activeSubjects[0].id);
+    }
+    setIsReassignOpen(true);
+  }
+
+  async function handleConfirmReassign() {
+    if (!selectedTargetSubjectId) return;
+    try {
+      setIsReassigning(true);
+      const res = await subjectsApi.reassignUnassigned(apiUrl, selectedTargetSubjectId);
+      toast.success(res.message || "Histórico reatribuído com sucesso!");
+      setIsReassignOpen(false);
+      window.dispatchEvent(new CustomEvent("subjectsUpdated"));
+      window.dispatchEvent(new CustomEvent("statsUpdated"));
+      await fetchSubjects();
+    } catch {
+      toast.error("Erro ao reatribuir histórico de foco.");
+    } finally {
+      setIsReassigning(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header with Title and Add Button */}
@@ -181,12 +211,23 @@ export default function SubjectManager() {
             Cadastre disciplinas, semestres e cores para classificar seus pomodoros e tempo de foco.
           </p>
         </div>
-        <Button
-          onClick={handleOpenCreate}
-          className="bg-blue-600 hover:bg-blue-500 text-white gap-2 shadow-lg shadow-blue-600/20 self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" /> Nova Matéria
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {activeSubjects.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleOpenReassign}
+              className="bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border-white/10 text-xs gap-1.5"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" /> Atribuir Tempo Sem Matéria
+            </Button>
+          )}
+          <Button
+            onClick={handleOpenCreate}
+            className="bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white gap-2 shadow-lg shadow-blue-600/20 text-xs transition-all duration-200"
+          >
+            <Plus className="w-4 h-4" /> Nova Matéria
+          </Button>
+        </div>
       </div>
 
       {/* Active Subjects List */}
@@ -455,6 +496,59 @@ export default function SubjectManager() {
             >
               <Check className="w-4 h-4" />
               {isSaving ? "Salvando..." : "Salvar Matéria"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reassign "Sem matéria" Dialog */}
+      <Dialog open={isReassignOpen} onOpenChange={setIsReassignOpen}>
+        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <ArrowRightLeft className="w-5 h-5 text-blue-400" />
+              Atribuir Tempo de "Sem matéria"
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400 text-xs">
+              Transfira todo o histórico de tempo e pomodoros acumulados sem matéria para uma das suas disciplinas ativas.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs text-zinc-300 font-medium">Matéria Destino</label>
+              <select
+                value={selectedTargetSubjectId ?? ""}
+                onChange={(e) => setSelectedTargetSubjectId(Number(e.target.value))}
+                className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/15 text-white text-sm focus:outline-none focus:border-blue-500 cursor-pointer"
+              >
+                {activeSubjects.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-[#0f172a] text-white">
+                    {s.name} {s.code ? `(${s.code})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <DialogFooter className="flex justify-end gap-2 pt-2 border-t border-white/10">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsReassignOpen(false)}
+              className="text-xs border-white/15 text-zinc-300 hover:bg-white/10"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleConfirmReassign}
+              disabled={isReassigning || !selectedTargetSubjectId || activeSubjects.length === 0}
+              className="text-xs bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white font-semibold transition-all duration-200"
+            >
+              {isReassigning ? "Atribuindo..." : "Confirmar Atribuição"}
             </Button>
           </DialogFooter>
         </DialogContent>

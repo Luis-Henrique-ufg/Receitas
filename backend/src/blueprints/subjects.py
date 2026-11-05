@@ -58,3 +58,17 @@ def delete_subject(subject_id: int):
     if not success:
         return jsonify({"error": "Matéria não encontrada"}), 404
     return jsonify({"message": "Matéria excluída com sucesso"})
+
+
+@subjects_bp.route("/api/subjects/reassign-unassigned", methods=["POST"])
+def reassign_unassigned():
+    data = request.json or {}
+    target_subject_id = data.get("target_subject_id")
+    if not target_subject_id:
+        return jsonify({"error": "target_subject_id é obrigatório"}), 400
+
+    try:
+        result = SubjectService.reassign_unassigned_activity(int(target_subject_id))
+        return jsonify(result), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
