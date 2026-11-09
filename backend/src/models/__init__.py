@@ -4,7 +4,7 @@ from models.daily_activity import (
     DailyCourseActivity,
     DailySubjectActivity,
 )
-from models.lesson import Lesson
+from models.lesson import Lesson, LessonProgressState
 from models.note import Note
 from models.pomodoro_session import PomodoroSession
 from models.study_event import StudyEvent
@@ -13,6 +13,7 @@ from models.subject import Subject
 __all__ = [
     "Course",
     "Lesson",
+    "LessonProgressState",
     "Note",
     "DailyActivity",
     "DailyCourseActivity",

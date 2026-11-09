@@ -4,7 +4,14 @@ import { playChimeSound } from "@/utils/sound";
 import { statsApi } from "@/services/statsApi";
 import { toast } from "sonner";
 import { usePlaybackStore } from "./usePlaybackStore";
+import {
+  PomodoroPhase,
+  resolvePomodoroPhase,
+  pomodoroQueries,
+} from "@/machines/pomodoroMachine";
 
+export type { PomodoroPhase };
+export { pomodoroQueries };
 export type PomodoroMode = "focus" | "short_break" | "long_break";
 export type CompletionBehavior = "flow" | "strict" | "prompt";
 
@@ -29,6 +36,7 @@ export interface InactivityNotice {
 }
 
 export interface PomodoroState {
+  phase: PomodoroPhase;
   mode: PomodoroMode;
   timeLeft: number;
   isRunning: boolean;
@@ -57,6 +65,7 @@ export interface PomodoroState {
   pendingInactivityNotice: InactivityNotice | null;
 
   // Actions
+  getPhase: () => PomodoroPhase;
   start: () => void;
   pause: () => void;
   toggle: () => void;
@@ -87,6 +96,7 @@ const DEFAULT_DURATIONS: PomodoroDurations = {
 export const usePomodoroStore = create<PomodoroState>()(
   persist(
     (set, get) => ({
+      phase: "idle",
       mode: "focus",
       timeLeft: DEFAULT_DURATIONS.focus * 60,
       isRunning: false,
@@ -105,6 +115,18 @@ export const usePomodoroStore = create<PomodoroState>()(
       currentSubjectId: null,
       currentSubjectName: null,
       intention: "",
+
+      getPhase: () => {
+        const s = get();
+        return resolvePomodoroPhase({
+          mode: s.mode,
+          isRunning: s.isRunning,
+          isOvertime: s.isOvertime,
+          startedAt: s.startedAt,
+          hasInactivityNotice: Boolean(s.pendingInactivityNotice),
+          hasSummary: Boolean(s.sessionSummary),
+        });
+      },
 
       setIntention: (intention: string) => {
         set({ intention });
@@ -148,6 +170,14 @@ export const usePomodoroStore = create<PomodoroState>()(
           isRunning: true,
           startedAt: newStartedAt,
           lastActiveAt: now,
+          phase: resolvePomodoroPhase({
+            mode,
+            isRunning: true,
+            isOvertime,
+            startedAt: newStartedAt,
+            hasInactivityNotice: false,
+            hasSummary: false,
+          }),
         });
       },
 
@@ -168,6 +198,7 @@ export const usePomodoroStore = create<PomodoroState>()(
               isOvertime: true,
               overtimeSeconds: Math.max(0, totalElapsed - initialFocusDuration),
               startedAt: null,
+              phase: "paused_focus",
             });
             return;
           } else {
@@ -175,12 +206,17 @@ export const usePomodoroStore = create<PomodoroState>()(
               isRunning: false,
               timeLeft: Math.max(0, initialFocusDuration - totalElapsed),
               startedAt: null,
+              phase: "paused_focus",
             });
             return;
           }
         }
 
-        set({ isRunning: false, startedAt: null });
+        set({
+          isRunning: false,
+          startedAt: null,
+          phase: mode === "focus" ? "paused_focus" : "paused_break",
+        });
       },
 
       toggle: () => {
@@ -195,6 +231,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       reset: () => {
         const { mode, durations } = get();
         set({
+          phase: "idle",
           isRunning: false,
           isOvertime: false,
           overtimeSeconds: 0,
@@ -211,6 +248,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         const { durations } = get();
         set({
           mode,
+          phase: "idle",
           isRunning: false,
           isOvertime: false,
           overtimeSeconds: 0,
@@ -345,6 +383,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         const newSessions = sessionsCompleted + earnedPomodoros;
 
         set({
+          phase: "session_summary",
           isRunning: false,
           isOvertime: false,
           overtimeSeconds: 0,
@@ -368,7 +407,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       },
 
       dismissSummary: () => {
-        set({ sessionSummary: null });
+        set({ sessionSummary: null, phase: "idle" });
       },
 
       resolveInactivity: async (apiUrl: string | undefined, discount: boolean) => {
@@ -441,6 +480,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         if (totalElapsedSeconds < initialFocusDuration) {
           const remaining = initialFocusDuration - totalElapsedSeconds;
           set({
+            phase: "running_focus",
             timeLeft: remaining,
             isOvertime: false,
             overtimeSeconds: 0,
@@ -560,6 +600,7 @@ export const usePomodoroStore = create<PomodoroState>()(
 
         // Update state
         set({
+          phase: "overtime_focus",
           timeLeft: 0,
           isOvertime: true,
           overtimeSeconds: overtime,

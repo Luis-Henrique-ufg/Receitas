@@ -100,12 +100,21 @@ class LessonService:
         if not lesson:
             return None
 
-        if progress_status:
-            lesson.progress_status = progress_status
         if is_completed is not None:
             lesson.is_completed = 1 if is_completed else 0
         if time_elapsed is not None:
-            lesson.time_elapsed = time_elapsed
+            lesson.time_elapsed = str(time_elapsed)
+
+        if progress_status:
+            lesson.progress_status = progress_status
+        elif is_completed:
+            lesson.progress_status = "completed"
+        elif time_elapsed:
+            try:
+                if float(time_elapsed) > 0:
+                    lesson.progress_status = "in_progress"
+            except (ValueError, TypeError):
+                pass
 
         db.session.commit()
         return lesson

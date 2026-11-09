@@ -110,6 +110,36 @@ class TestLessonService:
             elapsed = LessonService.get_elapsed_time(lesson.id)
             assert elapsed == "125"
 
+    def test_lesson_progress_state_machine(self, app):
+        with app.app_context():
+            course = Course(name="Curso SM", path="/path/sm", position=1)
+            db.session.add(course)
+            db.session.commit()
+
+            lesson = Lesson(
+                course_id=course.id,
+                title="Aula State Machine",
+                hierarchy_path="/aula_sm.mp4",
+                video_url="/aula_sm.mp4",
+                time_elapsed="0",
+                is_completed=0,
+            )
+            db.session.add(lesson)
+            db.session.commit()
+
+            # 1. Unstarted
+            assert lesson.progress_state == "not_started"
+
+            # 2. In progress
+            LessonService.update_progress(lesson.id, time_elapsed=30)
+            assert lesson.progress_state == "in_progress"
+            assert lesson.progress_status == "in_progress"
+
+            # 3. Completed
+            LessonService.update_progress(lesson.id, is_completed=True)
+            assert lesson.progress_state == "completed"
+            assert lesson.progress_status == "completed"
+
     def test_list_by_course_filters_and_groups(self, app):
         with app.app_context():
             course = Course(name="Curso Modulos", path="/path/m", position=0)

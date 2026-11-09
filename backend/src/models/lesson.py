@@ -1,6 +1,13 @@
+from enum import Enum
 from sqlalchemy.orm import synonym
 
 from database import db
+
+
+class LessonProgressState(str, Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
 
 
 class Lesson(db.Model):
@@ -22,6 +29,18 @@ class Lesson(db.Model):
     # Compatibilidade retroativa para acessos legado
     progressStatus = synonym("progress_status")
     isCompleted = synonym("is_completed")
+
+    @property
+    def progress_state(self) -> LessonProgressState:
+        if self.is_completed:
+            return LessonProgressState.COMPLETED
+        try:
+            elapsed = float(self.time_elapsed) if self.time_elapsed else 0.0
+        except (ValueError, TypeError):
+            elapsed = 0.0
+        if elapsed > 0:
+            return LessonProgressState.IN_PROGRESS
+        return LessonProgressState.NOT_STARTED
 
     def to_dict(self):
         return {

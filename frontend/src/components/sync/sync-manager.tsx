@@ -19,6 +19,7 @@ import useApiUrl from "@/hooks/useApiUrl";
 import { syncApi, SyncSummary } from "@/services/syncApi";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { SyncPhase } from "@/machines/syncMachine";
 
 export default function SyncManager() {
   const { apiUrl } = useApiUrl();
@@ -28,11 +29,11 @@ export default function SyncManager() {
   const [remoteUrl, setRemoteUrl] = useState(() => {
     return localStorage.getItem("receitas_peer_sync_url") || "";
   });
-  const [isPeerSyncing, setIsPeerSyncing] = useState(false);
+  const [syncPhase, setSyncPhase] = useState<SyncPhase>("idle");
 
-  // File import state
-  const [isImporting, setIsImporting] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
+  const isPeerSyncing = syncPhase === "peer_connecting" || syncPhase === "peer_syncing";
+  const isImporting = syncPhase === "importing_file";
+  const dragActive = syncPhase === "drag_hover";
 
   // Last sync results
   const [lastSummary, setLastSummary] = useState<{
@@ -48,9 +49,10 @@ export default function SyncManager() {
     }
 
     try {
-      setIsPeerSyncing(true);
+      setSyncPhase("peer_connecting");
       localStorage.setItem("receitas_peer_sync_url", remoteUrl.trim());
 
+      setSyncPhase("peer_syncing");
       const res = await syncApi.peerSync(apiUrl, remoteUrl.trim());
       setLastSummary({
         summary: res.summary,
@@ -58,9 +60,11 @@ export default function SyncManager() {
         twoWay: res.two_way,
       });
 
+      setSyncPhase("success");
       toast.success(res.message, { duration: 4000 });
       window.dispatchEvent(new CustomEvent("statsUpdated"));
     } catch (err: unknown) {
+      setSyncPhase("error");
       const errorMsg =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
@@ -68,8 +72,6 @@ export default function SyncManager() {
           ? err.message
           : "Erro desconhecido na sincronização";
       toast.error(errorMsg || "Não foi possível conectar ao outro dispositivo.");
-    } finally {
-      setIsPeerSyncing(false);
     }
   };
 
@@ -95,22 +97,23 @@ export default function SyncManager() {
     }
 
     try {
-      setIsImporting(true);
+      setSyncPhase("importing_file");
       const res = await syncApi.uploadFile(apiUrl, file);
       setLastSummary({
         summary: res.summary,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       });
+      setSyncPhase("success");
       toast.success(res.message);
       window.dispatchEvent(new CustomEvent("statsUpdated"));
     } catch (err: unknown) {
+      setSyncPhase("error");
       const errorMsg =
         err && typeof err === "object" && "response" in err
           ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
           : "Erro ao importar dados de sincronização";
       toast.error(errorMsg);
     } finally {
-      setIsImporting(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -127,10 +130,26 @@ export default function SyncManager() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragActive(false);
+    setSyncPhase("idle");
     const file = e.dataTransfer.files?.[0];
     if (file) {
       processUploadedFile(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (syncPhase !== "drag_hover") {
+      setSyncPhase("drag_hover");
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (syncPhase === "drag_hover") {
+      setSyncPhase("idle");
     }
   };
 
@@ -227,11 +246,8 @@ export default function SyncManager() {
 
         {/* Import Card */}
         <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragActive(true);
-          }}
-          onDragLeave={() => setDragActive(false)}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
             "glass-panel p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition-all",
