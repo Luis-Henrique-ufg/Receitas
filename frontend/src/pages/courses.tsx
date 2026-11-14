@@ -80,10 +80,10 @@ export default function CoursesPage() {
     <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto pb-20 animate-in fade-in duration-300">
       {/* Navigation Tabs Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
-        <div className="bg-white/[0.04] border border-white/10 p-1 rounded-xl self-start backdrop-blur-md flex items-center gap-1 select-none">
+        <div className="bg-card border border-border p-1 rounded-xl self-start flex items-center gap-1 select-none shadow-sm">
           <button
             type="button"
-            className="flex items-center gap-2 bg-white/15 text-white border-white/20 shadow-sm px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200 cursor-default"
+            className="flex items-center gap-2 bg-primary text-primary-foreground shadow-sm px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-default"
           >
             <BookOpen className="w-4 h-4 shrink-0" />
             <span>Cursos</span>
@@ -91,7 +91,7 @@ export default function CoursesPage() {
           <button
             type="button"
             onClick={() => navigate("/foco")}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent cursor-pointer"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent cursor-pointer"
           >
             <Clock className="w-4 h-4 shrink-0" />
             <span>Foco</span>
@@ -99,7 +99,7 @@ export default function CoursesPage() {
           <button
             type="button"
             onClick={() => navigate("/estatisticas")}
-            className="flex items-center gap-2 text-zinc-400 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent cursor-pointer"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent cursor-pointer"
           >
             <BarChart3 className="w-4 h-4 shrink-0" />
             <span>Estatísticas</span>
@@ -121,7 +121,7 @@ export default function CoursesPage() {
       {/* Courses List Section */}
       <div className="space-y-6 pt-2">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
             Meus Cursos
           </h1>
           <AddCourse onCreate={() => fetchCourses()} />
@@ -132,7 +132,7 @@ export default function CoursesPage() {
             Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="w-[300px] h-[350px] glass-panel rounded-2xl animate-pulse"
+                className="w-[300px] h-[350px] bg-card border border-border rounded-2xl animate-pulse"
               />
             ))
           ) : (

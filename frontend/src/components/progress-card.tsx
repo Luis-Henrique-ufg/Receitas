@@ -29,21 +29,20 @@ export default function ProgressCard({
   const getStatusBadge = () => {
     if (roundedValue === 0) {
       return (
-        <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-zinc-300 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 shrink-0" />
+        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium text-muted-foreground border border-border bg-secondary/80 inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 shrink-0" />
           Não iniciado
         </span>
       );
     }
     if (roundedValue === 100) {
       return (
-        <span className="glass-panel px-2.5 py-0.5 rounded-full text-[11px] font-medium text-zinc-200 border border-white/10 bg-white/[0.04] inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium text-accent border border-accent/30 bg-accent/10 inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
           Concluído
         </span>
       );
     }
-    // "Em andamento" is the default state; do not render an uninformative badge
     return null;
   };
 
@@ -54,7 +53,7 @@ export default function ProgressCard({
   const renderSecondaryInfo = () => {
     if (roundedValue === 100) {
       return (
-        <span className="text-xs text-emerald-400/90 tracking-tight font-medium">
+        <span className="text-xs text-accent tracking-tight font-medium">
           Todas as {totalLessons} aulas concluídas!
         </span>
       );
@@ -72,7 +71,6 @@ export default function ProgressCard({
       remainingText = `${remaining} ${remaining === 1 ? "aula restante" : "aulas restantes"}`;
     }
 
-    // Relative date: prefer localStorage viewedAt timestamp, fallback to backend lastStudiedDate
     let relTime = formatRelativeTime(lastViewedAt ?? undefined);
     if (!relTime && lastStudiedDate) {
       relTime = formatRelativeDate(lastStudiedDate);
@@ -80,7 +78,7 @@ export default function ProgressCard({
     const lastWatchedText = relTime ? ` · última aula ${relTime}` : "";
 
     return (
-      <span className="text-xs text-zinc-400 tracking-tight">
+      <span className="text-xs text-muted-foreground tracking-tight">
         {remainingText}{lastWatchedText}
       </span>
     );
@@ -90,11 +88,11 @@ export default function ProgressCard({
     <div className="flex flex-col gap-2 w-full">
       {showTitle && (
         <div className="flex justify-between items-center w-full text-xs">
-          <span className="text-white/60 font-medium tracking-wide">Seu progresso</span>
-          <div className="flex items-center gap-1 text-white font-semibold tabular-nums tracking-tight">
+          <span className="text-muted-foreground font-medium tracking-wide">Seu progresso</span>
+          <div className="flex items-center gap-1 text-foreground font-semibold tabular-nums tracking-tight">
             <span>{roundedValue}%</span>
             {estimatedFinishMonth && estimatedFinishMonth !== "sem previsão ainda" && roundedValue > 0 && roundedValue < 100 ? (
-              <span className="text-zinc-400 font-normal">
+              <span className="text-muted-foreground font-normal">
                 · termina em ~{estimatedFinishMonth}
               </span>
             ) : null}
@@ -113,4 +111,3 @@ export default function ProgressCard({
     </div>
   );
 }
-

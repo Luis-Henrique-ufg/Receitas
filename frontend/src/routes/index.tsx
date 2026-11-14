@@ -30,53 +30,16 @@ export default function Router() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    const cursor = document.getElementById("cursor");
-    if (!cursor) return;
-    
-    const moveCursor = (e: MouseEvent) => {
-      cursor.style.left = e.clientX + "px";
-      cursor.style.top = e.clientY + "px";
-    };
-    
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-
-      if (
-        target.tagName.toLowerCase() === 'button' || 
-        target.tagName.toLowerCase() === 'a' || 
-        target.closest('button') || 
-        target.closest('a') || 
-        target.classList.contains('cursor-hover') ||
-        target.closest('.cursor-hover')
-      ) {
-        cursor.classList.add('hovered');
-      } else {
-        cursor.classList.remove('hovered');
-      }
-    };
-
-    window.addEventListener("mousemove", moveCursor);
-    window.addEventListener("mouseover", handleMouseOver);
-    
-    return () => {
-      window.removeEventListener("mousemove", moveCursor);
-      window.removeEventListener("mouseover", handleMouseOver);
-    };
-  }, []);
-
   return (
     <BrowserRouter>
-      {/* Liquid Glass Background */}
-      <div id="cursor" className="hidden md:block"></div>
-      <div className="noise-overlay"></div>
+      {/* Tangerina Ambient Warm Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
-        <div className="liquid-blob bg-[#007bff]" style={{width: '500px', height: '500px', top: '-100px', left: '-100px', opacity: 0.2, animationDuration: '15s'}}></div>
-        <div className="liquid-blob bg-purple-600" style={{width: '400px', height: '400px', top: '40%', right: '-100px', opacity: 0.15, animationDuration: '20s', animationDelay: '-5s'}}></div>
-        <div className="liquid-blob bg-cyan-600" style={{width: '600px', height: '600px', bottom: '-150px', left: '20%', opacity: 0.15, animationDuration: '25s', animationDelay: '-10s'}}></div>
+        <div className="liquid-blob bg-primary" style={{width: '600px', height: '600px', top: '-150px', left: '-150px', opacity: 0.07, animationDuration: '20s'}}></div>
+        <div className="liquid-blob bg-[#FFAB3B]" style={{width: '500px', height: '500px', top: '35%', right: '-150px', opacity: 0.05, animationDuration: '25s', animationDelay: '-5s'}}></div>
+        <div className="liquid-blob bg-accent" style={{width: '600px', height: '600px', bottom: '-150px', left: '20%', opacity: 0.05, animationDuration: '30s', animationDelay: '-10s'}}></div>
       </div>
 
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         {!isZenMode && <Header onOpenSearch={() => setIsSearchOpen(true)} />}
         <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         {!isZenMode && <PomodoroWidget />}

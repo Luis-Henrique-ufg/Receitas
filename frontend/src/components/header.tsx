@@ -1,6 +1,7 @@
-import { Calendar, Cookie, Search, Timer, Coffee, BookOpen, Clock, BarChart3 } from "lucide-react";
+import { Calendar, Cookie, Search, Timer, Coffee, BookOpen, Clock, BarChart3, Settings } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usePomodoroStore } from "@/store/usePomodoroStore";
+import { ModeToggle } from "@/components/mode-theme-toggle";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -34,19 +35,19 @@ function Header({ onOpenSearch }: HeaderProps) {
 
   return (
     <nav className="fixed w-full z-[60] top-0 py-3 px-3 sm:px-4">
-      <div className="max-w-7xl mx-auto glass-panel rounded-full px-4 sm:px-6 py-2 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto bg-card/90 border border-border shadow-sm rounded-full px-4 sm:px-6 py-2 flex items-center justify-between gap-3 backdrop-blur-md transition-all">
         {/* Brand Logo */}
         <div
           onClick={() => handleNavigate("/")}
           className="flex items-center gap-2.5 cursor-pointer select-none py-0.5 shrink-0"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#29C5F6] to-[#3a4b9f] flex items-center justify-center shrink-0">
-            <Cookie className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm transition-transform hover:scale-105">
+            <Cookie className="w-4 h-4" />
           </div>
-          <span className="font-heading font-bold text-xl tracking-tight text-white hidden sm:inline">Receitas</span>
+          <span className="font-heading font-bold text-xl tracking-tight text-foreground hidden sm:inline">Receitas</span>
         </div>
 
-        {/* Center / Right: Navigation Items, Pomodoro Pill & Search */}
+        {/* Center / Right: Navigation Items, Pomodoro Pill, Search & Theme Toggle */}
         <div className="flex items-center gap-1 sm:gap-2">
           {/* Header Pomodoro Trigger Pill */}
           <button
@@ -54,27 +55,27 @@ function Header({ onOpenSearch }: HeaderProps) {
             type="button"
             onClick={toggleMinimized}
             className={cn(
-              "cursor-hover flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border transition-all duration-300 select-none cursor-pointer",
+              "flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border transition-all duration-200 select-none cursor-pointer",
               !isMinimized
-                ? "bg-white/15 text-white border-white/25 shadow-sm"
+                ? "bg-primary/15 text-primary border-primary/30 shadow-sm font-semibold"
                 : isRunning
-                ? "bg-white/10 text-white border-white/20 hover:bg-white/15"
-                : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
+                ? "bg-secondary text-foreground border-primary/40 hover:bg-secondary/90"
+                : "bg-secondary/60 text-muted-foreground border-border hover:bg-secondary hover:text-foreground"
             )}
             title={isRunning ? "Pomodoro em andamento (clique para abrir opções)" : "Abrir Pomodoro"}
           >
             {mode === "focus" ? (
-              <Timer className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+              <Timer className="w-3.5 h-3.5 text-primary shrink-0" />
             ) : (
-              <Coffee className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+              <Coffee className="w-3.5 h-3.5 text-accent shrink-0" />
             )}
-            <span className="font-mono tabular-nums text-xs font-medium text-white">
+            <span className="font-mono tabular-nums text-xs font-semibold text-foreground">
               {isOvertime ? `+${formatSeconds(overtimeSeconds)}` : formatSeconds(timeLeft)}
             </span>
             <span
               className={cn(
                 "w-1.5 h-1.5 rounded-full shrink-0",
-                isRunning ? "bg-emerald-400" : isOvertime ? "bg-white/80" : "bg-white/20"
+                isRunning ? "bg-primary animate-pulse" : isOvertime ? "bg-accent" : "bg-muted-foreground/40"
               )}
             />
           </button>
@@ -84,9 +85,9 @@ function Header({ onOpenSearch }: HeaderProps) {
             <button
               type="button"
               onClick={onOpenSearch}
-              className="cursor-hover hidden md:flex items-center gap-1.5 text-xs font-medium text-white/75 hover:text-white hover:bg-white/5 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+              className="hidden md:flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/70 px-3 py-1.5 rounded-full transition-colors cursor-pointer border border-transparent"
             >
-              <Search className="w-3.5 h-3.5 text-zinc-400" />
+              <Search className="w-3.5 h-3.5" />
               <span>Buscar</span>
             </button>
           )}
@@ -96,13 +97,13 @@ function Header({ onOpenSearch }: HeaderProps) {
             type="button"
             onClick={() => handleNavigate("/receitas")}
             className={cn(
-              "cursor-hover text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
+              "text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
               currentPath === "/receitas" || currentPath === "/"
-                ? "bg-white/15 text-white shadow-sm"
-                : "text-white/75 hover:text-white hover:bg-white/5"
+                ? "bg-primary/15 text-primary font-semibold border border-primary/25 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/70 border border-transparent"
             )}
           >
-            <BookOpen className="w-3.5 h-3.5 text-zinc-400 hidden sm:inline" />
+            <BookOpen className="w-3.5 h-3.5 hidden sm:inline" />
             <span>Cursos</span>
           </button>
 
@@ -110,13 +111,13 @@ function Header({ onOpenSearch }: HeaderProps) {
             type="button"
             onClick={() => handleNavigate("/foco")}
             className={cn(
-              "cursor-hover text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
+              "text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
               currentPath === "/foco"
-                ? "bg-white/15 text-white shadow-sm"
-                : "text-white/75 hover:text-white hover:bg-white/5"
+                ? "bg-primary/15 text-primary font-semibold border border-primary/25 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/70 border border-transparent"
             )}
           >
-            <Clock className="w-3.5 h-3.5 text-zinc-400 hidden sm:inline" />
+            <Clock className="w-3.5 h-3.5 hidden sm:inline" />
             <span>Foco</span>
           </button>
 
@@ -124,13 +125,13 @@ function Header({ onOpenSearch }: HeaderProps) {
             type="button"
             onClick={() => handleNavigate("/estatisticas")}
             className={cn(
-              "cursor-hover text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
+              "text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
               currentPath === "/estatisticas"
-                ? "bg-white/15 text-white shadow-sm"
-                : "text-white/75 hover:text-white hover:bg-white/5"
+                ? "bg-primary/15 text-primary font-semibold border border-primary/25 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/70 border border-transparent"
             )}
           >
-            <BarChart3 className="w-3.5 h-3.5 text-zinc-400 hidden sm:inline" />
+            <BarChart3 className="w-3.5 h-3.5 hidden sm:inline" />
             <span>Estatísticas</span>
           </button>
 
@@ -138,13 +139,13 @@ function Header({ onOpenSearch }: HeaderProps) {
             type="button"
             onClick={() => handleNavigate("/agenda")}
             className={cn(
-              "cursor-hover text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
+              "text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer",
               currentPath === "/agenda"
-                ? "bg-white/15 text-white shadow-sm"
-                : "text-white/75 hover:text-white hover:bg-white/5"
+                ? "bg-primary/15 text-primary font-semibold border border-primary/25 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/70 border border-transparent"
             )}
           >
-            <Calendar className="w-3.5 h-3.5 text-zinc-400 hidden sm:inline" />
+            <Calendar className="w-3.5 h-3.5 hidden sm:inline" />
             <span>Agenda</span>
           </button>
 
@@ -152,14 +153,21 @@ function Header({ onOpenSearch }: HeaderProps) {
             type="button"
             onClick={() => handleNavigate("/configuracoes")}
             className={cn(
-              "cursor-hover text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors cursor-pointer",
+              "text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-full transition-colors cursor-pointer flex items-center gap-1.5",
               currentPath === "/configuracoes" || currentPath === "/settings"
-                ? "bg-white/15 text-white shadow-sm"
-                : "text-white/75 hover:text-white hover:bg-white/5"
+                ? "bg-primary/15 text-primary font-semibold border border-primary/25 shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/70 border border-transparent"
             )}
+            title="Configurações"
           >
-            Configurações
+            <Settings className="w-3.5 h-3.5 sm:hidden" />
+            <span className="hidden sm:inline">Configurações</span>
           </button>
+
+          {/* Theme Mode Switcher */}
+          <div className="ml-1 shrink-0">
+            <ModeToggle />
+          </div>
         </div>
       </div>
     </nav>

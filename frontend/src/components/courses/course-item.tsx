@@ -58,6 +58,7 @@ export default function CourseItem({
         setIsMenuOpen(false);
       }
     }
+
     if (isMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
@@ -81,16 +82,20 @@ export default function CourseItem({
       style={style}
       {...(isEditable ? attributes : {})}
       {...(isEditable ? listeners : {})}
-      className={`group relative overflow-hidden transition-all duration-500 flex flex-col justify-between h-full ${isDragging ? "shadow-2xl ring-2 ring-[#007bff] z-50 opacity-80" : "hover:-translate-y-1.5 hover:border-white/30 hover:shadow-[0_15px_40px_rgba(0,123,255,0.15)]"} ${isEditable ? "cursor-grab active:cursor-grabbing" : ""}`}
+      className={`group relative overflow-hidden transition-all duration-300 flex flex-col justify-between h-full ${
+        isDragging
+          ? "shadow-2xl ring-2 ring-primary z-50 opacity-80"
+          : "hover:-translate-y-1.5 hover:border-primary/50 hover:shadow-md"
+      } ${isEditable ? "cursor-grab active:cursor-grabbing" : ""}`}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#007bff]/10 to-purple-900/20 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       
       <div className="flex flex-col flex-1">
         {/* Cover with top-right actions menu */}
-        <div className="relative w-full aspect-video overflow-hidden border-b border-white/10 [transform:translateZ(0)] [backface-visibility:hidden]">
+        <div className="relative w-full aspect-video overflow-hidden border-b border-border/80">
           <div className="w-full h-full cursor-pointer" onClick={onPlay}>
             <img
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 will-change-transform [backface-visibility:hidden] [transform:translate3d(0,0,0)]"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 will-change-transform"
               src={courseCover}
               alt={course.name}
             />
@@ -98,14 +103,14 @@ export default function CourseItem({
 
           {isHeroCourse && (
             <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-              <span className="glass-panel px-2.5 py-1 rounded text-[11px] font-medium text-white backdrop-blur-md border border-white/20 shadow-md inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+              <span className="bg-primary/20 text-primary border border-primary/30 rounded-full text-[11px] font-semibold px-2.5 py-1 backdrop-blur-md shadow-sm inline-flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 Em foco
               </span>
             </div>
           )}
 
-          {/* Contextual actions menu (⋯) */}
+          {/* Contextual actions menu */}
           {isEditable && (
             <div
               ref={menuRef}
@@ -115,7 +120,7 @@ export default function CourseItem({
               <button
                 type="button"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-zinc-300 hover:text-white border border-white/15 backdrop-blur-md shadow-lg flex items-center justify-center transition-all focus:outline-none"
+                className="w-8 h-8 rounded-full bg-card/80 hover:bg-card text-foreground/80 hover:text-foreground border border-border/80 backdrop-blur-md shadow-sm flex items-center justify-center transition-all focus:outline-none cursor-pointer"
                 title="Opções do curso"
                 aria-label="Opções do curso"
               >
@@ -123,16 +128,16 @@ export default function CourseItem({
               </button>
 
               {isMenuOpen && (
-                <div className="absolute right-0 top-10 w-44 rounded-xl glass-panel border border-white/15 shadow-2xl backdrop-blur-2xl p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 z-40 bg-[#050a14]/95">
+                <div className="absolute right-0 top-10 w-44 rounded-xl bg-card border border-border shadow-xl p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 z-40">
                   <button
                     type="button"
                     onClick={() => {
                       setIsMenuOpen(false);
                       setIsEditDialogOpen(true);
                     }}
-                    className="w-full text-left px-3 py-2 text-xs text-zinc-200 hover:text-white hover:bg-white/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer"
+                    className="w-full text-left px-3 py-2 text-xs text-foreground/90 hover:text-foreground hover:bg-secondary/70 flex items-center gap-2 rounded-lg transition-colors cursor-pointer"
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                    <Edit3 className="w-3.5 h-3.5 text-primary" />
                     <span>Editar dados</span>
                   </button>
 
@@ -142,7 +147,7 @@ export default function CourseItem({
                       setIsMenuOpen(false);
                       setIsDeleteDialogOpen(true);
                     }}
-                    className="w-full text-left px-3 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer mt-0.5"
+                    className="w-full text-left px-3 py-2 text-xs text-destructive hover:bg-destructive/10 flex items-center gap-2 rounded-lg transition-colors cursor-pointer mt-0.5"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Excluir curso</span>
@@ -155,7 +160,7 @@ export default function CourseItem({
 
         <CardContent className="flex flex-col gap-3 px-4 py-4 pt-4 relative z-10 flex-1 justify-between">
           <CardTitle
-            className="text-white text-base text-left font-heading tracking-tight line-clamp-2 h-12 leading-snug flex items-start"
+            className="text-foreground text-base text-left font-heading font-semibold tracking-tight line-clamp-2 h-12 leading-snug flex items-start"
             title={course.name}
           >
             {course.name}
@@ -167,18 +172,18 @@ export default function CourseItem({
         </CardContent>
       </div>
 
-      <CardFooter className="p-4 pt-2 relative z-10 mt-auto shrink-0 border-t border-white/5">
+      <CardFooter className="p-4 pt-2 relative z-10 mt-auto shrink-0 border-t border-border/60">
         <Button
           size="sm"
           onClick={onPlay}
-          className="w-full h-10 rounded-xl bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] [&:hover_svg]:text-[#007bff] font-semibold text-xs sm:text-sm shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all duration-200 active:scale-95"
+          className="w-full h-10 rounded-xl font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 cursor-pointer"
         >
-          <Play className="w-3.5 h-3.5 fill-current shrink-0 transition-colors" />
+          <Play className="w-3.5 h-3.5 fill-current shrink-0" />
           <span>{ctaLabel}</span>
         </Button>
       </CardFooter>
 
-      {/* Controlled Dialogs mounted outside the menu so click-outside does not close them prematurely */}
+      {/* Controlled Dialogs */}
       <EditCourse
         course={course}
         isOpen={isEditDialogOpen}

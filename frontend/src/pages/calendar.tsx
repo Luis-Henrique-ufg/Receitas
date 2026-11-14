@@ -178,12 +178,12 @@ export default function CalendarPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <Calendar className="w-6 h-6 text-zinc-400 shrink-0" />
+            <Calendar className="w-6 h-6 text-primary shrink-0" />
             <div>
-              <h1 className="text-2xl font-heading font-bold text-white tracking-tight">
+              <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
                 Agenda de Estudos
               </h1>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-muted-foreground">
                 Planejamento de provas, entregas e preparação integrada aos cursos
               </p>
             </div>
@@ -192,20 +192,20 @@ export default function CalendarPage() {
 
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={handleEnableNotifications}
-            className="h-9 px-3 text-xs bg-white/5 border border-white/10 hover:bg-white/15 text-zinc-300 hover:text-white gap-1.5 rounded-xl transition-all duration-200"
+            className="h-9 px-3 text-xs gap-1.5 rounded-xl transition-all duration-200"
             title="Ativar lembretes do navegador para os prazos"
           >
-            <Bell className="w-3.5 h-3.5 text-zinc-400" />
+            <Bell className="w-3.5 h-3.5 text-muted-foreground" />
             <span>Lembretes</span>
           </Button>
 
           <Button
             size="sm"
             onClick={() => handleOpenNewDialog()}
-            className="h-9 px-4 text-xs bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:text-[#007bff] font-semibold gap-1.5 rounded-xl transition-all duration-200 shadow-md shadow-blue-500/20"
+            className="h-9 px-4 text-xs font-semibold gap-1.5 rounded-xl transition-all duration-200 shadow-md"
           >
             <Plus className="w-4 h-4 transition-colors" />
             <span>Novo evento</span>

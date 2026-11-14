@@ -147,13 +147,13 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
   const showModule = Boolean(cleanedModule) && !isDuplicateName;
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/15 shadow-2xl relative overflow-hidden backdrop-blur-2xl group bg-gradient-to-r from-blue-950/20 via-black/40 to-black/60">
+    <div className="w-full bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-md relative overflow-hidden group">
       {/* Decorative background glow */}
-      <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -right-20 -top-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-5 relative z-10">
         {/* Cover Thumbnail with optional bottom progress line */}
-        <div className="relative w-full md:w-48 lg:w-52 aspect-video md:aspect-[16/10] rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-lg group-hover:border-blue-500/40 transition-colors">
+        <div className="relative w-full md:w-48 lg:w-52 aspect-video md:aspect-[16/10] rounded-xl overflow-hidden shrink-0 border border-border shadow-sm group-hover:border-primary/40 transition-colors">
           <img
             src={courseCover}
             alt={course.name}
@@ -165,7 +165,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
           {hasSavedPosition && thumbnailProgressPct > 0 && (
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                className="h-full bg-gradient-to-r from-primary to-orange-400"
                 style={{ width: `${thumbnailProgressPct}%` }}
               />
             </div>
@@ -176,20 +176,20 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
         <div className="flex-1 min-w-0 space-y-2.5 text-left w-full">
           {/* Status line: Clean typography with luminous indicator dot instead of monochromatic pills */}
           <div className="flex flex-wrap items-center gap-2.5 text-xs">
-            <div className="inline-flex items-center gap-2 text-xs font-medium text-zinc-300">
-              <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
+            <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
               <span>{isResume ? "Continuar de onde parei" : "Comece a estudar"}</span>
             </div>
 
             {/* Position Display: clean inline editorial timestamp */}
             {isResume && hasSavedPosition && (
               <>
-                <span className="text-zinc-600 select-none">•</span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
-                  <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                <span className="text-muted-foreground/60 select-none">•</span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="w-3.5 h-3.5 text-muted-foreground/80 shrink-0" />
                   <span>
                     Retomar em{" "}
-                    <span className="font-mono tabular-nums text-white font-semibold">
+                    <span className="font-mono tabular-nums text-foreground font-semibold">
                       {formatSeconds(lessonElapsed)}
                     </span>
                   </span>
@@ -198,31 +198,31 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
             )}
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-heading font-bold text-white tracking-tight truncate">
+          <h3 className="text-xl sm:text-2xl font-display font-bold text-foreground tracking-tight truncate">
             {course.name}
           </h3>
 
           {/* Cleaned Lesson Hierarchy Breadcrumb: icon and path inline with min-w-0 */}
-          <div className="text-sm text-zinc-300 flex items-center gap-2 min-w-0 max-w-full">
-            <BookOpen className="w-4 h-4 text-zinc-400 shrink-0" />
+          <div className="text-sm text-muted-foreground flex items-center gap-2 min-w-0 max-w-full">
+            <BookOpen className="w-4 h-4 text-muted-foreground/80 shrink-0" />
             {isResume && lesson ? (
               <div className="flex items-center gap-1.5 min-w-0 overflow-hidden text-sm">
                 {showModule && (
                   <>
-                    <span className="text-zinc-400 font-medium truncate max-w-[180px]" title={cleanedModule}>
+                    <span className="text-muted-foreground font-medium truncate max-w-[180px]" title={cleanedModule}>
                       {cleanedModule}
                     </span>
-                    <span className="text-zinc-600 font-semibold select-none shrink-0">›</span>
+                    <span className="text-muted-foreground/60 font-semibold select-none shrink-0">›</span>
                   </>
                 )}
-                <strong className="text-white font-medium truncate" title={lesson.title}>
+                <strong className="text-foreground font-medium truncate" title={lesson.title}>
                   {isAlreadyShowingLessonNumber && totalLessons && totalLessons > 0
                     ? `Aula ${effectiveLessonNumber} de ${totalLessons}`
                     : displayTitle}
                 </strong>
                 {!isAlreadyShowingLessonNumber && effectiveLessonNumber !== null && totalLessons !== null && totalLessons > 0 && (
-                  <span className="text-xs text-zinc-400 font-normal shrink-0 ml-1 whitespace-nowrap">
-                    (Aula {effectiveLessonNumber} de {totalLessons})
+                  <span className="text-xs text-muted-foreground/80 font-normal shrink-0 ml-1 whitespace-nowrap">
+                    (Aula {effectiveLessonNumber} de ${totalLessons})
                   </span>
                 )}
               </div>

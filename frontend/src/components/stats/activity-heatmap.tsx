@@ -36,13 +36,13 @@ const MONTH_NAMES = [
   "Dez",
 ];
 
-// Natural Liquid Glass levels (blue saturation strictly proportional to study time)
+// Tangerina Solar Orange levels (orange saturation strictly proportional to study time)
 const levelColors = [
-  "bg-white/[0.04] border-white/[0.06] hover:border-white/20",
-  "bg-blue-500/20 border-blue-500/30 hover:border-blue-400/50",
-  "bg-blue-500/45 border-blue-400/40 hover:border-blue-300/60",
-  "bg-blue-600/80 border-blue-400/60 hover:border-blue-300/80",
-  "bg-[#007bff] border-blue-300/80 hover:border-white/90 shadow-[0_0_8px_rgba(0,123,255,0.25)]",
+  "bg-muted/40 border-border/40 hover:border-border",
+  "bg-primary/20 border-primary/30 hover:border-primary/50",
+  "bg-primary/45 border-primary/50 hover:border-primary/70",
+  "bg-primary/75 border-primary/70 hover:border-primary/90",
+  "bg-primary border-primary hover:border-primary shadow-[0_0_8px_rgba(255,112,32,0.35)]",
 ];
 
 // Row index 0 = Monday, Row 2 = Wednesday, Row 4 = Friday
@@ -276,17 +276,17 @@ export default function ActivityHeatmap() {
   // 1. Error State
   if (hasError && !data) {
     return (
-      <div className="w-full glass-panel rounded-2xl p-5 border border-rose-500/20 shadow-2xl backdrop-blur-2xl bg-rose-950/10">
+      <div className="w-full bg-card rounded-2xl p-5 border border-rose-500/30 shadow-md">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-5 h-5 text-rose-400" />
+              <AlertCircle className="w-5 h-5 text-rose-500" />
             </div>
             <div className="text-left">
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-sm font-semibold text-foreground">
                 Não foi possível carregar o histórico de estudos
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Ocorreu uma falha na comunicação com o servidor.
               </p>
             </div>
@@ -294,7 +294,7 @@ export default function ActivityHeatmap() {
           <button
             type="button"
             onClick={() => loadStats(true)}
-            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-medium text-white transition-colors cursor-pointer flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 border border-border text-xs font-medium text-foreground transition-colors cursor-pointer flex items-center gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Tentar novamente</span>
@@ -307,17 +307,17 @@ export default function ActivityHeatmap() {
   // 2. Loading Skeleton State
   if (isLoading && !data) {
     return (
-      <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 shadow-2xl animate-pulse space-y-4">
+      <div className="w-full bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-md animate-pulse space-y-4">
         <div className="flex items-center justify-between">
-          <div className="h-5 w-44 bg-white/10 rounded-md" />
-          <div className="h-7 w-28 bg-white/10 rounded-lg" />
+          <div className="h-5 w-44 bg-muted rounded-md" />
+          <div className="h-7 w-28 bg-muted rounded-lg" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6">
-          <div className="h-32 bg-white/5 rounded-xl" />
-          <div className="space-y-3 border-l border-white/10 pl-5">
-            <div className="h-9 bg-white/10 rounded-lg" />
-            <div className="h-9 bg-white/10 rounded-lg" />
-            <div className="h-9 bg-white/10 rounded-lg" />
+          <div className="h-32 bg-muted/40 rounded-xl" />
+          <div className="space-y-3 border-l border-border pl-5">
+            <div className="h-9 bg-muted rounded-lg" />
+            <div className="h-9 bg-muted rounded-lg" />
+            <div className="h-9 bg-muted rounded-lg" />
           </div>
         </div>
       </div>
@@ -325,12 +325,12 @@ export default function ActivityHeatmap() {
   }
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
+    <div className="w-full bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-md relative overflow-hidden">
       {/* Header: Title and Aligned Subject Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <Calendar className="w-4 h-4 text-zinc-400 shrink-0" />
-          <h2 className="text-base font-heading font-semibold text-white tracking-tight">
+          <Calendar className="w-4 h-4 text-primary shrink-0" />
+          <h2 className="text-base font-display font-semibold text-foreground tracking-tight">
             Constância de estudo
           </h2>
         </div>
@@ -344,23 +344,23 @@ export default function ActivityHeatmap() {
                 const val = e.target.value;
                 setSelectedSubjectId(val === "" ? null : Number(val));
               }}
-              className="w-full truncate appearance-none bg-white/[0.04] hover:bg-white/[0.08] text-xs text-zinc-200 border border-white/10 rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400 cursor-pointer font-medium transition-colors"
+              className="w-full truncate appearance-none bg-muted/50 hover:bg-muted text-xs text-foreground border border-border rounded-lg pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer font-medium transition-colors"
               aria-label="Filtrar heatmap por matéria"
             >
-              <option value="" className="bg-[#050a14] text-white">
+              <option value="" className="bg-card text-foreground">
                 Todas as matérias
               </option>
               {availableSubjects.map((s) => (
                 <option
                   key={s.id ?? -1}
                   value={s.id ?? -1}
-                  className="bg-[#050a14] text-white"
+                  className="bg-card text-foreground"
                 >
                   {s.name}
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2 top-2 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-muted-foreground absolute right-2 top-2 pointer-events-none" />
           </div>
         )}
       </div>
@@ -382,7 +382,7 @@ export default function ActivityHeatmap() {
                 <div
                   key={idx}
                   style={{ height: `${cellSize}px` }}
-                  className="flex items-center justify-end text-[10px] text-zinc-400 font-sans leading-none"
+                  className="flex items-center justify-end text-[10px] text-muted-foreground font-sans leading-none"
                 >
                   {label || ""}
                 </div>
@@ -397,7 +397,7 @@ export default function ActivityHeatmap() {
               <div className="inline-block min-w-max">
                 {/* Months Header Row */}
                 <div
-                  className="flex mb-1.5 text-[11px] text-zinc-400 font-sans select-none"
+                  className="flex mb-1.5 text-[11px] text-muted-foreground font-sans select-none"
                   style={{ height: `${monthHeaderHeight - 6}px`, gap: `${cellGap}px` }}
                 >
                   {weeks.map((_, wIdx) => {
@@ -409,7 +409,7 @@ export default function ActivityHeatmap() {
                         className="text-left overflow-visible relative shrink-0"
                       >
                         {labelObj ? (
-                          <span className="font-medium text-zinc-400 whitespace-nowrap absolute left-0 top-0">
+                          <span className="font-medium text-muted-foreground whitespace-nowrap absolute left-0 top-0">
                             {labelObj.month}
                           </span>
                         ) : null}
@@ -447,8 +447,8 @@ export default function ActivityHeatmap() {
                             className={cn(
                               "relative rounded-[3px] border transition-all duration-150 cursor-pointer focus:outline-none",
                               levelColors[day.level],
-                              "hover:z-20 hover:ring-1 hover:ring-white/80",
-                              isSelected && "ring-2 ring-white border-white scale-110 z-30 shadow-lg"
+                              "hover:z-20 hover:ring-1 hover:ring-primary/80",
+                              isSelected && "ring-2 ring-primary border-primary scale-110 z-30 shadow-lg"
                             )}
                           />
                         );
@@ -461,39 +461,39 @@ export default function ActivityHeatmap() {
           </div>
 
           {/* Contextual Detail Bar below Heatmap (OUTSIDE the scroller, never truncated) */}
-          <div className="min-h-[22px] flex items-center text-xs text-zinc-300 pt-3">
+          <div className="min-h-[22px] flex items-center text-xs text-muted-foreground pt-3">
             {activeDetailDay ? (
-              <span className="text-white font-normal flex items-center gap-1.5 animate-in fade-in duration-150 flex-wrap">
-                <span className="text-white font-semibold tabular-nums">
+              <span className="text-foreground font-normal flex items-center gap-1.5 animate-in fade-in duration-150 flex-wrap">
+                <span className="text-foreground font-semibold tabular-nums">
                   {formatDateBr(activeDetailDay.date)}:
                 </span>{" "}
                 {activeDetailDay.date > todayIso ? (
-                  <span className="text-zinc-500 italic">A ser alcançado</span>
+                  <span className="text-muted-foreground italic">A ser alcançado</span>
                 ) : (
                   <>
-                    <span className="font-medium text-white tabular-nums">
+                    <span className="font-medium text-foreground tabular-nums">
                       {formatDuration(activeDetailDay.study_seconds)}
                     </span>
                     {activeDetailDay.subjects && activeDetailDay.subjects.length > 0 ? (
-                      <span className="text-zinc-300">
+                      <span className="text-muted-foreground">
                         · {activeDetailDay.subjects.map((s) => `${s.name} (${formatDuration(s.seconds)})`).join(", ")}
                       </span>
                     ) : activeDetailDay.courses && activeDetailDay.courses.length > 0 ? (
-                      <span className="text-zinc-300">
+                      <span className="text-muted-foreground">
                         · {activeDetailDay.courses.map((c) => c.name).join(", ")}
                       </span>
                     ) : activeDetailDay.study_seconds > 0 ? (
-                      <span className="text-zinc-400">· Atividade geral</span>
+                      <span className="text-muted-foreground">· Atividade geral</span>
                     ) : (
-                      <span className="text-zinc-500">· Sem registros</span>
+                      <span className="text-muted-foreground/60">· Sem registros</span>
                     )}
                     {activeDetailDay.pomodoros > 0 && (
-                      <span className="text-zinc-400 tabular-nums">
+                      <span className="text-muted-foreground tabular-nums">
                         • {activeDetailDay.pomodoros} {activeDetailDay.pomodoros === 1 ? "pomodoro" : "pomodoros"}
                       </span>
                     )}
                     {activeDetailDay.lessons > 0 && (
-                      <span className="text-zinc-400 tabular-nums">
+                      <span className="text-muted-foreground tabular-nums">
                         • {activeDetailDay.lessons} {activeDetailDay.lessons === 1 ? "aula concluída" : "aulas concluídas"}
                       </span>
                     )}
@@ -503,7 +503,7 @@ export default function ActivityHeatmap() {
                   <button
                     type="button"
                     onClick={() => setSelectedDay(null)}
-                    className="ml-2 text-[10px] text-zinc-400 hover:text-white underline cursor-pointer"
+                    className="ml-2 text-[10px] text-muted-foreground hover:text-foreground underline cursor-pointer"
                   >
                     (Limpar seleção)
                   </button>
@@ -514,16 +514,16 @@ export default function ActivityHeatmap() {
         </div>
 
         {/* Right Column: 3 Grouped Indicators in Single Stack */}
-        <div className="flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/10 pt-3 lg:pt-0 lg:pl-8 min-w-[210px] space-y-3.5 self-stretch">
+        <div className="flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-border pt-3 lg:pt-0 lg:pl-8 min-w-[210px] space-y-3.5 self-stretch">
           {/* 1. Hoje */}
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-zinc-400 font-medium tracking-wide">Hoje</span>
+            <span className="text-xs text-muted-foreground font-medium tracking-wide">Hoje</span>
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-base sm:text-lg font-bold text-white tabular-nums tracking-tight">
+              <span className="text-base sm:text-lg font-bold text-foreground tabular-nums tracking-tight">
                 {formatDuration(todaySeconds)}
               </span>
               {todayPomodoros > 0 && (
-                <span className="text-xs text-zinc-400 font-normal tabular-nums">
+                <span className="text-xs text-muted-foreground font-normal tabular-nums">
                   ({todayPomodoros} {todayPomodoros === 1 ? "pomodoro" : "pomodoros"})
                 </span>
               )}
@@ -532,9 +532,9 @@ export default function ActivityHeatmap() {
 
           {/* 2. Esta semana: Delta shown only when previous week > 0 */}
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-zinc-400 font-medium tracking-wide">Esta semana</span>
+            <span className="text-xs text-muted-foreground font-medium tracking-wide">Esta semana</span>
             <div className="flex items-baseline gap-2">
-              <span className="text-base sm:text-lg font-bold text-white tabular-nums tracking-tight">
+              <span className="text-base sm:text-lg font-bold text-foreground tabular-nums tracking-tight">
                 {formatDuration(weekSeconds)}
               </span>
               {hasMeaningfulDelta && (
@@ -546,7 +546,7 @@ export default function ActivityHeatmap() {
                   }
                   className={cn(
                     "text-xs font-semibold tabular-nums inline-flex items-baseline gap-1",
-                    deltaWeekSeconds > 0 ? "text-emerald-400" : "text-zinc-400"
+                    deltaWeekSeconds > 0 ? "text-emerald-500" : "text-muted-foreground"
                   )}
                 >
                   <span>
@@ -554,7 +554,7 @@ export default function ActivityHeatmap() {
                       ? `+${formatDuration(deltaWeekSeconds)}`
                       : `-${formatDuration(Math.abs(deltaWeekSeconds))}`}
                   </span>
-                  <span className="text-[10px] font-normal text-zinc-400 font-sans hidden sm:inline">
+                  <span className="text-[10px] font-normal text-muted-foreground font-sans hidden sm:inline">
                     vs. semana anterior
                   </span>
                 </span>
@@ -564,25 +564,25 @@ export default function ActivityHeatmap() {
 
           {/* 3. Sequência */}
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-zinc-400 font-medium tracking-wide">Sequência</span>
+            <span className="text-xs text-muted-foreground font-medium tracking-wide">Sequência</span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-base sm:text-lg font-bold text-white tabular-nums tracking-tight flex items-center gap-1">
+              <span className="text-base sm:text-lg font-bold text-foreground tabular-nums tracking-tight flex items-center gap-1">
                 <Flame
                   className={cn(
                     "w-4 h-4 shrink-0",
-                    currentStreak > 0 ? "text-amber-400 fill-amber-400" : "text-zinc-500"
+                    currentStreak > 0 ? "text-primary fill-primary" : "text-muted-foreground"
                   )}
                 />
                 <span>{currentStreak} {currentStreak === 1 ? "dia" : "dias"}</span>
               </span>
-              <span className="text-xs text-zinc-400 font-normal">
+              <span className="text-xs text-muted-foreground font-normal">
                 (recorde: {maxStreak})
               </span>
             </div>
           </div>
 
           {/* Heatmap Legend */}
-          <div className="flex items-center gap-2 text-[10px] text-zinc-400 pt-1 select-none border-t border-white/5">
+          <div className="flex items-center gap-2 text-[10px] text-muted-foreground pt-1 select-none border-t border-border">
             <span>Menos</span>
             <div className="flex items-center gap-1">
               {levelColors.map((cls, idx) => (
