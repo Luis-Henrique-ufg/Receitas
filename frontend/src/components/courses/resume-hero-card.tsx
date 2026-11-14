@@ -123,9 +123,10 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
 
   const showModule = Boolean(cleanedModule) && (cleanedModule.trim().toLowerCase() !== displayTitle.trim().toLowerCase());
 
-  const completedPct = stats?.completed_percentage ?? (
-    durationNum > 0 && lessonElapsed > 0 ? Math.round((lessonElapsed / durationNum) * 100) : 0
+  const rawPct = stats?.completed_percentage ?? (
+    durationNum > 0 && lessonElapsed > 0 ? (lessonElapsed / durationNum) * 100 : 0
   );
+  const completedPct = Math.round(Number(rawPct) || 0);
 
   const totalCount = totalLessons || stats?.total_lessons || 0;
   const completedCount = stats?.completed_lessons || 0;
@@ -148,16 +149,16 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
             </h2>
 
             {/* Lesson details breadcrumb */}
-            <div className="flex items-center gap-2.5 text-sm sm:text-base text-muted-foreground font-normal mb-6">
+            <div className="flex items-center gap-2.5 text-sm sm:text-base text-muted-foreground font-normal mb-6 flex-wrap">
               <Film className="w-4 h-4 text-primary shrink-0" />
-              <div className="flex items-center gap-1.5 truncate">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 {showModule && (
                   <>
-                    <span className="truncate max-w-[160px] font-medium text-muted-foreground">{cleanedModule}</span>
+                    <span className="font-medium text-muted-foreground">{cleanedModule}</span>
                     <span className="text-muted-foreground/50 select-none">•</span>
                   </>
                 )}
-                <span className="text-foreground font-medium truncate">
+                <span className="text-foreground font-medium">
                   {lesson ? displayTitle : "Explore as aulas deste curso"}
                 </span>
               </div>

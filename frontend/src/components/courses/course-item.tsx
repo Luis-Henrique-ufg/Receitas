@@ -208,7 +208,7 @@ export default function CourseItem({
           {totalHours && (
             <span className="flex items-center gap-1.5 hidden sm:flex" title={`Duração estimada de ${totalHours} horas`}>
               <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              <span>~{totalHours}h</span>
+              <span>{totalHours}h</span>
             </span>
           )}
         </div>

@@ -34,13 +34,14 @@ function Header({ onOpenSearch }: HeaderProps) {
   const currentPath = location.pathname;
 
   return (
-    <nav className="fixed w-full z-[60] top-0 py-3.5 px-4 sm:px-6">
-      <div className="max-w-[1800px] mx-auto bg-card border border-border shadow-md rounded-full px-4 sm:px-6 py-2 flex items-center justify-between gap-4 transition-all">
-        {/* Brand Logo with 15deg hover rotation */}
-        <div
-          onClick={() => handleNavigate("/receitas")}
-          className="flex items-center gap-3 cursor-pointer select-none py-0.5 shrink-0 group"
-        >
+    <header className="fixed w-full z-[60] top-0 pt-3.5 pb-2 pointer-events-none">
+      <div className="w-full max-w-[1800px] mx-auto px-3 sm:px-6 lg:px-8 pointer-events-auto">
+        <div className="w-full bg-card border border-border shadow-md rounded-full px-4 sm:px-6 py-2 flex items-center justify-between gap-4 transition-all">
+          {/* Brand Logo with 15deg hover rotation */}
+          <div
+            onClick={() => handleNavigate("/receitas")}
+            className="flex items-center gap-3 cursor-pointer select-none py-0.5 shrink-0 group"
+          >
           <div className="w-9 h-9 rounded-full bg-primary text-[#030607] flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300 group-hover:rotate-12 group-hover:scale-105">
             <Utensils className="w-4 h-4 stroke-[2.2]" />
           </div>
@@ -169,8 +170,9 @@ function Header({ onOpenSearch }: HeaderProps) {
             <ModeToggle />
           </div>
         </div>
+        </div>
       </div>
-    </nav>
+    </header>
   );
 }
 

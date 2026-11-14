@@ -66,7 +66,7 @@ export default function ProgressCard({
     let remainingText = "";
     if (remainingSeconds !== null && remainingSeconds !== undefined && remainingSeconds > 0) {
       const hours = Math.round(remainingSeconds / 3600);
-      remainingText = hours > 0 ? `~${hours} h restantes` : `< 1 h restante`;
+      remainingText = hours > 0 ? `${hours} h restantes` : `< 1 h restante`;
     } else {
       remainingText = `${remaining} ${remaining === 1 ? "aula restante" : "aulas restantes"}`;
     }
@@ -91,11 +91,6 @@ export default function ProgressCard({
           <span className="text-muted-foreground font-medium tracking-wide">Seu progresso</span>
           <div className="flex items-center gap-1 text-foreground font-semibold tabular-nums tracking-tight">
             <span>{roundedValue}%</span>
-            {estimatedFinishMonth && estimatedFinishMonth !== "sem previsão ainda" && roundedValue > 0 && roundedValue < 100 ? (
-              <span className="text-muted-foreground font-normal">
-                · termina em ~{estimatedFinishMonth}
-              </span>
-            ) : null}
           </div>
         </div>
       )}

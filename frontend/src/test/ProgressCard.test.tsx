@@ -11,7 +11,7 @@ describe("ProgressCard Component", () => {
     expect(screen.getByText("10 aulas restantes")).toBeInTheDocument();
   });
 
-  it("renders in-progress state with remaining hours and estimate without uninformative badge", () => {
+  it("renders in-progress state with remaining hours without approximation tilde", () => {
     render(
       <ProgressCard
         value={50}
@@ -22,9 +22,9 @@ describe("ProgressCard Component", () => {
       />
     );
     expect(screen.getByText("50%")).toBeInTheDocument();
-    expect(screen.getByText("· termina em ~março")).toBeInTheDocument();
+    expect(screen.queryByText(/termina em/i)).not.toBeInTheDocument();
     expect(screen.queryByText("Em andamento")).not.toBeInTheDocument();
-    expect(screen.getByText("~14 h restantes")).toBeInTheDocument();
+    expect(screen.getByText("14 h restantes")).toBeInTheDocument();
   });
 
   it("renders 100% completed state", () => {
