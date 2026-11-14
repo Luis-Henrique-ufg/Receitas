@@ -214,22 +214,22 @@ export default function PomodoroWidget() {
             right: "1.5rem",
             zIndex: 9990,
           }}
-          className="w-[calc(100vw-2rem)] max-w-[280px] rounded-2xl glass-panel border border-white/10 bg-[#080d1a]/95 p-4 shadow-2xl backdrop-blur-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200"
+          className="w-[calc(100vw-2rem)] max-w-[280px] rounded-3xl border border-border bg-card text-foreground p-4 shadow-2xl select-none animate-in fade-in slide-in-from-top-3 duration-200"
         >
           {/* Header Status & Close */}
-          <div className="flex items-center justify-between pb-2.5 border-b border-white/10">
+          <div className="flex items-center justify-between pb-2.5 border-b border-border">
             <div className="flex items-center gap-1.5">
               <span
                 className={cn(
                   "w-2 h-2 rounded-full",
                   isRunning
-                    ? "bg-emerald-400"
+                    ? "bg-primary animate-pulse-dot"
                     : isOvertime
-                    ? "bg-blue-400 animate-pulse"
-                    : "bg-white/30"
+                    ? "bg-accent animate-pulse"
+                    : "bg-muted-foreground/40"
                 )}
               />
-              <span className="text-xs font-semibold text-white">
+              <span className="text-xs font-semibold text-foreground">
                 {mode === "focus"
                   ? isOvertime
                     ? "Prolongamento"
@@ -241,17 +241,17 @@ export default function PomodoroWidget() {
             <button
               type="button"
               onClick={toggleMinimized}
-              className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Progress bar */}
-          <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden mt-3 mb-3">
+          <div className="w-full bg-muted/50 h-1.5 rounded-full overflow-hidden mt-3 mb-3">
             <div
               className={cn(
-                "h-full transition-all duration-500 bg-[#007bff]",
+                "h-full transition-all duration-500 bg-primary",
                 isOvertime && "animate-pulse"
               )}
               style={{ width: `${progressPercent}%` }}
@@ -311,7 +311,7 @@ export default function PomodoroWidget() {
             <Button
               size="sm"
               onClick={isRunning ? pause : start}
-              className="flex-1 h-9 rounded-xl bg-[#007bff] hover:bg-white text-white hover:text-[#007bff] [&:hover_svg]:fill-[#007bff] font-semibold text-xs gap-1.5 transition-all cursor-pointer flex items-center justify-center"
+              className="flex-1 h-9 rounded-full bg-primary hover:brightness-105 text-[#030607] font-semibold text-xs gap-1.5 transition-all cursor-pointer flex items-center justify-center shadow-sm"
             >
               {isRunning ? (
                 <>
@@ -398,7 +398,7 @@ export default function PomodoroWidget() {
               type="button"
               size="sm"
               onClick={() => handleConfirmInactivityDiscount(true)}
-              className="text-xs bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white font-semibold"
+              className="text-xs bg-primary hover:brightness-105 text-[#030607] font-semibold rounded-full shadow-sm"
             >
               Descontar Inatividade
             </Button>

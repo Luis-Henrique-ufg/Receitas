@@ -13,7 +13,7 @@ import { Input } from "../ui/input";
 import { Card, CardContent } from "../ui/card";
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
-import { Loader2, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { coursesApi } from "@/services/coursesApi";
 
 type Props = {
@@ -60,66 +60,55 @@ export default function AddCourse({ onCreate }: Props) {
   };
 
   const handleSubmit = async () => {
-    setIsLoadingManualInsertion(true);
-    let createdSuccessfully = false;
-
-    const finalPath = coursePath;
-
-    if (!courseName.trim() || !finalPath.trim()) {
-      toast.error("Informe o nome e o caminho do curso.");
-      setIsLoadingManualInsertion(false);
+    if (!courseName.trim() || !coursePath.trim()) {
+      toast.error("Preencha ao menos o nome do curso e o caminho das pastas.");
       return;
     }
 
+    setIsLoadingManualInsertion(true);
+    let uploadedImageUrl = imageURL.trim();
+
     try {
-      const imageFile = fileInputRef.current?.files?.[0] || null;
-      const result = await coursesApi.create(apiUrl, {
+      const selectedFile = fileInputRef.current?.files?.[0];
+      if (selectedFile) {
+        toast.info("Enviando imagem de capa...");
+        const uploadRes = await coursesApi.uploadCover(apiUrl, selectedFile);
+        if (uploadRes && uploadRes.url) {
+          uploadedImageUrl = uploadRes.url;
+        } else {
+          throw new Error("Não foi possível salvar o arquivo da imagem.");
+        }
+      }
+
+      await coursesApi.create(apiUrl, {
         name: courseName.trim(),
-        path: finalPath.trim(),
-        imageFile,
-        imageUrl: imageFile ? undefined : (imageURL.trim() || undefined),
+        image_url: uploadedImageUrl,
+        path: coursePath.trim(),
       });
 
-      toast.success(`Curso adicionado: ${result.name}`, {
-        duration: 2000,
-        action: {
-          label: "Ok",
-          onClick: () => {},
-        },
-      });
-      setIsOpen(false);
-      createdSuccessfully = true;
+      toast.success("Curso cadastrado com sucesso!");
       onCreate();
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } | string } };
-      const errorMessage =
-        (typeof err?.response?.data === "object"
-          ? err?.response?.data?.error
-          : err?.response?.data) || "Erro ao adicionar registro.";
-      toast.error(errorMessage, {
-        duration: 2000,
-        action: {
-          label: "Ok",
-          onClick: () => {},
-        },
-      });
+      setIsOpen(false);
+      setCourseName("");
+      setImageURL("");
+      setCoursePath("");
+      handleClearFile();
+    } catch (err: unknown) {
+      console.error(err);
+      const message =
+        err instanceof Error ? err.message : "Erro desconhecido ao cadastrar curso.";
+      toast.error(message);
     } finally {
       setIsLoadingManualInsertion(false);
-      if (createdSuccessfully) {
-        setCourseName("");
-        setImageURL("");
-        setCoursePath("");
-        handleClearFile();
-      }
     }
   };
 
   return (
     <div className="flex gap-4 items-center">
       {isLoadingManualInsertion && (
-        <div className="flex justify-center glass-panel px-8 py-2 rounded-xl text-sm items-center text-white/70">
-          <Loader2 className="animate-spin h-4 mr-4 text-[#007bff]" />
-          <p>Salvando curso...</p>
+        <div className="flex justify-center bg-card border border-border px-6 py-2 rounded-full text-xs items-center text-muted-foreground shadow-sm">
+          <Loader2 className="animate-spin h-3.5 w-3.5 mr-2 text-primary" />
+          <span>Salvando curso...</span>
         </div>
       )}
 
@@ -131,15 +120,20 @@ export default function AddCourse({ onCreate }: Props) {
         }}
       >
         <DialogTrigger asChild>
-          <Button variant={"link"}>Adicionar manualmente</Button>
+          <Button className="rounded-full bg-primary text-[#030607] font-semibold hover:brightness-105 active:scale-[0.98] shadow-md shadow-primary/20 flex items-center gap-2 px-5 py-2.5 cursor-pointer">
+            <Plus className="w-4 h-4" />
+            <span>Adicionar Novo Curso</span>
+          </Button>
         </DialogTrigger>
-        <DialogContent className="md:max-w-[700px] max-w-80 glass-panel border-white/15 bg-zinc-950/95 text-white">
+        <DialogContent className="md:max-w-[650px] max-w-sm bg-card border border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7">
           <DialogHeader>
-            <DialogTitle className="mb-4">Cadastro de Curso</DialogTitle>
+            <DialogTitle className="text-xl font-display font-semibold text-foreground mb-2">
+              Cadastro de Novo Curso
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 pt-2">
             <div>
-              <Label htmlFor="nome" className="text-xs text-zinc-300 font-medium block mb-1.5">
+              <Label htmlFor="nome" className="text-xs text-foreground font-medium block mb-1.5">
                 Nome do curso
               </Label>
               <Input
@@ -147,19 +141,19 @@ export default function AddCourse({ onCreate }: Props) {
                 id="nome"
                 value={courseName}
                 onChange={(e) => setCourseName(e.target.value)}
-                placeholder="Ex: Estatística Avançada"
-                className="bg-white/5 border-white/10 text-white"
+                placeholder="Ex: Linguagem C o Curso Definitivo"
+                className="bg-muted/40 border-border text-foreground rounded-xl"
               />
             </div>
 
             <div>
-              <h3 className="text-sm font-medium text-zinc-300 mb-2">
+              <h3 className="text-xs font-medium text-foreground mb-2">
                 Capa do curso (URL ou arquivo local):
               </h3>
-              <Card className="w-full bg-white/[0.02] border-white/10">
-                <CardContent className="pt-4 space-y-3">
+              <Card className="w-full bg-muted/20 border-border rounded-2xl">
+                <CardContent className="p-4 space-y-3">
                   <div>
-                    <Label htmlFor="capaUrl" className="text-xs text-zinc-300 font-medium block mb-1">
+                    <Label htmlFor="capaUrl" className="text-xs text-muted-foreground font-medium block mb-1">
                       URL da imagem
                     </Label>
                     <Input
@@ -168,18 +162,18 @@ export default function AddCourse({ onCreate }: Props) {
                       value={imageURL}
                       onChange={handleUrlChange}
                       placeholder="https://exemplo.com/imagem.jpg"
-                      className="bg-white/5 border-white/10 text-white"
+                      className="bg-card border-border text-foreground rounded-xl"
                     />
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 border-t border-white/10"></div>
-                    <span className="text-[11px] text-zinc-500 uppercase tracking-wider">ou</span>
-                    <div className="flex-1 border-t border-white/10"></div>
+                    <div className="flex-1 border-t border-border"></div>
+                    <span className="text-[11px] text-muted-foreground uppercase tracking-wider">ou</span>
+                    <div className="flex-1 border-t border-border"></div>
                   </div>
 
                   <div>
-                    <Label htmlFor="capaFile" className="text-xs text-zinc-300 font-medium block mb-1">
+                    <Label htmlFor="capaFile" className="text-xs text-muted-foreground font-medium block mb-1">
                       Anexar imagem local
                     </Label>
                     <Input
@@ -188,27 +182,27 @@ export default function AddCourse({ onCreate }: Props) {
                       ref={fileInputRef}
                       accept="image/*"
                       onChange={handleFileChange}
-                      className="bg-white/5 border-white/10 text-white file:text-white file:bg-white/10 file:border-0 file:rounded-md file:mr-2 file:px-2 file:py-1 cursor-pointer"
+                      className="bg-card border-border text-foreground rounded-xl file:text-foreground file:bg-muted file:border-0 file:rounded-lg file:mr-2 file:px-2.5 file:py-1 cursor-pointer"
                     />
                   </div>
 
                   {filePreview && (
-                    <div className="flex items-center gap-3 p-2 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-3 p-2.5 bg-card rounded-xl border border-border">
                       <img
                         src={filePreview}
                         alt="Prévia da capa local"
-                        className="w-16 h-10 object-cover rounded border border-white/20"
+                        className="w-16 h-10 object-cover rounded-lg border border-border"
                       />
-                      <div className="flex-1 text-xs text-zinc-300 truncate">
-                        <span className="text-emerald-400 font-medium block">Imagem local selecionada</span>
-                        <span className="text-zinc-500 text-[10px]">Será salva no servidor</span>
+                      <div className="flex-1 text-xs text-foreground truncate">
+                        <span className="text-primary font-medium block">Imagem local selecionada</span>
+                        <span className="text-muted-foreground text-[10px]">Será salva no servidor</span>
                       </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
                         onClick={handleClearFile}
-                        className="h-7 w-7 text-zinc-400 hover:text-white"
+                        className="h-7 w-7 text-muted-foreground hover:text-foreground rounded-lg"
                         title="Remover anexo"
                       >
                         <X className="w-4 h-4" />
@@ -220,7 +214,7 @@ export default function AddCourse({ onCreate }: Props) {
             </div>
 
             <div>
-              <Label htmlFor="path" className="text-xs text-zinc-300 font-medium block mb-1.5">
+              <Label htmlFor="path" className="text-xs text-foreground font-medium block mb-1.5">
                 Diretório (PATH) do curso
               </Label>
               <Input
@@ -229,17 +223,17 @@ export default function AddCourse({ onCreate }: Props) {
                 placeholder="Ex: C:\Users\kamik\Downloads\Linguagem C"
                 value={coursePath}
                 onChange={(e) => setCoursePath(e.target.value)}
-                className="bg-white/5 border-white/10 text-white font-mono text-xs"
+                className="bg-muted/40 border-border text-foreground font-mono text-xs rounded-xl"
               />
             </div>
           </div>
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-6 flex items-center justify-end gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="bg-white/5 border-white/10 text-zinc-300 hover:text-white"
+              className="rounded-full border-border text-foreground hover:bg-muted"
             >
               Cancelar
             </Button>
@@ -247,7 +241,7 @@ export default function AddCourse({ onCreate }: Props) {
               type="button"
               onClick={handleSubmit}
               disabled={isLoadingManualInsertion}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-semibold"
+              className="rounded-full bg-primary text-[#030607] font-semibold hover:brightness-105 shadow-md shadow-primary/20"
             >
               Confirmar
             </Button>

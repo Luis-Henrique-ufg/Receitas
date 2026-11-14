@@ -67,7 +67,7 @@ export default function CoursesList({
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
               <SortableContext
                 items={courses.map((c) => c.id.toString())}
                 strategy={rectSortingStrategy}
@@ -86,13 +86,13 @@ export default function CoursesList({
             </div>
           </DndContext>
         ) : (
-          <Card className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4">
+          <Card className="col-span-full">
             <CardHeader>
-              <CardTitle className="text-[hsl(222.2,84%,4.9%)] dark:text-white text-center">
+              <CardTitle className="text-foreground text-center font-display">
                 Nenhum curso encontrado!
               </CardTitle>
             </CardHeader>
-            <CardDescription className=" px-4 pb-4 text-center">
+            <CardDescription className="px-4 pb-6 text-center text-muted-foreground">
               Que tal cadastrar o primeiro?
             </CardDescription>
           </Card>

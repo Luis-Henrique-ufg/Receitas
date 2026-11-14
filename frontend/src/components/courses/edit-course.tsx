@@ -174,10 +174,10 @@ export default function EditCourse({
       )}
       <DialogContent
         onPointerDownOutside={(e) => e.preventDefault()}
-        className="md:max-w-[700px] max-w-80 glass-panel border-white/15 bg-zinc-950/95 text-white"
+        className="md:max-w-[650px] max-w-sm bg-card border border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7"
       >
         <DialogHeader>
-          <DialogTitle className="mb-4">
+          <DialogTitle className="text-xl font-display font-semibold text-foreground mb-2">
             Editando - {course?.name || ""}
           </DialogTitle>
         </DialogHeader>
@@ -308,12 +308,12 @@ export default function EditCourse({
           </div>
         </div>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter className="mt-6 flex items-center justify-end gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => handleOpenChange(false)}
-            className="bg-white/5 border-white/10 text-zinc-300 hover:text-white"
+            className="rounded-full border-border text-foreground hover:bg-muted"
           >
             Cancelar
           </Button>
@@ -321,7 +321,7 @@ export default function EditCourse({
             type="button"
             onClick={handleEdit}
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold"
+            className="rounded-full bg-primary text-[#030607] font-semibold hover:brightness-105 shadow-md shadow-primary/20"
           >
             {isLoading ? "Salvando..." : "Confirmar"}
           </Button>

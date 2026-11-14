@@ -32,13 +32,6 @@ export default function Router() {
 
   return (
     <BrowserRouter>
-      {/* Tangerina Ambient Warm Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
-        <div className="liquid-blob bg-primary" style={{width: '600px', height: '600px', top: '-150px', left: '-150px', opacity: 0.07, animationDuration: '20s'}}></div>
-        <div className="liquid-blob bg-[#FFAB3B]" style={{width: '500px', height: '500px', top: '35%', right: '-150px', opacity: 0.05, animationDuration: '25s', animationDelay: '-5s'}}></div>
-        <div className="liquid-blob bg-accent" style={{width: '600px', height: '600px', bottom: '-150px', left: '20%', opacity: 0.05, animationDuration: '30s', animationDelay: '-10s'}}></div>
-      </div>
-
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         {!isZenMode && <Header onOpenSearch={() => setIsSearchOpen(true)} />}
         <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
@@ -50,7 +43,7 @@ export default function Router() {
           visibleToasts={1}
         />
       </ThemeProvider>
-      <main className={cn(isZenMode ? "p-0 relative z-10" : "p-2.5 sm:p-3.5 lg:p-4 pt-16 sm:pt-18 lg:pt-18 xl:pt-20 relative z-10")}>
+      <main className={cn(isZenMode ? "p-0 relative z-10" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 relative z-10")}>
         <Routes>
           <Route path="/" element={<Navigate to="/receitas" replace />} />
           <Route path="/receitas/:courseId" element={<CoursePage />} />

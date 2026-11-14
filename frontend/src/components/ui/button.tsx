@@ -5,28 +5,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-2xl text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground font-semibold hover:brightness-105 active:scale-[0.98] shadow-sm hover:shadow-md transition-all duration-200",
+          "bg-primary text-primary-foreground font-semibold hover:brightness-105 active:scale-[0.98] shadow-md shadow-primary/20 transition-all duration-200",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl shadow-sm transition-all duration-200",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-2xl shadow-sm transition-all duration-200",
         outline:
-          "border border-border bg-transparent text-foreground hover:bg-secondary/70 hover:border-foreground/20 rounded-xl transition-all duration-200",
+          "border border-border bg-card/60 text-foreground hover:bg-muted hover:border-foreground/20 rounded-2xl transition-all duration-200",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl transition-all duration-200",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-2xl transition-all duration-200",
         ghost:
-          "hover:bg-secondary/60 text-foreground/80 hover:text-foreground rounded-xl transition-colors",
+          "hover:bg-muted text-foreground/80 hover:text-foreground rounded-2xl transition-colors",
         link:
           "text-foreground/80 hover:text-primary underline-offset-4 hover:underline transition-colors",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-lg px-3 text-xs",
-        lg: "h-11 rounded-xl px-8 text-base",
-        icon: "h-10 w-10",
+        default: "h-10 px-5 py-2.5",
+        sm: "h-8 rounded-xl px-3.5 text-xs",
+        lg: "h-12 rounded-2xl px-8 text-base",
+        icon: "h-10 w-10 rounded-2xl",
       },
     },
     defaultVariants: {

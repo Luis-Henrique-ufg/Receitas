@@ -87,26 +87,26 @@ export default function DeleteCourse({
         </Button>
       )}
       <AlertDialog open={showConfirm} onOpenChange={handleOpenChange}>
-        <AlertDialogContent className="glass-panel border-white/15 bg-zinc-950/95 text-white">
+        <AlertDialogContent className="bg-card border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7">
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmação</AlertDialogTitle>
-            <AlertDialogDescription className="text-zinc-400">
+            <AlertDialogTitle className="font-display font-semibold text-lg text-foreground">Confirmação de Exclusão</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground text-sm">
               Tem certeza de que deseja excluir o curso &quot;{course.name}&quot;? Esta ação não
               pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="mt-4 gap-2">
             <AlertDialogCancel
               onClick={() => handleOpenChange(false)}
-              className="bg-white/5 border-white/10 text-zinc-300 hover:text-white"
+              className="rounded-full border-border text-foreground hover:bg-muted"
             >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={onDelete}
-              className="bg-rose-600 hover:bg-rose-500 text-white"
+              className="rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold"
             >
-              Continuar
+              Excluir Curso
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

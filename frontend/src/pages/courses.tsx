@@ -7,7 +7,6 @@ import ActivityHeatmap from "@/components/stats/activity-heatmap";
 import ResumeHeroCard from "@/components/courses/resume-hero-card";
 import { useNavigate } from "react-router-dom";
 import useApiUrl from "@/hooks/useApiUrl";
-import { BookOpen, Clock, BarChart3 } from "lucide-react";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -77,37 +76,8 @@ export default function CoursesPage() {
   }, [courses]);
 
   return (
-    <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto pb-20 animate-in fade-in duration-300">
-      {/* Navigation Tabs Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
-        <div className="bg-card border border-border p-1 rounded-xl self-start flex items-center gap-1 select-none shadow-sm">
-          <button
-            type="button"
-            className="flex items-center gap-2 bg-primary text-primary-foreground shadow-sm px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-default"
-          >
-            <BookOpen className="w-4 h-4 shrink-0" />
-            <span>Cursos</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/foco")}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent cursor-pointer"
-          >
-            <Clock className="w-4 h-4 shrink-0" />
-            <span>Foco</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/estatisticas")}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border border-transparent cursor-pointer"
-          >
-            <BarChart3 className="w-4 h-4 shrink-0" />
-            <span>Estatísticas</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Spotlight: Resume Studies Hero */}
+    <div className="w-full space-y-10 sm:space-y-12 animate-in fade-in duration-300">
+      {/* 1. Spotlight: Resume Studies Hero */}
       {!isLoading && courses.length > 0 && (
         <ResumeHeroCard
           courses={courses}
@@ -115,26 +85,33 @@ export default function CoursesPage() {
         />
       )}
 
-      {/* Heatmap & Streaks Panel */}
+      {/* 2. Activity & Habit Rhythm Heatmap */}
       <ActivityHeatmap />
 
-      {/* Courses List Section */}
-      <div className="space-y-6 pt-2">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-            Meus Cursos
-          </h1>
+      {/* 3. Courses Catalog Section */}
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold text-foreground tracking-tight">
+              Meus Cursos &amp; Receitas
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Acesse sua grade de aprendizado contínuo
+            </p>
+          </div>
           <AddCourse onCreate={() => fetchCourses()} />
         </div>
-        <section className="mt-8 flex flex-wrap gap-4 w-full justify-center">
+
+        <div className="w-full pt-2">
           {isLoading ? (
-            // Skeleton Loaders
-            Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="w-[300px] h-[350px] bg-card border border-border rounded-2xl animate-pulse"
-              />
-            ))
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-80 bg-card border border-border rounded-3xl animate-pulse"
+                />
+              ))}
+            </div>
           ) : (
             <CoursesList
               courses={courses}
@@ -145,8 +122,8 @@ export default function CoursesPage() {
               onPlay={(courseId) => navigate(`/receitas/${courseId}`)}
             />
           )}
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

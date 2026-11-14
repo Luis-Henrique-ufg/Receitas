@@ -202,31 +202,31 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl glass-panel rounded-2xl border border-white/20 shadow-2xl overflow-hidden bg-[#050a14]/90 backdrop-blur-2xl"
+        className="w-full max-w-2xl bg-card rounded-3xl border border-border shadow-2xl overflow-hidden text-foreground"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/10">
-          <Search className="w-5 h-5 text-zinc-400 shrink-0" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+          <Search className="w-5 h-5 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar cursos, aulas, anexos, anotações ou ações..."
-            className="w-full bg-transparent text-white placeholder-zinc-500 text-sm outline-none font-medium"
+            className="w-full bg-transparent text-foreground placeholder-muted-foreground text-sm outline-none font-medium"
           />
-          {isLoading && <Loader2 className="w-4 h-4 text-blue-400 animate-spin shrink-0" />}
+          {isLoading && <Loader2 className="w-4 h-4 text-primary animate-spin shrink-0" />}
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-zinc-400 border border-white/10">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
             ESC
           </span>
         </div>
@@ -234,7 +234,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
         {/* Results List */}
         <div className="max-h-[420px] overflow-y-auto p-2 space-y-1 custom-scrollbar">
           {flatItems.length === 0 ? (
-            <div className="py-12 text-center text-zinc-500 text-sm">
+            <div className="py-12 text-center text-muted-foreground text-sm">
               {query ? "Nenhum resultado encontrado para a busca." : "Digite para buscar cursos, aulas ou ações..."}
             </div>
           ) : (
@@ -246,27 +246,27 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                   onClick={item.onSelect}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={cn(
-                    "flex items-center justify-between px-3.5 py-2.5 rounded-xl cursor-pointer transition-all duration-150",
+                    "flex items-center justify-between px-3.5 py-2.5 rounded-2xl cursor-pointer transition-all duration-150",
                     isSelected
-                      ? "bg-gradient-to-r from-blue-600/30 to-cyan-600/20 border border-blue-500/40 text-white shadow-sm"
-                      : "text-zinc-300 hover:bg-white/5 border border-transparent"
+                      ? "bg-primary/10 border border-primary/30 text-foreground shadow-sm"
+                      : "text-foreground/80 hover:bg-muted/50 border border-transparent"
                   )}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-2 rounded-lg bg-white/5 border border-white/10 shrink-0">
+                    <div className="p-2 rounded-xl bg-muted/60 border border-border shrink-0">
                       {item.icon}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-sm font-medium text-white truncate">{item.title}</div>
+                      <div className="text-sm font-medium text-foreground truncate">{item.title}</div>
                       {item.subtitle && (
-                        <div className="text-xs text-zinc-400 truncate">{item.subtitle}</div>
+                        <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>
                       )}
                     </div>
                   </div>
                   <ArrowRight
                     className={cn(
-                      "w-4 h-4 text-zinc-400 shrink-0 transition-opacity",
-                      isSelected ? "opacity-100 text-blue-400" : "opacity-0"
+                      "w-4 h-4 shrink-0 transition-opacity",
+                      isSelected ? "opacity-100 text-primary" : "opacity-0"
                     )}
                   />
                 </div>
@@ -276,16 +276,16 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
         </div>
 
         {/* Footer shortcuts */}
-        <div className="px-4 py-2.5 bg-black/40 border-t border-white/10 flex items-center justify-between text-[11px] text-zinc-500">
+        <div className="px-4 py-2.5 bg-muted/30 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
           <div className="flex items-center gap-3">
             <span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">↑↓</kbd> Navegar
+              <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground border border-border font-mono">↑↓</kbd> Navegar
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300">Enter</kbd> Selecionar
+              <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground border border-border font-mono">Enter</kbd> Selecionar
             </span>
           </div>
-          <span>Receitas Search</span>
+          <span className="font-display font-medium text-primary">Receitas</span>
         </div>
       </div>
     </div>

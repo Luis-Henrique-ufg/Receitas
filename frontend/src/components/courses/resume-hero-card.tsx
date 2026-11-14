@@ -1,7 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
-import { Play, BookOpen, Clock } from "lucide-react";
+import { Play, PlayCircle, Film, CheckCircle2 } from "lucide-react";
 import { Course, Lesson } from "@/models/models";
-import { Button } from "@/components/ui/button";
 import { getMostRecentActiveCourse } from "@/utils/utils";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
@@ -63,7 +62,6 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
   }, []);
 
   const activeItem = useMemo(() => {
-    // Reference updateTick so memo re-evaluates when lesson progress or course updates
     void updateTick;
     return getMostRecentActiveCourse(courses);
   }, [courses, updateTick]);
@@ -104,145 +102,133 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
     : "/sem-foto.png";
 
   const lessonElapsed = lesson?.time_elapsed ? Number(lesson.time_elapsed) : 0;
-  const hasSavedPosition = lessonElapsed > 0;
-
-  // Thumbnail progress percentage
   const durationNum = lesson?.duration ? parseFloat(lesson.duration) : 0;
-  const thumbnailProgressPct =
-    hasSavedPosition && durationNum > 0
-      ? Math.min(100, Math.max(3, Math.round((lessonElapsed / durationNum) * 100)))
-      : hasSavedPosition
-      ? 15
-      : 0;
 
   const lessonIndex = lesson ? extractLessonIndex(lesson.title, lesson.hierarchy_path) : null;
-  // Prefer real lesson index from resumed lesson; fallback to completion count
   const effectiveLessonNumber = lessonIndex !== null ? lessonIndex : (stats?.current_lesson_number || null);
   const rawCleanedTitle = lesson ? cleanLessonTitle(lesson.title) : "";
   const cleanedModule = lesson?.module ? cleanLessonTitle(lesson.module) : "";
 
-  // Check if title is generic like "Video", "Aula" or empty
   const isGenericTitle =
     !rawCleanedTitle ||
     rawCleanedTitle.toLowerCase() === "video" ||
     rawCleanedTitle.toLowerCase() === "aula" ||
     /^parte\s*\d+$/i.test(rawCleanedTitle);
 
-  // If generic, use "Aula {N}" or meaningful title
   const displayTitle = isGenericTitle
     ? effectiveLessonNumber
       ? `Aula ${effectiveLessonNumber}`
       : "Aula"
     : rawCleanedTitle;
 
-  const isAlreadyShowingLessonNumber = isGenericTitle && Boolean(effectiveLessonNumber);
+  const showModule = Boolean(cleanedModule) && (cleanedModule.trim().toLowerCase() !== displayTitle.trim().toLowerCase());
 
-  // Avoid repeating the title if module and lesson share the same name or prefix
-  const isDuplicateName =
-    Boolean(cleanedModule) &&
-    Boolean(displayTitle) &&
-    (cleanedModule.trim().toLowerCase() === displayTitle.trim().toLowerCase() ||
-      displayTitle.trim().toLowerCase().startsWith(cleanedModule.trim().toLowerCase()));
+  const completedPct = stats?.completed_percentage ?? (
+    durationNum > 0 && lessonElapsed > 0 ? Math.round((lessonElapsed / durationNum) * 100) : 0
+  );
 
-  const showModule = Boolean(cleanedModule) && !isDuplicateName;
+  const totalCount = totalLessons || stats?.total_lessons || 0;
+  const completedCount = stats?.completed_lessons || 0;
 
   return (
-    <div className="w-full bg-card rounded-2xl p-4 sm:p-5 border border-border shadow-md relative overflow-hidden group">
-      {/* Decorative background glow */}
-      <div className="absolute -right-20 -top-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+    <section className="w-full bg-card rounded-3xl border border-border shadow-md overflow-hidden mb-8 lg:mb-10 group">
+      <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] min-h-[22rem] lg:min-h-[26rem]">
+        {/* Left Column: Editorial Content */}
+        <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+          <div>
+            {/* Top Badge */}
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold text-primary mb-3 select-none">
+              <PlayCircle className="w-4 h-4 text-primary shrink-0" />
+              <span>{isResume ? "Continuar de onde parou" : "Estudo Ativo"}</span>
+            </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-5 relative z-10">
-        {/* Cover Thumbnail with optional bottom progress line */}
-        <div className="relative w-full md:w-48 lg:w-52 aspect-video md:aspect-[16/10] rounded-xl overflow-hidden shrink-0 border border-border shadow-sm group-hover:border-primary/40 transition-colors">
+            {/* Course Name */}
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-semibold text-foreground tracking-tight leading-snug mb-3">
+              {course.name}
+            </h2>
+
+            {/* Lesson details breadcrumb */}
+            <div className="flex items-center gap-2.5 text-sm sm:text-base text-muted-foreground font-normal mb-6">
+              <Film className="w-4 h-4 text-primary shrink-0" />
+              <div className="flex items-center gap-1.5 truncate">
+                {showModule && (
+                  <>
+                    <span className="truncate max-w-[160px] font-medium text-muted-foreground">{cleanedModule}</span>
+                    <span className="text-muted-foreground/50 select-none">•</span>
+                  </>
+                )}
+                <span className="text-foreground font-medium truncate">
+                  {lesson ? displayTitle : "Explore as aulas deste curso"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            {/* Progress Bar with Pill Style */}
+            <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden mb-2.5">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${Math.max(4, Math.min(100, completedPct))}%` }}
+              />
+            </div>
+
+            {/* Progress Meta Row */}
+            <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mb-6 font-normal">
+              <span>
+                Progresso: <strong className="text-foreground font-semibold">{completedPct}% concluído</strong>
+              </span>
+              {lessonElapsed > 0 && durationNum > 0 ? (
+                <span>
+                  Tempo: <strong className="text-foreground font-semibold tabular-nums">{formatSeconds(lessonElapsed)} / {formatSeconds(durationNum)}</strong>
+                </span>
+              ) : totalCount > 0 ? (
+                <span>
+                  Aulas: <strong className="text-foreground font-semibold">{completedCount} de {totalCount}</strong>
+                </span>
+              ) : null}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onPlay(course.id, lesson || undefined)}
+                className="inline-flex items-center justify-center gap-2.5 bg-primary text-[#030607] font-semibold text-sm sm:text-base px-7 py-3 rounded-xl shadow-md shadow-primary/25 hover:-translate-y-0.5 hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-current shrink-0" />
+                <span>{isResume ? "Retomar Aula" : "Iniciar Curso"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onPlay(course.id)}
+                className="inline-flex items-center justify-center bg-transparent hover:bg-secondary text-foreground border border-border font-medium text-xs sm:text-sm px-5 py-3 rounded-xl transition-colors cursor-pointer"
+              >
+                <span>Ver Todos os Módulos</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Full-Bleed Media */}
+        <div className="relative w-full aspect-video md:aspect-auto md:h-full min-h-[16rem] overflow-hidden bg-card border-t md:border-t-0 md:border-l border-border group-hover:border-primary/30 transition-colors">
           <img
             src={courseCover}
             alt={course.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
 
-          {/* Thin progress bar over thumbnail when position is saved */}
-          {hasSavedPosition && thumbnailProgressPct > 0 && (
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/60">
-              <div
-                className="h-full bg-gradient-to-r from-primary to-orange-400"
-                style={{ width: `${thumbnailProgressPct}%` }}
-              />
+          {/* Floating overlay badge */}
+          {totalCount > 0 && (
+            <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md text-white text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-2 border border-white/10 shadow-lg">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span>{completedCount} de {totalCount} aulas assistidas</span>
             </div>
           )}
         </div>
-
-        {/* Content Info */}
-        <div className="flex-1 min-w-0 space-y-2.5 text-left w-full">
-          {/* Status line: Clean typography with luminous indicator dot instead of monochromatic pills */}
-          <div className="flex flex-wrap items-center gap-2.5 text-xs">
-            <div className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-              <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-              <span>{isResume ? "Continuar de onde parei" : "Comece a estudar"}</span>
-            </div>
-
-            {/* Position Display: clean inline editorial timestamp */}
-            {isResume && hasSavedPosition && (
-              <>
-                <span className="text-muted-foreground/60 select-none">•</span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Clock className="w-3.5 h-3.5 text-muted-foreground/80 shrink-0" />
-                  <span>
-                    Retomar em{" "}
-                    <span className="font-mono tabular-nums text-foreground font-semibold">
-                      {formatSeconds(lessonElapsed)}
-                    </span>
-                  </span>
-                </span>
-              </>
-            )}
-          </div>
-
-          <h3 className="text-xl sm:text-2xl font-display font-bold text-foreground tracking-tight truncate">
-            {course.name}
-          </h3>
-
-          {/* Cleaned Lesson Hierarchy Breadcrumb: icon and path inline with min-w-0 */}
-          <div className="text-sm text-muted-foreground flex items-center gap-2 min-w-0 max-w-full">
-            <BookOpen className="w-4 h-4 text-muted-foreground/80 shrink-0" />
-            {isResume && lesson ? (
-              <div className="flex items-center gap-1.5 min-w-0 overflow-hidden text-sm">
-                {showModule && (
-                  <>
-                    <span className="text-muted-foreground font-medium truncate max-w-[180px]" title={cleanedModule}>
-                      {cleanedModule}
-                    </span>
-                    <span className="text-muted-foreground/60 font-semibold select-none shrink-0">›</span>
-                  </>
-                )}
-                <strong className="text-foreground font-medium truncate" title={lesson.title}>
-                  {isAlreadyShowingLessonNumber && totalLessons && totalLessons > 0
-                    ? `Aula ${effectiveLessonNumber} de ${totalLessons}`
-                    : displayTitle}
-                </strong>
-                {!isAlreadyShowingLessonNumber && effectiveLessonNumber !== null && totalLessons !== null && totalLessons > 0 && (
-                  <span className="text-xs text-muted-foreground/80 font-normal shrink-0 ml-1 whitespace-nowrap">
-                    (Aula {effectiveLessonNumber} de ${totalLessons})
-                  </span>
-                )}
-              </div>
-            ) : (
-              <span className="truncate">Explore as aulas e comece sua jornada de aprendizado</span>
-            )}
-          </div>
-        </div>
-
-        {/* Action Button: Design System Primary Button */}
-        <div className="shrink-0 w-full md:w-auto">
-          <Button
-            onClick={() => onPlay(course.id, lesson || undefined)}
-            className="w-full md:w-auto h-11 px-7 rounded-xl flex items-center justify-center gap-2 text-xs font-medium cursor-pointer"
-          >
-            <Play className="w-3.5 h-3.5 fill-current shrink-0" />
-            <span>{isResume ? "Continuar" : "Iniciar Curso"}</span>
-          </Button>
-        </div>
       </div>
-    </div>
+    </section>
   );
 }
