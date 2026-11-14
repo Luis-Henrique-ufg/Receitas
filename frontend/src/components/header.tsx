@@ -35,7 +35,7 @@ function Header({ onOpenSearch }: HeaderProps) {
 
   return (
     <nav className="fixed w-full z-[60] top-0 py-3.5 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto bg-card border border-border shadow-md rounded-full px-4 sm:px-6 py-2 flex items-center justify-between gap-4 transition-all">
+      <div className="max-w-[1800px] mx-auto bg-card border border-border shadow-md rounded-full px-4 sm:px-6 py-2 flex items-center justify-between gap-4 transition-all">
         {/* Brand Logo with 15deg hover rotation */}
         <div
           onClick={() => handleNavigate("/receitas")}
