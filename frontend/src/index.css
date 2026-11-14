@@ -1,60 +1,104 @@
 @import "video.js/dist/video-js.css";
 
+/* ==========================================================================
+   Tangerina Design System — Font-Face Definitions
+   ========================================================================== */
+@font-face {
+  font-family: 'GOL Sans Display';
+  src: url('./assets/fonts/GOLSansDisplay-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GOL Sans Display';
+  src: url('./assets/fonts/GOLSansDisplay-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GOL Sans Display';
+  src: url('./assets/fonts/GOLSansDisplay-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GOL Sans Text';
+  src: url('./assets/fonts/GOLSansText-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'icomoon';
+  src: url('./assets/fonts/icomoon.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 97%;
-    --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 211 100% 50%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 211 100% 50%;
-    --radius: 0.5rem;
+    /* Tangerina Light Mode Tokens */
+    --background: 24 33% 98%;          /* #FCF9F8 (white-1) */
+    --foreground: 200 40% 2%;          /* #030607 (black-1) */
+    --card: 26 29% 94%;                /* #F4EFEB (white-3) */
+    --card-foreground: 200 40% 2%;
+    --popover: 24 33% 98%;
+    --popover-foreground: 200 40% 2%;
+    --primary: 22 100% 56%;            /* #FF7020 (orange-1) */
+    --primary-foreground: 200 40% 2%;  /* Texto escuro no laranja */
+    --secondary: 34 46% 92%;           /* #F4ECE0 (white-2) */
+    --secondary-foreground: 200 40% 2%;
+    --muted: 20 22% 82%;               /* #DCCEC6 (brown-4) */
+    --muted-foreground: 23 9% 30%;     /* #534B46 (brown-6) */
+    --accent: 176 100% 32%;            /* #00A196 (green-1 / Smiles Teal) */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 39%;          /* #C50000 (red-1) */
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 22% 82%;               /* #DCCEC6 (brown-4) */
+    --input: 20 22% 82%;
+    --ring: 22 100% 56%;
+    --radius: 0.75rem;                  /* 1.2rem equivalente */
   }
 
   .dark {
-    --background: 0, 0%, 8%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 211 100% 50%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 211 100% 50%;
+    /* Tangerina Dark Mode Tokens */
+    --background: 200 40% 2%;          /* #030607 (black-1) */
+    --foreground: 24 33% 98%;          /* #FCF9F8 (white-1) */
+    --card: 0 0% 10%;                  /* #1A1A1A (black-3) */
+    --card-foreground: 24 33% 98%;
+    --popover: 200 40% 2%;
+    --popover-foreground: 24 33% 98%;
+    --primary: 22 100% 56%;            /* #FF7020 (orange-1) */
+    --primary-foreground: 200 40% 2%;
+    --secondary: 24 9% 18%;            /* #322D2A (black-2) */
+    --secondary-foreground: 24 33% 98%;
+    --muted: 24 9% 18%;                /* #322D2A */
+    --muted-foreground: 22 19% 70%;    /* #C2AEA3 (brown-3) */
+    --accent: 176 100% 32%;            /* #00A196 */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 24 9% 22%;               /* Borda sutil no dark */
+    --input: 24 9% 22%;
+    --ring: 22 100% 56%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    cursor: none !important;
   }
   body {
     @apply bg-background text-foreground;
@@ -68,9 +112,9 @@
 }
 
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #050a14; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #007bff; }
+::-webkit-scrollbar-track { background: hsl(var(--background)); }
+::-webkit-scrollbar-thumb { background: rgba(137, 118, 108, 0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #FF7020; }
 
 h1, h2, h3, h4, h5, h6 {
   @apply font-heading;

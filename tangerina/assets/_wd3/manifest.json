@@ -1,0 +1,655 @@
+{
+ "entryUrl": "https://tangerina.golsmiles.com.br/",
+ "capturedAt": "2026-11-13T14:29:38+00:00",
+ "indexHtml": {
+  "kind": "arquivo",
+  "description": "site vivo aberto com duplo clique (file://): um runtime faz o papel do Service Worker; imagens e vídeos que a página só exibe são lidos de assets/, o resto (CSS, JS, fontes, dados, imagens de WebGL) vai embutido no index.html"
+ },
+ "files": [
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Light.woff2",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Light.woff2",
+   "type": "font/woff2",
+   "resourceType": "font",
+   "size": 21272,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Medium.woff2",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Medium.woff2",
+   "type": "font/woff2",
+   "resourceType": "font",
+   "size": 21492,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Regular.woff2",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Regular.woff2",
+   "type": "font/woff2",
+   "resourceType": "font",
+   "size": 21108,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansText-Regular.woff2",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansText-Regular.woff2",
+   "type": "font/woff2",
+   "resourceType": "font",
+   "size": 20716,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/app.css",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/app.css",
+   "type": "text/css",
+   "resourceType": "stylesheet",
+   "size": 375320,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ],
+   "role": "site"
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/app2.js",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/app2.js",
+   "type": "application/x-javascript",
+   "resourceType": "script",
+   "size": 345917,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ],
+   "role": "site"
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/icomoon.ttf?jobimn",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/icomoon__q3c663166.ttf",
+   "type": "application/octet-stream",
+   "resourceType": "font",
+   "size": 9432,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/utils.css",
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/utils.css",
+   "type": "text/css",
+   "resourceType": "stylesheet",
+   "size": 11077,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ],
+   "role": "site"
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/cookies.png",
+   "file": "assets/tangerina.golsmiles.com.br/images/cookies.png",
+   "type": "image/png",
+   "resourceType": "image",
+   "size": 8010,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/favicon.png",
+   "file": "assets/tangerina.golsmiles.com.br/images/favicon.png",
+   "type": "image/png",
+   "resourceType": "other",
+   "size": 1371,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-aerotech-dark.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-aerotech-dark.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 3501,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-aerotech.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-aerotech.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 3510,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-dark.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-dark.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 1652,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-log-dark.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-log-dark.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 3000,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-log.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-log.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 2996,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-smiles.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-smiles.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 11320,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/gol.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 1696,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/goma-diagonal.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/goma-diagonal.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 555,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/iF_DesignAward2025_red_l_RGB%201.png",
+   "file": "assets/tangerina.golsmiles.com.br/images/iF_DesignAward2025_red_l_RGB 1.png",
+   "type": "image/png",
+   "resourceType": "image",
+   "size": 6476,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/logo-dark.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/logo-dark.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 13177,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/logo.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/logo.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 13177,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-1.json?id=1",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-1__q931a65dc.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 19593,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-2.json?id=2",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-2__qffac5db0.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 26002,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/criadores-landscape.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/criadores-landscape.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 74272,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/criadores-mobile.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/criadores-mobile.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 78720,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/criadores.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/criadores.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 76778,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3-mobile.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3-mobile.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 58595,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 58035,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/design-system.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/design-system.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 37224,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/ecossistema.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/ecossistema.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 10412,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/elementos-2.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/elementos-2.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 35052,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/elementos-mobile.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/elementos-mobile.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 8213,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/elementos.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/elementos.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 12390,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/footer.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/footer.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 46476,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/numeros-3-mobile.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/numeros-3-mobile.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 186228,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/numeros-3.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/numeros-3.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 185455,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/principios.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/principios.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 26168,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/video-2.json",
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/video-2.json",
+   "type": "application/json",
+   "resourceType": "xhr",
+   "size": 16032,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/smiles-viagens.svg?id=1",
+   "file": "assets/tangerina.golsmiles.com.br/images/smiles-viagens__q931a65dc.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 10355,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/smiles.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/smiles.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 4450,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-01.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-01.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 20341,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-02.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-02.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 76254,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-03.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-03.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 47058,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-04.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-04.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 80296,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-05.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-05.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 38029,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-06.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-06.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 52434,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-07.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-07.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 83075,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/jose-luiz-belixior.jpg",
+   "file": "assets/tangerina.golsmiles.com.br/images/team/jose-luiz-belixior.jpg",
+   "type": "image/jpeg",
+   "resourceType": "image",
+   "size": 9786,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/teaser.mp4?id=1",
+   "file": "assets/tangerina.golsmiles.com.br/images/teaser__q931a65dc.mp4",
+   "type": "video/mp4",
+   "resourceType": "media",
+   "size": 2002344,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/voebiz.svg",
+   "file": "assets/tangerina.golsmiles.com.br/images/voebiz.svg",
+   "type": "image/svg+xml",
+   "resourceType": "image",
+   "size": 2061,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/",
+   "file": "assets/tangerina.golsmiles.com.br/index.html",
+   "type": "text/html",
+   "resourceType": "document",
+   "size": 93689,
+   "status": 200,
+   "party": "first",
+   "passes": [
+    "desktop"
+   ]
+  },
+  {
+   "url": "https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js",
+   "file": "assets/cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js",
+   "type": "application/javascript",
+   "resourceType": "script",
+   "size": 305543,
+   "status": 200,
+   "party": "third",
+   "passes": [
+    "desktop"
+   ],
+   "library": {
+    "name": "lottie",
+    "version": null
+   },
+   "role": "library"
+  },
+  {
+   "url": "https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js",
+   "file": "assets/cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js",
+   "type": "application/javascript",
+   "resourceType": "script",
+   "size": 113187,
+   "status": 200,
+   "party": "third",
+   "passes": [
+    "desktop"
+   ],
+   "role": "third-party"
+  }
+ ]
+}

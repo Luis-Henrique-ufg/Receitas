@@ -18,10 +18,20 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ['"Open Sans"', '"Prompt"', 'sans-serif'],
-        heading: ['"Montserrat"', '"Prompt"', 'sans-serif'],
+        sans: ['"GOL Sans Text"', '"GOL Sans Display"', '"Open Sans"', 'sans-serif'],
+        heading: ['"GOL Sans Display"', '"Montserrat"', 'sans-serif'],
+        display: ['"GOL Sans Display"', 'sans-serif'],
       },
       colors: {
+        tangerina: {
+          orange: "#FF7020",
+          teal: "#00A196",
+          pink: "#E33D6C",
+          yellow: "#FFAB3B",
+          cream: "#F4ECE0",
+          brown: "#534B46",
+          border: "#DCCEC6",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

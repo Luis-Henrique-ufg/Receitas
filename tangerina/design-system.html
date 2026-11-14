@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <title>Tangerina — Living Design System & Pattern Library</title>
+    <meta name="description" content="Living Design System & Pattern Library for Tangerina (GOL Smiles Design System).">
+    
+    <link rel="icon" type="image/png" href="assets/tangerina.golsmiles.com.br/images/favicon.png" />
+    
+    <!-- Original CSS assets -->
+    <link rel="preload" as="style" href="assets/tangerina.golsmiles.com.br/build/assets/utils.css" />
+    <link rel="preload" as="style" href="assets/tangerina.golsmiles.com.br/build/assets/app.css" />
+    <link rel="stylesheet" href="assets/tangerina.golsmiles.com.br/build/assets/utils.css" />
+    <link rel="stylesheet" href="assets/tangerina.golsmiles.com.br/build/assets/app.css" />
+    
+    <!-- External / Vendor Scripts from assets -->
+    <script src="assets/cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
+    <script src="assets/cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
+    <style>
+        /* ==========================================================================
+           Living Design System Showcase Frame & Documentation Layout
+           Using strictly original CSS variables and font-family tokens
+           ========================================================================== */
+        :root {
+            --ds-border: var(--brown-4);
+            --ds-card-bg: var(--white-3);
+            --ds-muted-text: var(--brown-6);
+            --ds-nav-height: 5.4rem;
+        }
+
+        [data-color-mode="dark"] {
+            --ds-border: rgba(220, 206, 198, 0.2);
+            --ds-card-bg: var(--black-3);
+            --ds-muted-text: var(--brown-3);
+        }
+
+        /* Top Horizontal Nav */
+        #ds-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--ds-nav-height);
+            z-index: 1000;
+            background: rgba(252, 249, 248, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--ds-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--padding-fluid);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        [data-color-mode="dark"] #ds-nav {
+            background: rgba(3, 6, 7, 0.88);
+            border-bottom: 1px solid var(--ds-border);
+        }
+
+        .ds-nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .ds-nav-brand img {
+            height: 2.2rem;
+            width: auto;
+            display: block;
+        }
+
+        [data-color-mode="light"] .ds-nav-brand .logo-dark { display: none; }
+        [data-color-mode="light"] .ds-nav-brand .logo-light { display: block; }
+        [data-color-mode="dark"] .ds-nav-brand .logo-light { display: none; }
+        [data-color-mode="dark"] .ds-nav-brand .logo-dark { display: block; }
+
+        .ds-nav-badge {
+            font-size: 1.1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 500;
+            padding: 0.3rem 0.8rem;
+            background: var(--orange-1);
+            color: var(--black-1);
+            border-radius: 99rem;
+            line-height: 1;
+        }
+
+        .ds-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.4rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ds-nav-links a {
+            font-size: 1.3rem;
+            font-family: 'GOL Sans Display', sans-serif;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: inherit;
+            position: relative;
+            padding: 0.6rem 0;
+            transition: color 0.2s ease;
+        }
+
+        .ds-nav-links a:hover {
+            color: var(--orange-1);
+        }
+
+        .ds-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.4rem;
+        }
+
+        /* Showcase Documentation Section Shells */
+        .ds-section {
+            padding: 8rem 0;
+            border-bottom: 1px solid var(--ds-border);
+            position: relative;
+        }
+
+        .ds-section-header {
+            margin-bottom: 4.8rem;
+        }
+
+        .ds-eyebrow {
+            font-size: 1.4rem;
+            font-family: 'GOL Sans Display', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--orange-1);
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .ds-eyebrow::before {
+            content: "";
+            display: inline-block;
+            width: 1.2rem;
+            height: 2px;
+            background: var(--orange-1);
+        }
+
+        .ds-title {
+            margin-bottom: 1.2rem;
+        }
+
+        .ds-description {
+            font-size: 1.8rem;
+            line-height: 1.4;
+            color: var(--ds-muted-text);
+            max-width: 80rem;
+        }
+
+        /* Spec Table / Vertical List (Section 1 - Typography) */
+        .ds-spec-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .ds-spec-row {
+            border-bottom: 1px solid var(--ds-border);
+            padding: 3rem 0;
+            display: grid;
+            grid-template-columns: 20rem 1fr 14rem;
+            align-items: center;
+            gap: 2.4rem;
+            transition: background 0.2s ease;
+        }
+
+        .ds-spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .ds-spec-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .ds-spec-name {
+            font-size: 1.6rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ds-spec-tag {
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: var(--ds-muted-text);
+        }
+
+        .ds-spec-preview {
+            overflow: hidden;
+            word-break: break-word;
+        }
+
+        .ds-spec-values {
+            text-align: right;
+            font-size: 1.4rem;
+            font-family: monospace;
+            color: var(--ds-muted-text);
+            white-space: nowrap;
+        }
+
+        /* Color Palette & Surface Swatches */
+        .ds-color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .ds-swatch {
+            border-radius: 1.2rem;
+            overflow: hidden;
+            border: 1px solid var(--ds-border);
+            background: var(--ds-card-bg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .ds-swatch:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .ds-swatch-box {
+            height: 10rem;
+            width: 100%;
+            position: relative;
+        }
+
+        .ds-swatch-info {
+            padding: 1.4rem 1.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .ds-swatch-name {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        .ds-swatch-val {
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: var(--ds-muted-text);
+        }
+
+        .ds-surface-card {
+            padding: 3rem;
+            border-radius: 1.6rem;
+            border: 1px solid var(--ds-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 18rem;
+        }
+
+        /* Component Demo Matrix */
+        .ds-component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+            gap: 2.4rem;
+            margin-bottom: 4rem;
+        }
+
+        .ds-state-card {
+            border: 1px solid var(--ds-border);
+            border-radius: 1.4rem;
+            padding: 2.8rem 2.4rem;
+            background: var(--ds-card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.6rem;
+            min-height: 16rem;
+            position: relative;
+        }
+
+        .ds-state-label {
+            position: absolute;
+            top: 1.2rem;
+            left: 1.6rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ds-muted-text);
+            font-family: monospace;
+        }
+
+        /* Layout Grid Visualizer */
+        .ds-grid-demo {
+            background: var(--ds-card-bg);
+            border: 1px solid var(--ds-border);
+            border-radius: 1.4rem;
+            padding: 2.4rem;
+            margin-bottom: 3.2rem;
+        }
+
+        .ds-grid-col {
+            background: rgba(255, 112, 32, 0.12);
+            border: 1px dashed var(--orange-1);
+            color: var(--orange-1);
+            padding: 1.6rem 0.8rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-family: monospace;
+            border-radius: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Motion Gallery */
+        .ds-motion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+            gap: 2.4rem;
+        }
+
+        .ds-motion-card {
+            border: 1px solid var(--ds-border);
+            border-radius: 1.4rem;
+            padding: 2.4rem;
+            background: var(--ds-card-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
+        }
+
+        .ds-motion-stage {
+            height: 12rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.02);
+            border-radius: 0.8rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ds-motion-box {
+            width: 5rem;
+            height: 5rem;
+            background: var(--orange-1);
+            border-radius: 1rem;
+        }
+
+        /* Icons Matrix */
+        .ds-icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+            gap: 1.6rem;
+        }
+
+        .ds-icon-card {
+            border: 1px solid var(--ds-border);
+            border-radius: 1.2rem;
+            padding: 2rem 1.2rem;
+            background: var(--ds-card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .ds-icon-card:hover {
+            border-color: var(--orange-1);
+            transform: translateY(-2px);
+        }
+
+        .ds-icon-card i {
+            font-size: 3.2rem;
+            color: currentColor;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .ds-icon-card:hover i {
+            transform: scale(1.15);
+            color: var(--orange-1);
+        }
+
+        .ds-icon-name {
+            font-size: 1.15rem;
+            font-family: monospace;
+            color: var(--ds-muted-text);
+            word-break: break-all;
+        }
+
+        /* Floating Theme Switcher Override */
+        .container-btn-color-mode {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            z-index: 1001;
+        }
+
+        /* Mouse cursor fix for living showcase */
+        body, body *:not([data-cursor-style="hide"]) {
+            cursor: auto !important;
+        }
+        
+        .cursor-wrapper {
+            pointer-events: none;
+        }
+
+        @media (max-width: 1024px) {
+            .ds-nav-links { display: none; }
+            .ds-spec-row {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+            .ds-spec-values { text-align: left; }
+        }
+    </style>
+</head>
+
+<body data-scroll-direction="initial" data-load="first-loading" data-section-active="tangerina" data-color-mode="light">
+
+    <!-- Top Horizontal Navigation Bar (Rule 6) -->
+    <nav id="ds-nav" aria-label="Design System Navigation">
+        <a href="#hero" class="ds-nav-brand">
+            <img src="assets/tangerina.golsmiles.com.br/images/logo.svg" alt="Tangerina" class="logo-light">
+            <img src="assets/tangerina.golsmiles.com.br/images/logo-dark.svg" alt="Tangerina" class="logo-dark">
+            <span class="ds-nav-badge">Design System v2</span>
+        </a>
+
+        <ul class="ds-nav-links">
+            <li><a href="#hero" class="link-underline">00. Hero</a></li>
+            <li><a href="#typography" class="link-underline">01. Tipografia</a></li>
+            <li><a href="#colors" class="link-underline">02. Cores &amp; Superfícies</a></li>
+            <li><a href="#components" class="link-underline">03. Componentes</a></li>
+            <li><a href="#layout" class="link-underline">04. Layout &amp; Grid</a></li>
+            <li><a href="#motion" class="link-underline">05. Movimento</a></li>
+            <li><a href="#icons" class="link-underline">06. Ícones</a></li>
+        </ul>
+
+        <div class="ds-nav-actions">
+            <!-- Mode Switcher Controls -->
+            <div class="container-list">
+                <ul class="list-color-mode d-flex" style="gap: 0.6rem;">
+                    <li>
+                        <button class="btn-light active" id="ds-toggle-light" data-cursor-style="hover" data-set-color-mode="light" title="Light Mode">
+                            <span>Light</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="btn-dark" id="ds-toggle-dark" data-cursor-style="hover" data-set-color-mode="dark" title="Dark Mode">
+                            <span>Dark</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Floating Theme Switcher Component (Canonical) -->
+    <div class="container-btn-color-mode">
+        <div class="container-list">
+            <ul class="list-color-mode">
+                <li>
+                    <button class="btn-dark" data-cursor-style="hover" data-set-color-mode="dark"><span>Dark</span></button>
+                </li>
+                <li>
+                    <button class="btn-light active" data-cursor-style="hover" data-set-color-mode="light"><span>Light</span></button>
+                </li>
+            </ul>
+        </div>
+        <div class="container-btn" data-cursor-style="hover">
+            <button class="btn-color-mode" id="btn-color-mode-floating" aria-label="Alternar tema">
+                <i class="icon-dark"></i>
+                <i class="icon-light"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         SECTION 0: HERO (Exact Clone of Original, Text Adapted for Design System)
+         Preserves exact HTML structure, class names, SVG paths, video, animations
+         ========================================================================== -->
+    <section class="section-tangerina section active" data-end="top top" data-end-trigger="#typography" data-set-section="tangerina" id="hero" style="padding-top: var(--ds-nav-height);">
+        <div class="wrapper-sticky wrapper-sticky-1">
+            <div class="pin-spacer">
+                <div class="fraction-circle" data-sticky="" data-trigger="parent">
+                    <div class="circle" data-aos="d:loop" data-delay="120" id="circle"></div>
+                    <div class="bg-circle-border" data-aos="d:loop" data-delay="100">
+                        <span data-end="bottom 80%" data-opacity="0" data-parallax="" data-scale="1.2" data-start="top top" data-trigger=".fraction-para-que"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="fraction-para-que container-fluid" data-first-section="">
+                <div class="row">
+                    <div class="col-12 mx-auto column" data-end="bottom 90%" data-opacity="0" data-parallax="" data-start="top top" data-translate-y="7%" data-trigger=".fraction-para-que">
+                        <h1 class="fs--64 fs-phone-32 text-color-1" data-aos="fadeInUp .8s ease-in-out" data-delay="800">
+                            <span>Design System Tangerina</span>
+                        </h1>
+                        <h2 class="fs--32" data-aos="fadeInUp .8s ease-in-out" data-delay="850">Documentação Viva &amp; Biblioteca de Padrões</h2>
+                        <div class="container-scroll-btn no-desktop pointer-events-auto">
+                            <div class="container-icon" data-aos="d:loop" data-delay="1000" data-scrollto="#typography" data-timeout="0">
+                                <i class="icon-scroll-down-arrow" data-end="bottom 90%" data-opacity="0" data-parallax="" data-start="center center" data-translate-y="5%" data-trigger=".fraction-para-que"></i>
+                                <i class="icon-scroll-down-border" data-end="bottom 90%" data-opacity="0" data-parallax="" data-start="center center" data-translate-y="5%" data-trigger=".fraction-para-que"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-scroll-btn no-mobile">
+                    <div class="container-icon" data-aos="d:loop" data-delay="1000" data-scrollto="#typography" data-timeout="0">
+                        <i class="icon-scroll-down-arrow" data-end="bottom 90%" data-opacity="0" data-parallax="" data-start="center center" data-translate-y="5%" data-trigger=".fraction-para-que"></i>
+                        <i class="icon-scroll-down-border" data-end="bottom 90%" data-opacity="0" data-parallax="" data-start="center center" data-translate-y="5%" data-trigger=".fraction-para-que"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wrapper-sticky-2 pointer-events-none">
+                <div class="fraction-circles">
+                    <div class="wrapper-circles">
+                        <div class="circles">
+                            <div class="path pink-path">
+                                <svg id="Layer_pink" style="enable-background:new 0 0 381 1318;" version="1.1" viewBox="0 0 381 1318" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                                    <style type="text/css">
+                                        .st0{fill:none;stroke:#000000;stroke-width:0.9702;stroke-miterlimit:10;}
+                                    </style>
+                                    <path class="st0" d="M54.5,1373.5c-20-171,152.7-258.2,159.9-264.3c97.5-82.3,125.2-226.7,104.1-355.7c-17-137-18.9-245-18-293 c1-52-46-377,8-490" id="pink-path"></path>
+                                </svg>
+                            </div>
+                            <div class="path brown-path">
+                                <svg id="Layer_brown" style="enable-background:new 0 0 355 1318;" version="1.1" viewBox="0 0 355 1318" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                                    <style type="text/css">
+                                        .st0{fill:none;stroke:#000000;stroke-width:0.9702;stroke-miterlimit:10;}
+                                    </style>
+                                    <path class="st0" d="M-0.5,1357.5c0,0,159-174,200.6-246.6c28.2-49.2,107.5-204.1,48.4-342.4c-125.6-293.7-99-381-89-428 c8.9-41.7,9.8-78.7,2.3-129.9C145.5,99.5,90.7-10.5,89.5-17.5" id="brown-path"></path>
+                                </svg>
+                            </div>
+                            <div class="path border-path">
+                                <svg id="Layer_border" style="enable-background:new 0 0 248 1318;" version="1.1" viewBox="0 0 248 1318" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                                    <style type="text/css">
+                                        .st0{fill:none;stroke:#000000;stroke-width:0.9702;stroke-miterlimit:10;}
+                                    </style>
+                                    <path class="st0" d="M201.5,1389.5c0,0-80-178-102.8-293.6c-15.6-79-48.4-292.2,51.8-497.4c60.9-124.7,52.1-296.7,47-379.3 c-9-147.7-45.7-241.1-47-248.7" id="border-path"></path>
+                                </svg>
+                            </div>
+                            <div class="path green-path">
+                                <svg id="Layer_green" style="enable-background:new 0 0 320 1318;" version="1.1" viewBox="0 0 320 1318" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+                                    <style type="text/css">
+                                        .st0{fill:none;stroke:#000000;stroke-width:0.9702;stroke-miterlimit:10;}
+                                    </style>
+                                    <path class="st0" d="M54.5,1392.5c0,0,152-282,41.7-632.6c-47.4-150.8-12.1-321.3,40.3-400.4c22.3-33.6,52-168-62-380" id="green-path"></path>
+                                </svg>
+                            </div>
+                            <div class="circle circle-pink"></div>
+                            <div class="circle circle-border"></div>
+                            <div class="circle circle-brown"></div>
+                            <div class="circle circle-green"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fraction-pessoas-voem-alto">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-10 offset-lg-1 column">
+                            <h2 class="fs--64 fs-phone-32 text-color-1 text-uppercase">
+                                <span>Para construir experiências digitais</span>
+                                <span class="text-lg-right">coesas, humanas e escaláveis</span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fraction-video">
+                <div class="sticky-content">
+                    <btn-modal-open class="container-lottie" data-href="https://www.youtube.com/embed/VQTogMOSntg?iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1&amp;autoplay=1" group="modal-video" template="video">
+                        <lottie-player class="no-mobile no-mobile-landscape" preserveaspectratio="xMidYMid slice" renderer="svg" speed="1" src="assets/tangerina.golsmiles.com.br/images/lotties/video-2.json"></lottie-player>
+                        <video data-autoplay="" id="video" loop="" muted="" playsinline="" src="assets/tangerina.golsmiles.com.br/images/teaser.mp4?id=1"></video>
+                        <div class="container-icon no-desktop-hover">
+                            <i class="icon-play"></i>
+                        </div>
+                    </btn-modal-open>
+                </div>
+            </div>
+
+            <div class="fraction-para-inspirar container-fluid">
+                <div class="sticky-content">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2 column-1">
+                            <h2 class="fs--96 fs-tablet-44 fs-phone-32 text-color-1 text-uppercase text-center masked-text">
+                                <div class="text-mask">
+                                    <span class="line line-0">Padrões visuais</span>
+                                </div>
+                                <div class="text-mask">
+                                    <span class="line line-1">e tokens de design</span>
+                                </div>
+                            </h2>
+                        </div>
+                        <div class="col-lg-12 column-2">
+                            <div class="tangerina-design">
+                                <span class="orange-circle"></span>
+                                <div class="masked-text">
+                                    <div class="text-mask">
+                                        <span class="line line-0"> Tangerina</span>
+                                    </div>
+                                    <div class="text-mask">
+                                        <span class="line line-1"> Living Spec</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container-trigger">
+                                <div class="container-circles mt-90" data-aos="trigger: .container-trigger, d:loop">
+                                    <div class="responsive-space no-desktop"></div>
+                                    <div class="first-circle"></div>
+                                    <div class="second-circle">
+                                        <div class="text-center masked-text">
+                                            <div class="text-mask"><span class="line line-0">Um sistema vivo e pulsante. </span></div>
+                                            <div class="text-mask"><span class="line line-1">Que conecta marcas e pessoas </span></div>
+                                            <div class="text-mask"><span class="line line-2">com clareza e dinamismo.</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="last-circle">
+                                        <div class="inner-circle">
+                                            <div class="inner-circle2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 1: TYPOGRAPHY
+         Spec table / vertical list format communicating scale, rhythm & hierarchy
+         Rows: Heading 1, 2, 3, 4, Bold L/M/S, Paragraph, Regular L/M/S
+         ========================================================================== -->
+    <section class="ds-section" id="typography">
+        <div class="container-fluid">
+            <div class="ds-section-header">
+                <span class="ds-eyebrow">01. Tipografia</span>
+                <h2 class="ds-title fs--64 text-color-1">Escala Tipográfica &amp; Ritmo</h2>
+                <p class="ds-description">
+                    Tipografia proprietária baseada em <strong>GOL Sans Display</strong> e <strong>GOL Sans Text</strong>. A escala utiliza dimensionamento fluido proporcional à largura da tela (<code style="color: var(--orange-1); font-size: 1.4rem;">1rem = 0.520833vw</code> em desktop, equivalente a 10px a 1920px).
+                </p>
+            </div>
+
+            <!-- Display Scales from Reference -->
+            <div class="mb-30" style="border-bottom: 1px dashed var(--ds-border); padding-bottom: 3rem;">
+                <span class="fs--12 text-uppercase fw-500" style="color: var(--orange-1); letter-spacing: 0.1em; display: block; margin-bottom: 2rem;">Display Headlines (Grandes Formatos)</span>
+                
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Display 1</span>
+                        <span class="ds-spec-tag">h2.fs--128</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h2 class="fs--128">Design System</h2>
+                    </div>
+                    <div class="ds-spec-values">128px / 128px (1.0em)</div>
+                </div>
+
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Display 2</span>
+                        <span class="ds-spec-tag">h2.fs--96.text-color-1</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h2 class="fs--96 text-color-1 text-uppercase">Para inspirar e facilitar</h2>
+                    </div>
+                    <div class="ds-spec-values">96px / 104px (1.08em)</div>
+                </div>
+
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Display 3</span>
+                        <span class="ds-spec-tag">h2.fs--82.text-color-5</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h2 class="fs--82 text-color-5">Para construir conexões reais</h2>
+                    </div>
+                    <div class="ds-spec-values">82px / 90px (1.1em)</div>
+                </div>
+            </div>
+
+            <!-- Mandatory Canonical Typography Spec Table -->
+            <div class="ds-spec-table">
+                <!-- Heading 1 -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Heading 1</span>
+                        <span class="ds-spec-tag">h1.fs--64.text-color-1</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h1 class="fs--64 fs-phone-32 text-color-1">Prazer, Tangerina</h1>
+                    </div>
+                    <div class="ds-spec-values">64px / 70px (1.1em)</div>
+                </div>
+
+                <!-- Heading 2 -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Heading 2</span>
+                        <span class="ds-spec-tag">h2.fs--32</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h2 class="fs--32">O design system do grupo GOL Smiles</h2>
+                    </div>
+                    <div class="ds-spec-values">32px / 35px (1.1em)</div>
+                </div>
+
+                <!-- Heading 3 -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Heading 3</span>
+                        <span class="ds-spec-tag">h3.fs--32.text-uppercase</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h3 class="fs--32 text-uppercase">De onde vem a nossa leveza</h3>
+                    </div>
+                    <div class="ds-spec-values">32px / 35px (1.1em)</div>
+                </div>
+
+                <!-- Heading 4 -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Heading 4</span>
+                        <span class="ds-spec-tag">h4.occupation.fs--20</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <h4 class="occupation fs--20">CEO Smiles e Vice Presidente GOL</h4>
+                    </div>
+                    <div class="ds-spec-values">20px / 22px (1.1em)</div>
+                </div>
+
+                <!-- Bold L -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Bold L</span>
+                        <span class="ds-spec-tag">p.fs--24.fw-600</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--24 fw-600">Simplicidade dinâmica e consistência visual para voar alto</p>
+                    </div>
+                    <div class="ds-spec-values">24px / 26px (1.1em)</div>
+                </div>
+
+                <!-- Bold M -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Bold M</span>
+                        <span class="ds-spec-tag">p.fs--20.fw-600</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--20 fw-600">Construindo experiências conectadas em todos os pontos de contato</p>
+                    </div>
+                    <div class="ds-spec-values">20px / 22px (1.1em)</div>
+                </div>
+
+                <!-- Bold S -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Bold S</span>
+                        <span class="ds-spec-tag">p.fs--16.fw-600</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--16 fw-600">Padrões de interface, tokens e componentes acessíveis e consistentes</p>
+                    </div>
+                    <div class="ds-spec-values">16px / 18px (1.1em)</div>
+                </div>
+
+                <!-- Paragraph (larger body) -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Paragraph (Lead)</span>
+                        <span class="ds-spec-tag">p.fs--24</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--24">Imagine uma tangerina formada por diferentes gomos: cada um com sua singularidade, mas todos unidos para dar forma a algo maior. Um ecossistema de marcas que voam juntas.</p>
+                    </div>
+                    <div class="ds-spec-values">24px / 26px (1.1em)</div>
+                </div>
+
+                <!-- Regular L -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Regular L</span>
+                        <span class="ds-spec-tag">p.fs--20</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--20">Um ecossistema conectado que simplifica e potencializa experiências de viagem, fidelidade e logística integrada para milhões de passageiros.</p>
+                    </div>
+                    <div class="ds-spec-values">20px / 22px (1.1em)</div>
+                </div>
+
+                <!-- Regular M -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Regular M</span>
+                        <span class="ds-spec-tag">p.fs--16.brown-6</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--16 brown-6">Tangerina é o design system que une as marcas GOL, Smiles, VoeBiz e Gollog em uma linguagem visual coesa, acolhedora e eficiente em cada jornada.</p>
+                    </div>
+                    <div class="ds-spec-values">16px / 18px (1.1em)</div>
+                </div>
+
+                <!-- Regular S -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Regular S</span>
+                        <span class="ds-spec-tag">p.fs--14</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <p class="fs--14">Utilizamos cookies essenciais e tecnologias semelhantes de acordo com a nossa Política de Privacidade para oferecer uma navegação aprimorada e personalizada.</p>
+                    </div>
+                    <div class="ds-spec-values">14px / 15px (1.1em)</div>
+                </div>
+
+                <!-- Micro / Footnote -->
+                <div class="ds-spec-row">
+                    <div class="ds-spec-meta">
+                        <span class="ds-spec-name">Micro / Caption</span>
+                        <span class="ds-spec-tag">span.fs--12</span>
+                    </div>
+                    <div class="ds-spec-preview">
+                        <span class="fs--12 text-uppercase" style="letter-spacing: 0.05em;">&copy; GOL Linhas Aéreas Inteligentes &bull; Todos os direitos reservados</span>
+                    </div>
+                    <div class="ds-spec-values">12px / 14px (1.2em)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 2: COLORS & SURFACES
+         Brand colors, earth tones, neutrals, light/dark surfaces, dividers & gradients
+         ========================================================================== -->
+    <section class="ds-section" id="colors">
+        <div class="container-fluid">
+            <div class="ds-section-header">
+                <span class="ds-eyebrow">02. Cores &amp; Superfícies</span>
+                <h2 class="ds-title fs--64 text-color-1">Paleta Cromática &amp; Tokens de Superfície</h2>
+                <p class="ds-description">
+                    Cores inspiradas na identidade calorosa e solar da GOL e da Smiles. A paleta equilibra tons de terra quentes com cores de destaque expressivas e superfícies adaptáveis ao modo claro e escuro.
+                </p>
+            </div>
+
+            <!-- Brand Accent Colors -->
+            <h3 class="fs--24 text-uppercase mb-2" style="font-weight: 500; letter-spacing: 0.05em;">Cores Primárias &amp; Destaques de Marca</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Tokens de identidade aplicados em botões, destaques e acentos interativos.</p>
+            <div class="ds-color-grid">
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--orange-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Orange Primary</span>
+                        <span class="ds-swatch-val">--orange-1: #FF7020</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--green-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Teal Green</span>
+                        <span class="ds-swatch-val">--green-1: #00A196</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--pink-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Vibrant Pink</span>
+                        <span class="ds-swatch-val">--pink-1: #E33D6C</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--pink-2);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Soft Pink</span>
+                        <span class="ds-swatch-val">--pink-2: #F5D6DF</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--yellow-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Warm Yellow</span>
+                        <span class="ds-swatch-val">--yellow-1: #FFAB3B</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--purple-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Deep Purple</span>
+                        <span class="ds-swatch-val">--purple-1: #663399</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--red-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Alert Red</span>
+                        <span class="ds-swatch-val">--red-1: #C50000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earth / Neutral Brown Tones -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Tons de Terra &amp; Estrutura (Brown System)</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Gama de marrons que definem divisórias, tipografia secundária e cartões orgânicos.</p>
+            <div class="ds-color-grid">
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-1);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 1</span>
+                        <span class="ds-swatch-val">--brown-1: #89766C</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-2);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 2</span>
+                        <span class="ds-swatch-val">--brown-2: #6D5E55</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-3);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 3</span>
+                        <span class="ds-swatch-val">--brown-3: #C2AEA3</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-4);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 4 (Border)</span>
+                        <span class="ds-swatch-val">--brown-4: #DCCEC6</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-5);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 5</span>
+                        <span class="ds-swatch-val">--brown-5: #D0CBC3</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-6);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 6 (Text)</span>
+                        <span class="ds-swatch-val">--brown-6: #534B46</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-7);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 7 (Peach)</span>
+                        <span class="ds-swatch-val">--brown-7: #FF9E66</span>
+                    </div>
+                </div>
+                <div class="ds-swatch">
+                    <div class="ds-swatch-box" style="background-color: var(--brown-8);"></div>
+                    <div class="ds-swatch-info">
+                        <span class="ds-swatch-name">Brown 8 (Burnt)</span>
+                        <span class="ds-swatch-val">--brown-8: #8D370C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surfaces in Light & Dark Mode -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Superfícies &amp; Fundos (Light / Dark)</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Comportamento das camadas de fundo que respondem a <code style="color: var(--orange-1); font-size: 1.3rem;">data-color-mode</code>.</p>
+            <div class="row">
+                <div class="col-lg-6 col-12 mb-3">
+                    <div class="ds-surface-card" style="background-color: var(--white-1); color: var(--black-1); border: 2px solid var(--brown-4);">
+                        <div>
+                            <span class="fs--12 text-uppercase fw-500" style="color: var(--orange-1); letter-spacing: 0.08em;">Modo Claro / Light Surface</span>
+                            <h4 class="fs--24 mt-1">Superfície Primária (--white-1)</h4>
+                            <p class="fs--16 mt-1" style="color: var(--brown-6);">Base clara acolhedora (#FCF9F8) combinada com cartões em --white-3 (#F4EFEB) e bordas --brown-4.</p>
+                        </div>
+                        <div class="d-flex" style="gap: 1.2rem; margin-top: 2rem;">
+                            <span class="ds-nav-badge" style="background: var(--white-2); color: var(--black-1); border: 1px solid var(--brown-4);">--white-2: #F4ECE0</span>
+                            <span class="ds-nav-badge" style="background: var(--white-3); color: var(--black-1); border: 1px solid var(--brown-4);">--white-3: #F4EFEB</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-12 mb-3">
+                    <div class="ds-surface-card" style="background-color: var(--black-1); color: var(--white-1); border: 2px solid rgba(255,255,255,0.15);">
+                        <div>
+                            <span class="fs--12 text-uppercase fw-500" style="color: var(--orange-1); letter-spacing: 0.08em;">Modo Escuro / Dark Surface</span>
+                            <h4 class="fs--24 mt-1">Superfície Noturna (--black-1)</h4>
+                            <p class="fs--16 mt-1" style="color: var(--brown-3);">Fundo profundo (#030607) com elevações em --black-2 (#322D2A), cartões em --black-3 (#1A1A1A) e tipografia em --white-1.</p>
+                        </div>
+                        <div class="d-flex" style="gap: 1.2rem; margin-top: 2rem;">
+                            <span class="ds-nav-badge" style="background: var(--black-2); color: var(--white-1);">--black-2: #322D2A</span>
+                            <span class="ds-nav-badge" style="background: var(--black-3); color: var(--white-1);">--black-3: #1A1A1A</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gradients & Overlays -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Gradientes &amp; Transições de Máscara</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Gradientes de difusão utilizados em cabeçalhos, rodapés e transições de modais.</p>
+            <div class="row">
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-swatch">
+                        <div class="ds-swatch-box" style="background: linear-gradient(90deg, var(--white-1) 0%, transparent 100%); border-bottom: 1px solid var(--ds-border);"></div>
+                        <div class="ds-swatch-info">
+                            <span class="ds-swatch-name">Header Gradient Light</span>
+                            <span class="ds-swatch-val">linear-gradient(90deg, --white-1, transparent)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-swatch">
+                        <div class="ds-swatch-box" style="background: linear-gradient(90deg, var(--black-1) 0%, transparent 100%); border-bottom: 1px solid var(--ds-border);"></div>
+                        <div class="ds-swatch-info">
+                            <span class="ds-swatch-name">Header Gradient Dark</span>
+                            <span class="ds-swatch-val">linear-gradient(90deg, --black-1, transparent)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-swatch">
+                        <div class="ds-swatch-box" style="background: linear-gradient(to right, var(--orange-1) 0%, var(--yellow-1) 100%);"></div>
+                        <div class="ds-swatch-info">
+                            <span class="ds-swatch-name">Tangerina Warm Sun</span>
+                            <span class="ds-swatch-val">linear-gradient(to right, --orange-1, --yellow-1)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 3: UI COMPONENTS
+         Buttons (all states side-by-side), navigation links, cards, dialogs
+         ========================================================================== -->
+    <section class="ds-section" id="components">
+        <div class="container-fluid">
+            <div class="ds-section-header">
+                <span class="ds-eyebrow">03. Componentes de UI</span>
+                <h2 class="ds-title fs--64 text-color-1">Biblioteca Canônica de Componentes</h2>
+                <p class="ds-description">
+                    Exibição lado a lado de todos os estados interativos (Padrão, Hover, Active, Focus, Disabled) utilizando exclusivamente as classes e tags originais do ecossistema Tangerina.
+                </p>
+            </div>
+
+            <!-- Primary Action Button (.btn-1) States Matrix -->
+            <h3 class="fs--24 text-uppercase mb-2" style="font-weight: 500; letter-spacing: 0.05em;">Botão Primário de Ação (.btn-1)</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">O elemento de ação de maior destaque da interface, com cantos arredondados (1.2rem) e fundo Tangerina Orange.</p>
+            
+            <div class="ds-component-grid">
+                <!-- Default -->
+                <div class="ds-state-card">
+                    <span class="ds-state-label">Estado: Default</span>
+                    <button class="btn-1">
+                        <span>Conhecer o projeto</span>
+                    </button>
+                </div>
+
+                <!-- Hover simulated / active -->
+                <div class="ds-state-card">
+                    <span class="ds-state-label">Estado: Hover / Glow</span>
+                    <button class="btn-1" style="filter: brightness(1.08); transform: translateY(-1px);">
+                        <span>Conhecer o projeto</span>
+                    </button>
+                </div>
+
+                <!-- Active -->
+                <div class="ds-state-card">
+                    <span class="ds-state-label">Estado: Active (Pressed)</span>
+                    <button class="btn-1 active" style="transform: scale(0.97);">
+                        <span>Conhecer o projeto</span>
+                    </button>
+                </div>
+
+                <!-- Focus -->
+                <div class="ds-state-card">
+                    <span class="ds-state-label">Estado: Focus Visible</span>
+                    <button class="btn-1" style="outline: 3px solid var(--orange-1); outline-offset: 3px;">
+                        <span>Conhecer o projeto</span>
+                    </button>
+                </div>
+
+                <!-- Disabled -->
+                <div class="ds-state-card">
+                    <span class="ds-state-label">Estado: Disabled</span>
+                    <button class="btn-1 disabled" disabled style="opacity: 0.45; cursor: not-allowed; pointer-events: none;">
+                        <span>Indisponível</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Underline Link & Action Variations -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Ações com Efeito de Sublinhado Animado</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Interações de links refinadas através de transições de escala e gradiente de traço na pseudo-linha.</p>
+            
+            <div class="row">
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-state-card" style="align-items: flex-start; padding: 3rem;">
+                        <span class="ds-state-label">.btn-underline</span>
+                        <p class="fs--14" style="color: var(--ds-muted-text); margin-bottom: 1.6rem;">Expansão contínua da borda inferior no hover:</p>
+                        <button class="btn-underline fs--18">
+                            <span>Explorar ecossistema</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-state-card" style="align-items: flex-start; padding: 3rem;">
+                        <span class="ds-state-label">.btn-underlined</span>
+                        <p class="fs--14" style="color: var(--ds-muted-text); margin-bottom: 1.6rem;">Linha pré-existente com retração ao interagir:</p>
+                        <button class="btn-underlined fs--18">
+                            <span>Ver todas as diretrizes</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-state-card" style="align-items: flex-start; padding: 3rem;">
+                        <span class="ds-state-label">.link-underline</span>
+                        <p class="fs--14" style="color: var(--ds-muted-text); margin-bottom: 1.6rem;">Animação com curva cubic-bezier(.785,.135,.15,.86):</p>
+                        <a href="javascript:void(0)" class="link-underline fs--18">
+                            <span>Baixar diretrizes do Brand Book</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating & Auxiliary Components -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Botão de Retorno ao Topo &amp; Cookie Consent</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Controles flutuantes de navegação e aviso legal de privacidade.</p>
+
+            <div class="row">
+                <!-- Return to Top -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-state-card" style="padding: 3rem;">
+                        <span class="ds-state-label">.btn-voltar-ao-topo</span>
+                        <button class="btn-voltar-ao-topo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="margin: auto;">
+                            <span>Voltar ao topo</span>
+                            <div class="circle">
+                                <div class="container-icon">
+                                    <i class="icon-arrow-up"></i>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cookie Banner Card & Button -->
+                <div class="col-lg-8 col-12 mb-3">
+                    <div class="ds-state-card" style="align-items: flex-start; padding: 3rem;">
+                        <span class="ds-state-label">Card de Consentimento &amp; .btn-cookies</span>
+                        <div class="d-flex align-items-center justify-content-between w-100" style="gap: 2rem; flex-wrap: wrap;">
+                            <p class="fs--14" style="max-width: 50rem; color: var(--ds-muted-text);">
+                                Utilizamos cookies essenciais para personalizar sua experiência. Ao prosseguir, você concorda com nossos termos.
+                            </p>
+                            <div class="d-flex" style="gap: 1rem;">
+                                <button class="btn-cookies accept fs--12" style="padding: 1.2rem 2.4rem; background: var(--orange-1); color: var(--black-1); border-radius: 99rem; font-weight: 500;">
+                                    <span>Aceitar</span>
+                                </button>
+                                <button class="btn-footer fs--12" style="align-self: center;">
+                                    <span>Preferências</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Card Patterns from Reference -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Padrões de Cartões &amp; Mídia</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Estruturas de conteúdo para membros da equipe, princípios de design e mídia imersiva.</p>
+
+            <div class="row">
+                <!-- Creator Profile Card -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div style="background: var(--ds-card-bg); border: 1px solid var(--ds-border); border-radius: 1.6rem; overflow: hidden; padding: 2.4rem;">
+                        <div style="border-radius: 1.2rem; overflow: hidden; height: 26rem; margin-bottom: 2rem;">
+                            <img src="assets/tangerina.golsmiles.com.br/images/team/img-01.jpg" alt="Carla Fonseca" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3 class="name fs--24" style="font-weight: 500;">Carla Fonseca</h3>
+                        <h4 class="occupation fs--16" style="color: var(--orange-1); margin-top: 0.4rem;">CEO Smiles e VP GOL</h4>
+                        <p class="fs--14 mt-2" style="color: var(--ds-muted-text); line-height: 1.4;">
+                            Liderança estratégica na integração do ecossistema e na construção de experiências consistentes.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Principle Stamp Card -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div style="background: var(--ds-card-bg); border: 1px solid var(--ds-border); border-radius: 1.6rem; padding: 3rem; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                        <div>
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <span class="fs--64" style="color: var(--orange-1); font-weight: 300; line-height: 1;">01</span>
+                                <i class="icon-logo-goma fs--32" style="color: var(--orange-1);"></i>
+                            </div>
+                            <h3 class="fs--32" style="font-weight: 400; margin-bottom: 1.2rem;">O nosso sabor</h3>
+                            <p class="fs--16" style="color: var(--ds-muted-text); line-height: 1.5;">
+                                Acolhedor, caloroso e brasileiro. Um design system que expressa empatia e proximidade em cada ponto de contato.
+                            </p>
+                        </div>
+                        <div style="margin-top: 3rem; border-top: 1px solid var(--ds-border); padding-top: 1.6rem;">
+                            <span class="fs--12 text-uppercase" style="color: var(--orange-1); letter-spacing: 0.1em;">Princípio Fundamental</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video / Modal Trigger Card -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div style="background: var(--ds-card-bg); border: 1px solid var(--ds-border); border-radius: 1.6rem; overflow: hidden; position: relative; height: 100%; min-height: 38rem;">
+                        <video loop muted playsinline autoplay src="assets/tangerina.golsmiles.com.br/images/teaser.mp4" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;"></video>
+                        <div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 2.4rem; color: #fff;">
+                            <div class="d-flex align-items-center" style="gap: 1.2rem; margin-bottom: 1rem;">
+                                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: var(--orange-1); display: flex; align-items: center; justify-content: center; color: var(--black-1);">
+                                    <i class="icon-play fs--18"></i>
+                                </div>
+                                <span class="fs--14 text-uppercase" style="letter-spacing: 0.08em;">Manifesto Tangerina</span>
+                            </div>
+                            <h4 class="fs--20" style="color: #fff; font-weight: 400;">Assista ao vídeo teaser do Design System Gol Smiles</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Non-negotiable Rule 4 note on inputs -->
+            <div class="mt-30 p-3" style="border: 1px dashed var(--ds-border); border-radius: 1.2rem; background: rgba(255, 112, 32, 0.04);">
+                <p class="fs--14" style="color: var(--ds-muted-text); margin: 0;">
+                    <strong style="color: var(--orange-1);">&bull; Nota de Conformidade com o Design Original:</strong> O HTML de referência do site Tangerina não emprega elementos de entrada de dados de formulário (<code style="font-size: 1.3rem;">&lt;input&gt;</code>, <code style="font-size: 1.3rem;">&lt;select&gt;</code>, <code style="font-size: 1.3rem;">&lt;textarea&gt;</code>). Em observância à Regra Estrita nº 4 (&ldquo;Se um componente/estilo não for usado no HTML de referência, não o adicione&rdquo;), campos de formulário não foram arbitrariamente inseridos.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 4: LAYOUT & SPACING
+         Containers, 12-column grid, fluid padding, breakpoints, real patterns
+         ========================================================================== -->
+    <section class="ds-section" id="layout">
+        <div class="container-fluid">
+            <div class="ds-section-header">
+                <span class="ds-eyebrow">04. Layout &amp; Espaçamento</span>
+                <h2 class="ds-title fs--64 text-color-1">Grid, Containers &amp; Ritmo Espacial</h2>
+                <p class="ds-description">
+                    Sistema de grid responsivo de 12 colunas construído sobre flexbox, com calhas padronizadas e espaçamento de margens fluidas calculadas em unidades <code style="color: var(--orange-1); font-size: 1.4rem;">rem</code>.
+                </p>
+            </div>
+
+            <!-- Layout Tokens Spec Table -->
+            <div class="row mb-30">
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="min-height: 12rem; padding: 2rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Container Max-Width</span>
+                        <h4 class="fs--32 mt-1">130rem</h4>
+                        <span class="fs--12" style="color: var(--ds-muted-text);">1300px no breakpoint desktop base</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="min-height: 12rem; padding: 2rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Padding Fluid</span>
+                        <h4 class="fs--32 mt-1">3.6rem</h4>
+                        <span class="fs--12" style="color: var(--ds-muted-text);">36px desktop / 3.2rem mobile</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="min-height: 12rem; padding: 2rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Grid Gutter (Calha)</span>
+                        <h4 class="fs--32 mt-1">1.8rem</h4>
+                        <span class="fs--12" style="color: var(--ds-muted-text);">--padding: 1.8rem (3.6rem total)</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="min-height: 12rem; padding: 2rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Header Height</span>
+                        <h4 class="fs--32 mt-1">4.2rem</h4>
+                        <span class="fs--12" style="color: var(--ds-muted-text);">42px desktop / 6.2rem tablet/phone</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live 12-Column Grid Demonstration -->
+            <h3 class="fs--24 text-uppercase mb-2" style="font-weight: 500; letter-spacing: 0.05em;">Demonstração do Sistema de 12 Colunas</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Estrutura flexível utilizando classes nativas <code style="color: var(--orange-1); font-size: 1.3rem;">.row</code> e <code style="color: var(--orange-1); font-size: 1.3rem;">.col-[1..12]</code>.</p>
+
+            <div class="ds-grid-demo">
+                <!-- 12 individual columns -->
+                <div class="row">
+                    <div class="col-1"><div class="ds-grid-col">1</div></div>
+                    <div class="col-1"><div class="ds-grid-col">2</div></div>
+                    <div class="col-1"><div class="ds-grid-col">3</div></div>
+                    <div class="col-1"><div class="ds-grid-col">4</div></div>
+                    <div class="col-1"><div class="ds-grid-col">5</div></div>
+                    <div class="col-1"><div class="ds-grid-col">6</div></div>
+                    <div class="col-1"><div class="ds-grid-col">7</div></div>
+                    <div class="col-1"><div class="ds-grid-col">8</div></div>
+                    <div class="col-1"><div class="ds-grid-col">9</div></div>
+                    <div class="col-1"><div class="ds-grid-col">10</div></div>
+                    <div class="col-1"><div class="ds-grid-col">11</div></div>
+                    <div class="col-1"><div class="ds-grid-col">12</div></div>
+                </div>
+
+                <!-- 2 Equal Halves (col-6) -->
+                <div class="row">
+                    <div class="col-6"><div class="ds-grid-col">col-6 (50%)</div></div>
+                    <div class="col-6"><div class="ds-grid-col">col-6 (50%)</div></div>
+                </div>
+
+                <!-- 3 Equal Thirds (col-4) -->
+                <div class="row">
+                    <div class="col-4"><div class="ds-grid-col">col-4 (33.3%)</div></div>
+                    <div class="col-4"><div class="ds-grid-col">col-4 (33.3%)</div></div>
+                    <div class="col-4"><div class="ds-grid-col">col-4 (33.3%)</div></div>
+                </div>
+
+                <!-- Asymmetrical Split with Offsets (col-lg-5 + offset-lg-1 + col-lg-6) -->
+                <div class="row">
+                    <div class="col-lg-5 col-12"><div class="ds-grid-col" style="background: rgba(0, 161, 150, 0.12); border-color: var(--green-1); color: var(--green-1);">col-lg-5 (Focal Graphic / Sticky Area)</div></div>
+                    <div class="col-lg-6 offset-lg-1 col-12"><div class="ds-grid-col" style="background: rgba(227, 61, 108, 0.12); border-color: var(--pink-1); color: var(--pink-1);">col-lg-6 offset-lg-1 (Narrative Content)</div></div>
+                </div>
+            </div>
+
+            <!-- Real Reference Layout Patterns -->
+            <h3 class="fs--24 text-uppercase mb-2 mt-30" style="font-weight: 500; letter-spacing: 0.05em;">Padrões de Layout Extraídos do Site Original</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">3 composições canônicas presentes nas seções de Princípios, Números e Criadores.</p>
+
+            <div class="row">
+                <!-- Pattern 1: Asymmetric Header Layout -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-surface-card" style="height: 100%;">
+                        <div>
+                            <span class="fs--12 text-uppercase fw-500" style="color: var(--orange-1);">Padrão A: Header Tripartite</span>
+                            <h4 class="fs--20 mt-1">Logo + Título Central + Ações</h4>
+                            <p class="fs--14 mt-1" style="color: var(--ds-muted-text);">Composição assimétrica do topo: col-lg-2 (Logo), col-lg-2 offset-lg-3 (Design system), col-lg-2 offset-lg-3 (Menu e Botões).</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.04); border-radius: 0.8rem; padding: 1.4rem; margin-top: 2rem;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fs--12 fw-500">[Logo 2 col]</span>
+                                <span class="fs--10 text-uppercase">[Title 2 col offset-3]</span>
+                                <span class="fs--12 fw-500">[Actions 2 col]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pattern 2: Sticky Split Screen Layout -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-surface-card" style="height: 100%;">
+                        <div>
+                            <span class="fs--12 text-uppercase fw-500" style="color: var(--green-1);">Padrão B: Split Screen Sticky</span>
+                            <h4 class="fs--20 mt-1">Foco Visual + Rolagem Contínua</h4>
+                            <p class="fs--14 mt-1" style="color: var(--ds-muted-text);">Utilizado em #principios e #numeros. Uma metade fixa de ilustração enquanto a coluna paralela apresenta o conteúdo narrativo.</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.04); border-radius: 0.8rem; padding: 1.4rem; margin-top: 2rem;">
+                            <div class="row">
+                                <div class="col-5"><div style="background: var(--green-1); height: 3.2rem; border-radius: 0.4rem; opacity: 0.4;"></div></div>
+                                <div class="col-6 offset-1"><div style="background: var(--brown-4); height: 3.2rem; border-radius: 0.4rem; opacity: 0.4;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pattern 3: Creators Grid -->
+                <div class="col-lg-4 col-12 mb-3">
+                    <div class="ds-surface-card" style="height: 100%;">
+                        <div>
+                            <span class="fs--12 text-uppercase fw-500" style="color: var(--pink-1);">Padrão C: Grid de Criadores</span>
+                            <h4 class="fs--20 mt-1">Cards Modulares Responsivos</h4>
+                            <p class="fs--14 mt-1" style="color: var(--ds-muted-text);">Empregado na seção #em-criacao com cartões de perfil distribuídos horizontalmente em carrossel ou grade com dados bio.</p>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.04); border-radius: 0.8rem; padding: 1.4rem; margin-top: 2rem;">
+                            <div class="d-flex" style="gap: 0.8rem;">
+                                <div style="flex: 1; background: var(--pink-1); height: 3.2rem; border-radius: 0.4rem; opacity: 0.4;"></div>
+                                <div style="flex: 1; background: var(--pink-1); height: 3.2rem; border-radius: 0.4rem; opacity: 0.4;"></div>
+                                <div style="flex: 1; background: var(--pink-1); height: 3.2rem; border-radius: 0.4rem; opacity: 0.4;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 5: MOTION & INTERACTION
+         Keyframes gallery, timing/easing curves, hover effects, interactive stage
+         ========================================================================== -->
+    <section class="ds-section" id="motion">
+        <div class="container-fluid">
+            <div class="ds-section-header">
+                <span class="ds-eyebrow">05. Movimento &amp; Interação</span>
+                <h2 class="ds-title fs--64 text-color-1">Curvas de Animação &amp; Galeria de Movimento</h2>
+                <p class="ds-description">
+                    Transições fluidas inspiradas no dinamismo do voo e na pulsação viva do sistema. Abaixo estão as funções de interpolação (<code style="color: var(--orange-1); font-size: 1.4rem;">cubic-bezier</code>) e os keyframes originais.
+                </p>
+            </div>
+
+            <!-- Easing Curves Matrix -->
+            <div class="row mb-30">
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="padding: 2rem; min-height: 14rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Curva de Links</span>
+                        <h4 class="fs--20 mt-1">cubic-bezier(.785,.135,.15,.86)</h4>
+                        <span class="fs--12 mt-1" style="color: var(--ds-muted-text);">Aceleração inicial veloz com desaceleração nítida.</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="padding: 2rem; min-height: 14rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Curva de Botões</span>
+                        <h4 class="fs--20 mt-1">cubic-bezier(.19,1,.155,1.01)</h4>
+                        <span class="fs--12 mt-1" style="color: var(--ds-muted-text);">Expansão suave de traço gradiente nos botões sublinhados.</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="padding: 2rem; min-height: 14rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Transição de Tema</span>
+                        <h4 class="fs--20 mt-1">cubic-bezier(.42,0,.58,1)</h4>
+                        <span class="fs--12 mt-1" style="color: var(--ds-muted-text);">Suavidade balanceada entre light mode e dark mode.</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-3">
+                    <div class="ds-surface-card" style="padding: 2rem; min-height: 14rem;">
+                        <span class="fs--12 text-uppercase" style="color: var(--orange-1); font-family: monospace;">Entradas Fluidas</span>
+                        <h4 class="fs--20 mt-1">cubic-bezier(.215,.61,.355,1)</h4>
+                        <span class="fs--12 mt-1" style="color: var(--ds-muted-text);">Decelerate padrão para revelação de blocos e títulos.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Motion Gallery -->
+            <h3 class="fs--24 text-uppercase mb-2" style="font-weight: 500; letter-spacing: 0.05em;">Galeria de Movimento (Keyframes Nativos)</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Passe o cursor sobre os cards ou clique no botão para disparar a animação nativa correspondente do CSS.</p>
+
+            <div class="ds-motion-grid">
+                <!-- fadeInUp -->
+                <div class="ds-motion-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs--16 fw-500">fadeInUp</span>
+                        <button class="btn-underline fs--12" onclick="replayAnimation('anim-fadeinup', 'fadeInUp 0.8s ease-in-out')"><span>Executar</span></button>
+                    </div>
+                    <div class="ds-motion-stage">
+                        <div id="anim-fadeinup" class="ds-motion-box" style="animation: fadeInUp 0.8s ease-in-out infinite alternate;"></div>
+                    </div>
+                    <span class="fs--12" style="color: var(--ds-muted-text); font-family: monospace;">@keyframes fadeInUp (Títulos da Hero)</span>
+                </div>
+
+                <!-- fadeIn -->
+                <div class="ds-motion-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs--16 fw-500">fadeIn</span>
+                        <button class="btn-underline fs--12" onclick="replayAnimation('anim-fadein', 'fadeIn 1s ease-in-out')"><span>Executar</span></button>
+                    </div>
+                    <div class="ds-motion-stage">
+                        <div id="anim-fadein" class="ds-motion-box" style="animation: fadeIn 1s ease-in-out infinite alternate;"></div>
+                    </div>
+                    <span class="fs--12" style="color: var(--ds-muted-text); font-family: monospace;">@keyframes fadeIn (Aparecimento gradual)</span>
+                </div>
+
+                <!-- slideInUp -->
+                <div class="ds-motion-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs--16 fw-500">slideInUp</span>
+                        <button class="btn-underline fs--12" onclick="replayAnimation('anim-slideup', 'slideInUp 0.8s ease-out')"><span>Executar</span></button>
+                    </div>
+                    <div class="ds-motion-stage">
+                        <div id="anim-slideup" class="ds-motion-box" style="animation: slideInUp 0.8s ease-out infinite alternate;"></div>
+                    </div>
+                    <span class="fs--12" style="color: var(--ds-muted-text); font-family: monospace;">@keyframes slideInUp (Deslocamento vertical)</span>
+                </div>
+
+                <!-- reveal-right -->
+                <div class="ds-motion-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs--16 fw-500">reveal-right</span>
+                        <button class="btn-underline fs--12" onclick="replayAnimation('anim-revealright', 'reveal-right 0.9s cubic-bezier(.785,.135,.15,.86)')"><span>Executar</span></button>
+                    </div>
+                    <div class="ds-motion-stage">
+                        <div id="anim-revealright" class="ds-motion-box" style="animation: reveal-right 0.9s cubic-bezier(.785,.135,.15,.86) infinite alternate;"></div>
+                    </div>
+                    <span class="fs--12" style="color: var(--ds-muted-text); font-family: monospace;">@keyframes reveal-right (Máscara lateral)</span>
+                </div>
+
+                <!-- scaleOut -->
+                <div class="ds-motion-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs--16 fw-500">scaleOut</span>
+                        <button class="btn-underline fs--12" onclick="replayAnimation('anim-scaleout', 'scaleOut 1.2s ease-in-out')"><span>Executar</span></button>
+                    </div>
+                    <div class="ds-motion-stage">
+                        <div id="anim-scaleout" class="ds-motion-box" style="border-radius: 50%; animation: scaleOut 1.2s ease-in-out infinite alternate;"></div>
+                    </div>
+                    <span class="fs--12" style="color: var(--ds-muted-text); font-family: monospace;">@keyframes scaleOut (Pulsação de círculos)</span>
+                </div>
+
+                <!-- rotate -->
+                <div class="ds-motion-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fs--16 fw-500">rotate</span>
+                        <button class="btn-underline fs--12" onclick="replayAnimation('anim-rotate', 'rotate 2s linear')"><span>Executar</span></button>
+                    </div>
+                    <div class="ds-motion-stage">
+                        <div id="anim-rotate" class="ds-motion-box" style="animation: rotate 3s linear infinite;"></div>
+                    </div>
+                    <span class="fs--12" style="color: var(--ds-muted-text); font-family: monospace;">@keyframes rotate (Giro orbital)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 6: ICONS
+         Complete Icomoon icon system: 37 canonical icons, size scale, color inheritance
+         ========================================================================== -->
+    <section class="ds-section" id="icons">
+        <div class="container-fluid">
+            <div class="ds-section-header">
+                <span class="ds-eyebrow">06. Ícones</span>
+                <h2 class="ds-title fs--64 text-color-1">Sistema Iconográfico Icomoon</h2>
+                <p class="ds-description">
+                    Biblioteca vetorial proprietária integrada via fonte iconográfica com 37 glifos. Os ícones herdam cor via <code style="color: var(--orange-1); font-size: 1.4rem;">currentColor</code> e contam com variantes de escala e peso visual.
+                </p>
+            </div>
+
+            <!-- Size Variants Demo -->
+            <h3 class="fs--24 text-uppercase mb-2" style="font-weight: 500; letter-spacing: 0.05em;">Escala de Tamanhos &amp; Herança de Cores</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Visualização da mesma marcação em diferentes tamanhos tipográficos e tons da paleta.</p>
+
+            <div class="ds-state-card mb-30" style="padding: 3rem; flex-direction: row; justify-content: space-around; flex-wrap: wrap;">
+                <div class="text-center">
+                    <i class="icon-plane-02 fs--16" style="color: var(--orange-1);"></i>
+                    <span class="d-block fs--12 mt-1" style="color: var(--ds-muted-text); font-family: monospace;">fs--16 (16px)</span>
+                </div>
+                <div class="text-center">
+                    <i class="icon-plane-02 fs--24" style="color: var(--green-1);"></i>
+                    <span class="d-block fs--12 mt-1" style="color: var(--ds-muted-text); font-family: monospace;">fs--24 (24px)</span>
+                </div>
+                <div class="text-center">
+                    <i class="icon-plane-02 fs--32" style="color: var(--pink-1);"></i>
+                    <span class="d-block fs--12 mt-1" style="color: var(--ds-muted-text); font-family: monospace;">fs--32 (32px)</span>
+                </div>
+                <div class="text-center">
+                    <i class="icon-plane-02 fs--48" style="color: var(--yellow-1);"></i>
+                    <span class="d-block fs--12 mt-1" style="color: var(--ds-muted-text); font-family: monospace;">fs--48 (48px)</span>
+                </div>
+                <div class="text-center">
+                    <i class="icon-plane-02 fs--64" style="color: var(--orange-1);"></i>
+                    <span class="d-block fs--12 mt-1" style="color: var(--ds-muted-text); font-family: monospace;">fs--64 (64px)</span>
+                </div>
+            </div>
+
+            <!-- Full 37 Icons Canonical Catalog -->
+            <h3 class="fs--24 text-uppercase mb-2" style="font-weight: 500; letter-spacing: 0.05em;">Catálogo Completo dos 37 Ícones</h3>
+            <p class="fs--14 mb-3" style="color: var(--ds-muted-text);">Markup idêntico ao original: <code style="color: var(--orange-1); font-size: 1.3rem;">&lt;i class="icon-[nome]"&gt;&lt;/i&gt;</code>.</p>
+
+            <div class="ds-icons-grid">
+                <!-- Navigation & Arrows -->
+                <div class="ds-icon-card"><i class="icon-arrow"></i><span class="ds-icon-name">icon-arrow</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-left"></i><span class="ds-icon-name">icon-arrow-left</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-left-02"></i><span class="ds-icon-name">icon-arrow-left-02</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-left-03"></i><span class="ds-icon-name">icon-arrow-left-03</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-right"></i><span class="ds-icon-name">icon-arrow-right</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-right-02"></i><span class="ds-icon-name">icon-arrow-right-02</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-right-03"></i><span class="ds-icon-name">icon-arrow-right-03</span></div>
+                <div class="ds-icon-card"><i class="icon-arrow-up"></i><span class="ds-icon-name">icon-arrow-up</span></div>
+
+                <!-- Interface & Controls -->
+                <div class="ds-icon-card"><i class="icon-close"></i><span class="ds-icon-name">icon-close</span></div>
+                <div class="ds-icon-card"><i class="icon-dark"></i><span class="ds-icon-name">icon-dark</span></div>
+                <div class="ds-icon-card"><i class="icon-light"></i><span class="ds-icon-name">icon-light</span></div>
+                <div class="ds-icon-card"><i class="icon-play"></i><span class="ds-icon-name">icon-play</span></div>
+                <div class="ds-icon-card"><i class="icon-pause"></i><span class="ds-icon-name">icon-pause</span></div>
+                <div class="ds-icon-card"><i class="icon-plus"></i><span class="ds-icon-name">icon-plus</span></div>
+                <div class="ds-icon-card"><i class="icon-scroll-down"></i><span class="ds-icon-name">icon-scroll-down</span></div>
+                <div class="ds-icon-card"><i class="icon-scroll-down-arrow"></i><span class="ds-icon-name">icon-scroll-down-arrow</span></div>
+                <div class="ds-icon-card"><i class="icon-scroll-down-border"></i><span class="ds-icon-name">icon-scroll-down-border</span></div>
+
+                <!-- Brand & Visual Motifs -->
+                <div class="ds-icon-card"><i class="icon-logo-icon"></i><span class="ds-icon-name">icon-logo-icon</span></div>
+                <div class="ds-icon-card"><i class="icon-logo-goma"></i><span class="ds-icon-name">icon-logo-goma</span></div>
+                <div class="ds-icon-card"><i class="icon-goma-border"></i><span class="ds-icon-name">icon-goma-border</span></div>
+                <div class="ds-icon-card"><i class="icon-semente"></i><span class="ds-icon-name">icon-semente</span></div>
+                <div class="ds-icon-card"><i class="icon-semente-linha"></i><span class="ds-icon-name">icon-semente-linha</span></div>
+                <div class="ds-icon-card"><i class="icon-gol-sans"></i><span class="ds-icon-name">icon-gol-sans</span></div>
+                <div class="ds-icon-card"><i class="icon-gol-sans-aa"></i><span class="ds-icon-name">icon-gol-sans-aa</span></div>
+                <div class="ds-icon-card"><i class="icon-nunito"></i><span class="ds-icon-name">icon-nunito</span></div>
+                <div class="ds-icon-card"><i class="icon-nuninto-aa"></i><span class="ds-icon-name">icon-nuninto-aa</span></div>
+
+                <!-- Journey, Travel & Features -->
+                <div class="ds-icon-card"><i class="icon-plane"></i><span class="ds-icon-name">icon-plane</span></div>
+                <div class="ds-icon-card"><i class="icon-plane-02"></i><span class="ds-icon-name">icon-plane-02</span></div>
+                <div class="ds-icon-card"><i class="icon-wifi"></i><span class="ds-icon-name">icon-wifi</span></div>
+                <div class="ds-icon-card"><i class="icon-pin"></i><span class="ds-icon-name">icon-pin</span></div>
+                <div class="ds-icon-card"><i class="icon-magnifying-glass"></i><span class="ds-icon-name">icon-magnifying-glass</span></div>
+                <div class="ds-icon-card"><i class="icon-ac"></i><span class="ds-icon-name">icon-ac</span></div>
+
+                <!-- Social & Sharing -->
+                <div class="ds-icon-card"><i class="icon-share"></i><span class="ds-icon-name">icon-share</span></div>
+                <div class="ds-icon-card"><i class="icon-facebook"></i><span class="ds-icon-name">icon-facebook</span></div>
+                <div class="ds-icon-card"><i class="icon-instagram"></i><span class="ds-icon-name">icon-instagram</span></div>
+                <div class="ds-icon-card"><i class="icon-linkedin"></i><span class="ds-icon-name">icon-linkedin</span></div>
+                <div class="ds-icon-card"><i class="icon-x"></i><span class="ds-icon-name">icon-x</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer of Living Showcase -->
+    <footer style="padding: 6rem 0; border-top: 1px solid var(--ds-border); text-align: center; background: var(--ds-card-bg);">
+        <div class="container-fluid">
+            <a href="#hero" class="d-inline-flex align-items-center mb-3" style="gap: 1rem; text-decoration: none; color: inherit;">
+                <img src="assets/tangerina.golsmiles.com.br/images/logo.svg" alt="Tangerina" class="logo-light" style="height: 2.4rem;">
+                <img src="assets/tangerina.golsmiles.com.br/images/logo-dark.svg" alt="Tangerina" class="logo-dark" style="height: 2.4rem;">
+            </a>
+            <p class="fs--16 brown-6" style="margin-bottom: 2rem;">
+                Tangerina &mdash; Living Design System &bull; GOL Linhas Aéreas &bull; Smiles &bull; Gollog &bull; VoeBiz
+            </p>
+            <div class="d-flex justify-content-center" style="gap: 2.4rem;">
+                <a href="#hero" class="btn-underline fs--14"><span>Topo da Página</span></a>
+                <a href="#typography" class="btn-underline fs--14"><span>Tipografia</span></a>
+                <a href="#colors" class="btn-underline fs--14"><span>Cores</span></a>
+                <a href="#components" class="btn-underline fs--14"><span>Componentes</span></a>
+                <a href="#icons" class="btn-underline fs--14"><span>Ícones</span></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts for Living Showcase & Theme Synchronization -->
+    <script>
+        (function() {
+            // Theme Mode Switching
+            function setColorMode(mode) {
+                document.body.setAttribute('data-color-mode', mode);
+                document.documentElement.setAttribute('data-color-mode', mode);
+
+                const lightBtns = document.querySelectorAll('[data-set-color-mode="light"]');
+                const darkBtns = document.querySelectorAll('[data-set-color-mode="dark"]');
+
+                if (mode === 'dark') {
+                    lightBtns.forEach(btn => btn.classList.remove('active'));
+                    darkBtns.forEach(btn => btn.classList.add('active'));
+                } else {
+                    darkBtns.forEach(btn => btn.classList.remove('active'));
+                    lightBtns.forEach(btn => btn.classList.add('active'));
+                }
+            }
+
+            document.querySelectorAll('[data-set-color-mode]').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const mode = this.getAttribute('data-set-color-mode');
+                    setColorMode(mode);
+                });
+            });
+
+            const floatingToggle = document.getElementById('btn-color-mode-floating');
+            if (floatingToggle) {
+                floatingToggle.addEventListener('click', function() {
+                    const current = document.body.getAttribute('data-color-mode') || 'light';
+                    setColorMode(current === 'light' ? 'dark' : 'light');
+                });
+            }
+
+            // Smooth Scrolling Anchor Navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId && targetId !== '#') {
+                        const targetEl = document.querySelector(targetId);
+                        if (targetEl) {
+                            e.preventDefault();
+                            targetEl.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+
+            // Motion Gallery Replay Helper
+            window.replayAnimation = function(elementId, animationStyle) {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                el.style.animation = 'none';
+                void el.offsetWidth; // trigger reflow
+                el.style.animation = animationStyle;
+            };
+        })();
+    </script>
+</body>
+</html>
+

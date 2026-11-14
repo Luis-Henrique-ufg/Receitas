@@ -1,0 +1,1423 @@
+{
+ "version": 1,
+ "tool": "wd3 0.1.0",
+ "captureId": "tangerina.golsmiles.com.br-821f2eb2",
+ "capturedAt": "2026-11-13T14:29:38+00:00",
+ "entry": {
+  "url": "https://tangerina.golsmiles.com.br/",
+  "path": "/",
+  "search": "",
+  "file": "assets/tangerina.golsmiles.com.br/index.html",
+  "contentType": "text/html"
+ },
+ "blocked": [
+  "^https?://([^/?#]+\\.)?(google\\-analytics\\.com|analytics\\.google\\.com|googletagmanager\\.com|googleadservices\\.com|doubleclick\\.net|googlesyndication\\.com|googleoptimize\\.com|connect\\.facebook\\.net|bat\\.bing\\.com|snap\\.licdn\\.com|px\\.ads\\.linkedin\\.com|analytics\\.tiktok\\.com|ct\\.pinterest\\.com|static\\.ads\\-twitter\\.com|analytics\\.twitter\\.com|tr\\.snapchat\\.com|sc\\-static\\.net|mc\\.yandex\\.ru|hotjar\\.com|hotjar\\.io|clarity\\.ms|cdn\\.segment\\.com|api\\.segment\\.io|cdn\\.mxpnl\\.com|api\\-js\\.mixpanel\\.com|api\\.mixpanel\\.com|api\\.amplitude\\.com|api2\\.amplitude\\.com|api\\-secure\\.amplitude\\.com|api\\-sr\\.amplitude\\.com|sr\\-client\\-cfg\\.amplitude\\.com|plausible\\.io|cloud\\.umami\\.is|analytics\\.umami\\.is|static\\.cloudflareinsights\\.com|cloudflareinsights\\.com|vitals\\.vercel\\-insights\\.com|browser\\-intake\\-datadoghq\\.com|browser\\-intake\\-datadoghq\\.eu|js\\-agent\\.newrelic\\.com|bam\\.nr\\-data\\.net|bam\\-cell\\.nr\\-data\\.net|fullstory\\.com|script\\.crazyegg\\.com|mouseflow\\.com|smartlook\\.com|heapanalytics\\.com|i\\.posthog\\.com|stats\\.wp\\.com|pixel\\.wp\\.com|promotekit\\.com|ingest\\.sentry\\.io|ingest\\.us\\.sentry\\.io|ingest\\.de\\.sentry\\.io|widget\\.intercom\\.io|js\\.intercomcdn\\.com|api\\-iam\\.intercom\\.io|js\\.hs\\-scripts\\.com|js\\.hs\\-analytics\\.net|js\\.hs\\-banner\\.com|js\\.hscollectedforms\\.net|js\\.usemessages\\.com|track\\.hubspot\\.com|client\\.crisp\\.chat|embed\\.tawk\\.to|js\\.driftt\\.com|static\\.zdassets\\.com|ekr\\.zdassets\\.com|cdn\\.cookielaw\\.org|geolocation\\.onetrust\\.com|consent\\.cookiebot\\.com|consentcdn\\.cookiebot\\.com|app\\.usercentrics\\.eu|api\\.usercentrics\\.eu|cdn\\.iubenda\\.com|cmp\\.osano\\.com|cdn\\.termly\\.io)(:\\d+)?([/?#]|$)",
+  "/rpc/increment_shared_code_views",
+  "^https?://(umami|analytics|stats|plausible)\\.[^/]+/(api/send|api/collect|api/event|script\\.js)",
+  "/g/c(ollect)?\\?v=2&",
+  "sentry\\.io/api/\\d+/(envelope|store)",
+  "/api/meta-capi",
+  "^https?://(leadtracker|tracking|track|events?|collect)\\.[^/]+/",
+  "^https?://a\\.vturb\\.com/",
+  "facebook\\.com/tr[/?]",
+  "/_vercel/(speed-)?insights/",
+  "/cdn-cgi/rum",
+  "/cdn-cgi/challenge-platform/",
+  "google\\.com/(pagead|ads)/"
+ ],
+ "volatileParams": [
+  "v",
+  "_rsc",
+  "dpl",
+  "_",
+  "t",
+  "ts",
+  "timestamp",
+  "cb",
+  "cachebust",
+  "cacheBust",
+  "nocache",
+  "rnd",
+  "rand",
+  "random",
+  "_t"
+ ],
+ "entries": [
+  {
+   "url": "https://tangerina.golsmiles.com.br/",
+   "method": "GET",
+   "status": 200,
+   "contentType": "text/html",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "ASrIPw1FRMy41d27EDePKw==",
+    "content-type": "text/html",
+    "x-azure-ref": "20260324T170745Z-r189cb8d5d4kg5zxhC1BL1h7ng0000002wtg00000000dmpr",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "a5d5d3d0-e01e-007a-3bb0-bb4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "document",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/index.html",
+   "size": 93689,
+   "modes": [
+    "navigate"
+   ]
+  },
+  {
+   "url": "https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/javascript; charset=utf-8",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "cf-cdnjs-via": "cfworker/r2",
+    "content-type": "application/javascript; charset=utf-8",
+    "priority": "u=1,i=?0",
+    "timing-allow-origin": "*",
+    "x-cdnjs-cache": "HIT"
+   },
+   "resourceType": "script",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js",
+   "size": 113187,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/javascript; charset=utf-8",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "cf-cdnjs-via": "cfworker/r2",
+    "content-type": "application/javascript; charset=utf-8",
+    "priority": "u=1,i=?0",
+    "timing-allow-origin": "*",
+    "x-cdnjs-cache": "HIT"
+   },
+   "resourceType": "script",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js",
+   "size": 305543,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/app2.js",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/x-javascript",
+   "headers": {
+    "access-control-allow-origin": "https://tangerina.golsmiles.com.br",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "WmQ+CZFL4hvpp6cOL/7Tuw==",
+    "content-type": "application/x-javascript",
+    "x-azure-ref": "20260928T221645Z-1574d76fdccpdrvfhC1BL10vys0000000qy0000000006vyy",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "7bf84f1f-001e-00f4-2c97-4f92ee000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "script",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/app2.js",
+   "size": 345917,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/logo-dark.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "2sycngPWr1tFw/ucL6fErQ==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260730T135226Z-1845f48bd59nt8v8hC1DM12nt4000000073000000000fmzh",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "e110bd0a-901e-00ab-392a-2026d2000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/logo-dark.svg",
+   "size": 13177,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/logo.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "n9BXZ+M4FevvYhmOqbxSfw==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170927Z-r1f8f7cb6644w64dhC1BL1fbfw0000002s6g00000000bfd8",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "d07c52ec-301e-0079-3cb0-bba53c000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/logo.svg",
+   "size": 13177,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/app.css",
+   "method": "GET",
+   "status": 200,
+   "contentType": "text/css",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "mPxuxt+4iL/HEB3NRwhhKw==",
+    "content-type": "text/css",
+    "x-azure-ref": "20260324T170905Z-159567c94d4ggsv9hC1BL1798s00000032eg00000000g56r",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "4db32b9d-001e-0062-56b0-bb9b3f000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "stylesheet",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/app.css",
+   "size": 375320,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/utils.css",
+   "method": "GET",
+   "status": 200,
+   "contentType": "text/css",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "kK0S4RHz2kzR9iVV2mP0yg==",
+    "content-type": "text/css",
+    "x-azure-ref": "20260730T135226Z-1845f48bd59nhw7lhC1DM1fq2c00000019v000000000b1z3",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "b096b6a1-701e-0068-4a2a-203f88000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "stylesheet",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/utils.css",
+   "size": 11077,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "kW8IkuL4S5VSFBcZkvjdZQ==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170923Z-17fb8dccf88g7gf8hC1IADv72c00000038p0000000003ntv",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "e54e4e22-201e-00cc-04b0-bb362e000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol.svg",
+   "size": 1696,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/smiles.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "goe5sWbPXCtreVZiJrxezA==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170900Z-r1f8f7cb6646h9d8hC1BL11ey8000000421g00000000c2mf",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "9de5c6e5-d01e-0013-03b0-bb7d14000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/smiles.svg",
+   "size": 4450,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-smiles.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "0UwvUhdy1rKasGjpG0hVDg==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170839Z-r1f8f7cb664k4skdhC1BL1evg4000000016g000000001wey",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5147ad3e-401e-004c-13b0-bbc928000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-smiles.svg",
+   "size": 11320,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-log-dark.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "4wSoqM4o9OvdZ5xMU0UOcQ==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170924Z-r1f8f7cb664lg7p8hC1BL1n664000000021000000000bd3q",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "173ab066-901e-00c9-39b0-bbe4f5000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-log-dark.svg",
+   "size": 3000,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/jose-luiz-belixior.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "lgNab5ZDENJXjGBppwoTag==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110452Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000gabw",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d4575-e01e-007a-605a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/jose-luiz-belixior.jpg",
+   "size": 9786,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-06.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "kTqm+Q4f8LfF2FJ/R6MU0Q==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110452Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000gacb",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d45cc-e01e-007a-2c5a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-06.jpg",
+   "size": 52434,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-03.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "SdAtd9rulMjBmp1j0dBLYw==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110451Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fmp",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a7af8-301e-00b2-745a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-03.jpg",
+   "size": 47058,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/design-system.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "NIFyAsEmvknYKwIdk4zJpA==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110450Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fk8",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a79d8-301e-00b2-675a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/design-system.json",
+   "size": 37224,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "HhM82Y9cZG/nIZ6r4C/J3g==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110450Z-r1c59d5d77dx8lfwhC1BL1et9n0000000gm0000000003msb",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "3228862c-401e-003e-5f5a-cece67000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3.json",
+   "size": 58035,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/icomoon.ttf?jobimn",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/octet-stream",
+   "headers": {
+    "access-control-allow-origin": "https://tangerina.golsmiles.com.br",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "xl36bta8D3XhQDfmvNYlxw==",
+    "content-type": "application/octet-stream",
+    "x-azure-ref": "20260417T110450Z-r1c59d5d77dx8lfwhC1BL1et9n0000000gm0000000003msy",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "32288669-401e-003e-105a-cece67000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "font",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/icomoon__q3c663166.ttf",
+   "size": 9432,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansText-Regular.woff2",
+   "method": "GET",
+   "status": 200,
+   "contentType": "font/woff2",
+   "headers": {
+    "access-control-allow-origin": "https://tangerina.golsmiles.com.br",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "7mdTBbME006S3U/YpwTy5g==",
+    "content-type": "font/woff2",
+    "x-azure-ref": "20260715T111257Z-17cfc6fcf6fkjnlvhC1DM10wq800000005r0000000008dcv",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "7b05addc-001e-0096-0e4a-1450c9000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "font",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansText-Regular.woff2",
+   "size": 20716,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-01.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "xqexkQGBl7xt2LPnhc1j+g==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000gaau",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d44dd-e01e-007a-525a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-01.jpg",
+   "size": 20341,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-05.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "zHunT4V38CU6DRDkJA+uiQ==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110452Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fn1",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a7b45-301e-00b2-3b5a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-05.jpg",
+   "size": 38029,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/criadores.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "Tc55fWghMeIynjxM5MjYkw==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110450Z-15c6b7d94d7tqwdrhC1IADn4h00000000c8g000000003a6k",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "e2ee5a93-c01e-00a6-4c5a-ceee06000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/criadores.json",
+   "size": 76778,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/criadores-landscape.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "lDjvZB2zCiH5w8AiyM0IXw==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fkh",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a7a02-301e-00b2-0e5a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/criadores-landscape.json",
+   "size": 74272,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Regular.woff2",
+   "method": "GET",
+   "status": 200,
+   "contentType": "font/woff2",
+   "headers": {
+    "access-control-allow-origin": "https://tangerina.golsmiles.com.br",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "MbsLWyCzUW276gFXMvzaQg==",
+    "content-type": "font/woff2",
+    "x-azure-ref": "20260417T110450Z-15c6b7d94d7tqwdrhC1IADn4h00000000c8g000000003a6r",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "e2ee5acf-c01e-00a6-045a-ceee06000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "font",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Regular.woff2",
+   "size": 21108,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-02.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "fK510JVlYZnBJe2qORU7WQ==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000gab9",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d4528-e01e-007a-195a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-02.jpg",
+   "size": 76254,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/voebiz.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "WQ3XxwjNNqHMzyVIcj9YLw==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260916T013804Z-r17cdc85545mtq5khC1DM16cfg0000001bb000000000du4t",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "56b79c3b-101e-00b5-1e7c-45ca0a000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/voebiz.svg",
+   "size": 2061,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/elementos.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "0CYf9ITYR07prm3cOvr+PQ==",
+    "content-type": "application/json",
+    "x-azure-ref": "20261001T095106Z-16d5c7f4dfflcwtvhC1IADuw080000001hn0000000000wqp",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "505ade8e-501e-0040-318a-515e20000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/elementos.json",
+   "size": 12390,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-07.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "51sZIhqZwu8DtlwliKhH0Q==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260417T110452Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fn5",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a7b63-301e-00b2-575a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-07.jpg",
+   "size": 83075,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/iF_DesignAward2025_red_l_RGB%201.png",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/png",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "/eLl0HvP7YY5KRBQ75Lz0A==",
+    "content-type": "image/png",
+    "x-azure-ref": "20260417T110452Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000gacs",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d4602-e01e-007a-615a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/iF_DesignAward2025_red_l_RGB 1.png",
+   "size": 6476,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-dark.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "4VbW7PJ377nc0cIcNI9VgA==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170915Z-r1f8f7cb664lg7p8hC1BL1n664000000021000000000bc3s",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "173a9d0b-901e-00c9-75b0-bbe4f5000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-dark.svg",
+   "size": 1652,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-aerotech-dark.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "tAzKiVs++dwGfZKFLxZcRQ==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170903Z-17fb8dccf88pbbqphC1IADwrgg0000003a4g00000000bzbh",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "173a830a-901e-00c9-7eb0-bbe4f5000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-aerotech-dark.svg",
+   "size": 3501,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/goma-diagonal.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "hmA31OmDU7F09Wr1QglSQA==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170923Z-r1f8f7cb664lg7p8hC1BL1n664000000021000000000bcz9",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "173aae26-901e-00c9-0ab0-bbe4f5000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/goma-diagonal.svg",
+   "size": 555,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3-mobile.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "3JtcWbXu9S5wwCQMd0qKJw==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000ga76",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d435f-e01e-007a-705a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/de-onde-vem-3-mobile.json",
+   "size": 58595,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/smiles-viagens.svg?id=1",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "lcoVhJDYyrLo1zWVzZ4nKw==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170926Z-r1f8f7cb664lg7p8hC1BL1n664000000021000000000bday",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "173ab4e6-901e-00c9-07b0-bbe4f5000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/smiles-viagens__q931a65dc.svg",
+   "size": 10355,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/cookies.png",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/png",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "ZcdMgqudASoYRlIMNU60Hg==",
+    "content-type": "image/png",
+    "x-azure-ref": "20260417T110452Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fnc",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a7c04-301e-00b2-7b5a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/cookies.png",
+   "size": 8010,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/elementos-2.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "uTt+M/Cq5d6x1hf7NjtTcg==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110450Z-15c6b7d94d7czr9bhC1IADcbsn0000000bd000000000buxy",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "f5e643bc-f01e-0092-5f5a-ceddce000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/elementos-2.json",
+   "size": 35052,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/ecossistema.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "VO/SCYjB5CAahb5nt/Mj8g==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-155cf88b48fh5dzthC1IADxnfc000000097g0000000041gk",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "a2edb1bd-e01e-00a1-7b5a-ce8265000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/ecossistema.json",
+   "size": 10412,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Light.woff2",
+   "method": "GET",
+   "status": 200,
+   "contentType": "font/woff2",
+   "headers": {
+    "access-control-allow-origin": "https://tangerina.golsmiles.com.br",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "xxJvmK9I8Oi8NxiB/ykaHg==",
+    "content-type": "font/woff2",
+    "x-azure-ref": "20260417T110450Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fkd",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a79eb-301e-00b2-785a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "font",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Light.woff2",
+   "size": 21272,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Medium.woff2",
+   "method": "GET",
+   "status": 200,
+   "contentType": "font/woff2",
+   "headers": {
+    "access-control-allow-origin": "https://tangerina.golsmiles.com.br",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "M+E1hOjtDx6g9POHKx09Tg==",
+    "content-type": "font/woff2",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7czr9bhC1IADcbsn0000000bd000000000buz1",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "f5e6443f-f01e-0092-565a-ceddce000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "font",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/build/assets/GOLSansDisplay-Medium.woff2",
+   "size": 21492,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/video-2.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "ALpuMFFGDh1j+AXvrvmSRg==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7tqwdrhC1IADn4h00000000c8g000000003a6v",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "e2ee5b08-c01e-00a6-3c5a-ceee06000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/video-2.json",
+   "size": 16032,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/principios.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "DzQ4MjOUeRDSQjsFfeA0KQ==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110450Z-155cf88b48fh5dzthC1IADxnfc000000097g0000000041g9",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "a2edb157-e01e-00a1-1b5a-ce8265000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/principios.json",
+   "size": 26168,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-2.json?id=2",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "Yjcx9psWLAQAu0I2gNlCPQ==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-r1c59d5d77dx8lfwhC1BL1et9n0000000gm0000000003mt2",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "3228867b-401e-003e-215a-cece67000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-2__qffac5db0.json",
+   "size": 26002,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/footer.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "C7mQQXAUb57AmSt17uVTJA==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7czr9bhC1IADcbsn0000000bd000000000buyk",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "f5e64409-f01e-0092-265a-ceddce000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/footer.json",
+   "size": 46476,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-aerotech.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "NOG7ZYcPAOXZSvbT3Vc1QQ==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170920Z-r1f8f7cb664wph9mhC1BL15qc80000003yy000000000bzh3",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "1ce212f3-d01e-00ba-77b0-bbbc66000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-aerotech.svg",
+   "size": 3510,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/gol-log.svg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/svg+xml",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "00uuKyH2pLPWmjA/DjMW6w==",
+    "content-type": "image/svg+xml",
+    "x-azure-ref": "20260324T170901Z-r189cb8d5d4kg5zxhC1BL1h7ng0000002wtg00000000dtxy",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "a5d67c94-e01e-007a-6cb0-bb4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/gol-log.svg",
+   "size": 2996,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/team/img-04.jpg",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/jpeg",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "1zJp2f/+03bFpJEHGvKLpg==",
+    "content-type": "image/jpeg",
+    "x-azure-ref": "20260906T102509Z-r17cdc85545r82qmhC1DM19wyn0000000bq00000000017z7",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "ab890c43-101e-00b5-70e9-3dca0a000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "image",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/team/img-04.jpg",
+   "size": 80296,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/numeros-3-mobile.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "1aQa87c2zDS4j3+Ym9vXQA==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7tqwdrhC1IADn4h00000000c8g000000003a6t",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "e2ee5af6-c01e-00a6-2a5a-ceee06000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/numeros-3-mobile.json",
+   "size": 186228,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/elementos-mobile.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "L/CBfHQB/2jfMKfKjMwizw==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-1689dff777b6jb56hC1IADrygn0000000bmg000000004fkf",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "5a1a79f9-301e-00b2-055a-cea669000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/elementos-mobile.json",
+   "size": 8213,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-1.json?id=1",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "Cxq87l4/KM5s8r4pac3o0Q==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110450Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000ga6q",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d4300-e01e-007a-155a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/a-combinacao-linha-1__q931a65dc.json",
+   "size": 19593,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/numeros-3.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "csfAVryfIHPG6hEu2NM88g==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000ga72",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d4352-e01e-007a-645a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/numeros-3.json",
+   "size": 185455,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/lotties/criadores-mobile.json",
+   "method": "GET",
+   "status": 200,
+   "contentType": "application/json",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "bA4npt3U8TVczXKyi9XHiA==",
+    "content-type": "application/json",
+    "x-azure-ref": "20260417T110451Z-15c6b7d94d7msgnthC1IADdfw40000000f1000000000ga7a",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "911d4380-e01e-007a-0d5a-ce4458000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "xhr",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/lotties/criadores-mobile.json",
+   "size": 78720,
+   "modes": [
+    "cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/favicon.png",
+   "method": "GET",
+   "status": 200,
+   "contentType": "image/png",
+   "headers": {
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "content-md5": "orJGOUQTwrU6XYbdMb317g==",
+    "content-type": "image/png",
+    "x-azure-ref": "20260401T172636Z-155cf88b48f5jtk6hC1IAD65540000000e1g000000007vhv",
+    "x-ms-blob-type": "BlockBlob",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-request-id": "49f2ea7e-101e-0051-10fc-c1c494000000",
+    "x-ms-version": "2009-09-19"
+   },
+   "resourceType": "other",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/favicon.png",
+   "size": 1371,
+   "modes": [
+    "no-cors"
+   ]
+  },
+  {
+   "url": "https://tangerina.golsmiles.com.br/images/teaser.mp4?id=1",
+   "method": "GET",
+   "status": 200,
+   "contentType": "video/mp4",
+   "headers": {
+    "content-type": "video/mp4",
+    "content-md5": "KmXvnDl3Am8KIos5BWt/UQ==",
+    "x-ms-request-id": "7ad3f59d-601e-0016-2a7c-45afcf000000",
+    "x-ms-version": "2009-09-19",
+    "x-ms-lease-status": "unlocked",
+    "x-ms-blob-type": "BlockBlob",
+    "access-control-expose-headers": "x-ms-request-id,Server,x-ms-version,Content-Type,ETag,Last-Modified,Content-MD5,x-ms-lease-status,x-ms-blob-type,Content-Length,Date,Transfer-Encoding",
+    "access-control-allow-origin": "*",
+    "x-azure-ref": "20260916T013804Z-r17cdc85545sgt58hC1DM1cp5w00000032500000000019r3"
+   },
+   "resourceType": "media",
+   "passes": [
+    "desktop"
+   ],
+   "file": "assets/tangerina.golsmiles.com.br/images/teaser__q931a65dc.mp4",
+   "size": 2002344,
+   "modes": [
+    "no-cors"
+   ]
+  }
+ ],
+ "videos": {
+  "posters": {},
+  "onlineHosts": []
+ }
+}

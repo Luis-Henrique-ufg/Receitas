@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Interativo — Receitas com Design System Tangerina</title>
+    
+    <!-- Tangerina Original CSS & Fonts -->
+    <link rel="stylesheet" href="tangerina/assets/tangerina.golsmiles.com.br/build/assets/utils.css">
+    <link rel="stylesheet" href="tangerina/assets/tangerina.golsmiles.com.br/build/assets/app.css">
+    
+    <!-- Lucide Icons via unpkg -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           Dynamic Theme Variables & Architecture Comparison
+           Allows toggling between:
+           1) 'tangerina-light' (Tangerina Modo Claro)
+           2) 'tangerina-dark'  (Tangerina Modo Noturno)
+           3) 'liquid-glass'    (Design Atual)
+           ========================================================================== */
+
+        /* Default: Tangerina Light Mode */
+        :root {
+            --theme-mode: "tangerina-light";
+            --font-display: 'GOL Sans Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'GOL Sans Text', 'GOL Sans Display', sans-serif;
+
+            /* Tangerina Tokens */
+            --app-bg: #FCF9F8;
+            --app-fg: #030607;
+            --app-card: #F4EFEB;
+            --app-card-alt: #F4ECE0;
+            --app-border: #DCCEC6;
+            --app-primary: #FF7020;
+            --app-primary-fg: #030607;
+            --app-accent: #00A196;
+            --app-muted: #89766C;
+            --app-subtle: #534B46;
+            --app-header-bg: rgba(252, 249, 248, 0.92);
+            --app-card-radius: 1.6rem;
+            --app-card-shadow: 0 4px 20px rgba(83, 75, 70, 0.06);
+            --app-card-border: 1px solid var(--app-border);
+            --app-glass-blur: none;
+        }
+
+        /* Tangerina Dark Mode */
+        [data-preview-theme="tangerina-dark"] {
+            --theme-mode: "tangerina-dark";
+            --font-display: 'GOL Sans Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'GOL Sans Text', 'GOL Sans Display', sans-serif;
+
+            --app-bg: #030607;
+            --app-fg: #FCF9F8;
+            --app-card: #1A1A1A;
+            --app-card-alt: #322D2A;
+            --app-border: rgba(220, 206, 198, 0.16);
+            --app-primary: #FF7020;
+            --app-primary-fg: #030607;
+            --app-accent: #00A196;
+            --app-muted: #89766C;
+            --app-subtle: #C2AEA3;
+            --app-header-bg: rgba(3, 6, 7, 0.92);
+            --app-card-radius: 1.6rem;
+            --app-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --app-card-border: 1px solid var(--app-border);
+            --app-glass-blur: none;
+        }
+
+        /* Current Design: Liquid Glass (Dark Neon Tech) */
+        [data-preview-theme="liquid-glass"] {
+            --theme-mode: "liquid-glass";
+            --font-display: 'Montserrat', sans-serif;
+            --font-body: 'Open Sans', sans-serif;
+
+            --app-bg: #050a14;
+            --app-fg: #f4f4f5;
+            --app-card: rgba(255, 255, 255, 0.04);
+            --app-card-alt: rgba(255, 255, 255, 0.07);
+            --app-border: rgba(255, 255, 255, 0.12);
+            --app-primary: #007bff;
+            --app-primary-fg: #ffffff;
+            --app-accent: #29C5F6;
+            --app-muted: #71717a;
+            --app-subtle: #a1a1aa;
+            --app-header-bg: rgba(5, 10, 20, 0.75);
+            --app-card-radius: 1.2rem;
+            --app-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --app-card-border: 1px solid rgba(255, 255, 255, 0.14);
+            --app-glass-blur: blur(16px);
+        }
+
+        /* Reset & Base Elements */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: auto !important; /* restore accessible cursor */
+        }
+
+        body {
+            background-color: var(--app-bg);
+            color: var(--app-fg);
+            font-family: var(--font-body);
+            transition: background-color 0.35s ease, color 0.35s ease;
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 500;
+            color: var(--app-fg);
+        }
+
+        /* Top Simulation Bar (Controls to switch theme and test UI) */
+        #sim-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #111417;
+            color: #fff;
+            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .sim-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .sim-title span.badge {
+            font-size: 1.1rem;
+            background: var(--app-primary);
+            color: #030607;
+            padding: 0.2rem 0.8rem;
+            border-radius: 99rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .sim-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .sim-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e4e4e7;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1.4rem;
+            border-radius: 0.8rem;
+            font-size: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .sim-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .sim-btn.active {
+            background: var(--app-primary);
+            color: #030607;
+            border-color: var(--app-primary);
+            font-weight: 600;
+        }
+
+        /* App Header Shell */
+        #app-header {
+            position: sticky;
+            top: 4.8rem;
+            z-index: 900;
+            padding: 1.2rem var(--padding-fluid);
+            background: var(--app-header-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--app-border);
+            transition: all 0.3s ease;
+        }
+
+        .header-inner {
+            max-width: 130rem;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-icon-box {
+            width: 3.6rem;
+            height: 3.6rem;
+            border-radius: 50%;
+            background: var(--app-primary);
+            color: var(--app-primary-fg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-logo:hover .brand-icon-box {
+            transform: rotate(15deg) scale(1.05);
+        }
+
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .header-center-tabs {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--app-card);
+            border: 1px solid var(--app-border);
+            padding: 0.4rem;
+            border-radius: 99rem;
+        }
+
+        .header-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.7rem 1.6rem;
+            border-radius: 99rem;
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: var(--app-subtle);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .header-tab-btn.active {
+            background: var(--app-bg);
+            color: var(--app-fg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* Interactive Pomodoro Pill in Header */
+        .pomodoro-pill {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--app-card);
+            border: 1px solid var(--app-border);
+            padding: 0.6rem 1.4rem;
+            border-radius: 99rem;
+            font-size: 1.35rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pomodoro-pill:hover {
+            border-color: var(--app-primary);
+        }
+
+        .pomodoro-dot {
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+            background: var(--app-primary);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Main Container */
+        .app-main {
+            max-width: 130rem;
+            margin: auto;
+            padding: 3.6rem var(--padding-fluid) 8rem;
+        }
+
+        /* Spotlight: Resume Hero Card */
+        .resume-hero {
+            background: var(--app-card);
+            border-radius: var(--app-card-radius);
+            border: var(--app-card-border);
+            box-shadow: var(--app-card-shadow);
+            backdrop-filter: var(--app-glass-blur);
+            -webkit-backdrop-filter: var(--app-glass-blur);
+            overflow: hidden;
+            margin-bottom: 4rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .resume-hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            min-height: 28rem;
+        }
+
+        .resume-hero-content {
+            padding: 4rem 4.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .resume-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--app-primary);
+            margin-bottom: 1.2rem;
+        }
+
+        .resume-title {
+            font-size: 3.2rem;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .resume-lesson-name {
+            font-size: 1.8rem;
+            color: var(--app-subtle);
+            margin-bottom: 2.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .progress-bar-wrap {
+            width: 100%;
+            height: 0.8rem;
+            background: rgba(0,0,0,0.08);
+            border-radius: 99rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        [data-preview-theme="tangerina-dark"] .progress-bar-wrap,
+        [data-preview-theme="liquid-glass"] .progress-bar-wrap {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 68%;
+            background: var(--app-primary);
+            border-radius: 99rem;
+            transition: width 0.5s ease;
+        }
+
+        .resume-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            color: var(--app-muted);
+            margin-bottom: 2.8rem;
+        }
+
+        .resume-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+        }
+
+        .btn-play-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: var(--app-primary);
+            color: var(--app-primary-fg);
+            padding: 1.4rem 2.8rem;
+            border-radius: 1.2rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255, 112, 32, 0.25);
+            transition: all 0.25s ease;
+        }
+
+        .btn-play-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+            box-shadow: 0 8px 24px rgba(255, 112, 32, 0.35);
+        }
+
+        .btn-play-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary-link {
+            background: transparent;
+            color: var(--app-fg);
+            border: 1px solid var(--app-border);
+            padding: 1.4rem 2.4rem;
+            border-radius: 1.2rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary-link:hover {
+            background: var(--app-card-alt);
+        }
+
+        .resume-hero-media {
+            position: relative;
+            background: #2a2522;
+            overflow: hidden;
+        }
+
+        .resume-hero-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .resume-hero:hover .resume-hero-media img {
+            transform: scale(1.04);
+        }
+
+        .resume-overlay-badge {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 0.6rem 1.4rem;
+            border-radius: 99rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* Activity & Habit Rhythm Heatmap */
+        .heatmap-card {
+            background: var(--app-card);
+            border: var(--app-card-border);
+            border-radius: var(--app-card-radius);
+            box-shadow: var(--app-card-shadow);
+            padding: 2.8rem 3.2rem;
+            margin-bottom: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-info {
+            display: flex;
+            align-items: center;
+            gap: 2.4rem;
+        }
+
+        .streak-fire-box {
+            width: 5.6rem;
+            height: 5.6rem;
+            border-radius: 1.4rem;
+            background: rgba(255, 112, 32, 0.12);
+            border: 1px solid rgba(255, 112, 32, 0.25);
+            color: var(--app-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+        }
+
+        .streak-meta h3 {
+            font-size: 2.4rem;
+            font-weight: 600;
+        }
+
+        .streak-meta p {
+            font-size: 1.4rem;
+            color: var(--app-subtle);
+        }
+
+        .heatmap-grid {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .heatmap-day {
+            width: 3.2rem;
+            height: 3.2rem;
+            border-radius: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 500;
+            background: rgba(0,0,0,0.04);
+            color: var(--app-muted);
+            border: 1px solid var(--app-border);
+            transition: transform 0.2s ease;
+        }
+
+        .heatmap-day:hover {
+            transform: translateY(-2px);
+        }
+
+        .heatmap-day.active-1 { background: rgba(255, 112, 32, 0.2); color: var(--app-primary); font-weight: 700; border-color: rgba(255,112,32,0.3); }
+        .heatmap-day.active-2 { background: rgba(255, 112, 32, 0.45); color: #fff; font-weight: 700; }
+        .heatmap-day.active-3 { background: var(--app-primary); color: #030607; font-weight: 700; }
+
+        /* Courses Catalog Grid */
+        .section-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.4rem;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            letter-spacing: -0.02em;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(36rem, 1fr));
+            gap: 2.8rem;
+        }
+
+        .course-card {
+            background: var(--app-card);
+            border: var(--app-card-border);
+            border-radius: var(--app-card-radius);
+            box-shadow: var(--app-card-shadow);
+            backdrop-filter: var(--app-glass-blur);
+            -webkit-backdrop-filter: var(--app-glass-blur);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+            border-color: var(--app-primary);
+        }
+
+        .course-thumb-wrap {
+            height: 20rem;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background: #1f1b18;
+        }
+
+        .course-thumb-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .course-card:hover .course-thumb-wrap img {
+            transform: scale(1.06);
+        }
+
+        .course-tag {
+            position: absolute;
+            top: 1.4rem;
+            left: 1.4rem;
+            background: var(--app-primary);
+            color: var(--app-primary-fg);
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 0.3rem 0.9rem;
+            border-radius: 99rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .course-body {
+            padding: 2.4rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .course-title {
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 0.8rem;
+        }
+
+        .course-desc {
+            font-size: 1.45rem;
+            color: var(--app-subtle);
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-footer {
+            border-top: 1px solid var(--app-border);
+            padding-top: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .course-stats {
+            display: flex;
+            align-items: center;
+            gap: 1.4rem;
+            font-size: 1.3rem;
+            color: var(--app-muted);
+        }
+
+        .course-stats span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--app-card-alt);
+            color: var(--app-fg);
+            border: 1px solid var(--app-border);
+            padding: 0.8rem 1.6rem;
+            border-radius: 0.9rem;
+            font-size: 1.35rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-card-action:hover {
+            background: var(--app-primary);
+            color: var(--app-primary-fg);
+            border-color: var(--app-primary);
+        }
+
+        /* Floating Info Badge on Bottom */
+        #design-spec-pill {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--app-card);
+            border: 1px solid var(--app-border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 1.4rem;
+            padding: 1.4rem 2rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+            font-size: 1.3rem;
+        }
+
+        .spec-token {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .spec-token span.label {
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            color: var(--app-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .spec-token span.value {
+            font-weight: 600;
+            font-family: monospace;
+            color: var(--app-primary);
+        }
+
+        @media (max-width: 992px) {
+            .resume-hero-grid { grid-template-columns: 1fr; }
+            .resume-hero-media { height: 22rem; }
+            .header-center-tabs { display: none; }
+        }
+    </style>
+</head>
+
+<body data-preview-theme="tangerina-light">
+
+    <!-- TOP SIMULATION CONTROL BAR -->
+    <aside id="sim-bar" aria-label="Controle de Simulação de Design System">
+        <div class="sim-title">
+            <i data-lucide="sparkles" style="color: var(--app-primary);"></i>
+            <span>Simulador de Transição de Design</span>
+            <span class="badge" id="sim-current-badge">Tangerina Solar (Modo Claro)</span>
+        </div>
+
+        <div class="sim-actions">
+            <span style="color: #a1a1aa; font-size: 1.2rem; margin-right: 0.6rem;">Alternar Tema em Tempo Real:</span>
+            <button class="sim-btn active" id="btn-tangerina-light" onclick="setTheme('tangerina-light')">
+                <span>🍊 Tangerina Light</span>
+            </button>
+            <button class="sim-btn" id="btn-tangerina-dark" onclick="setTheme('tangerina-dark')">
+                <span>🌙 Tangerina Dark</span>
+            </button>
+            <button class="sim-btn" id="btn-liquid-glass" onclick="setTheme('liquid-glass')">
+                <span>❄️ Liquid Glass (Atual)</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- APP HEADER -->
+    <header id="app-header">
+        <div class="header-inner">
+            <!-- Brand Logo -->
+            <a href="javascript:void(0)" class="brand-logo">
+                <div class="brand-icon-box">
+                    <i data-lucide="utensils" style="width: 2rem; height: 2rem;"></i>
+                </div>
+                <div>
+                    <h1 class="brand-title">Receitas</h1>
+                    <span style="font-size: 1.15rem; color: var(--app-muted); display: block; margin-top: -0.3rem;">Plataforma de Cursos</span>
+                </div>
+            </a>
+
+            <!-- Navigation Tabs -->
+            <nav class="header-center-tabs">
+                <button class="header-tab-btn active" onclick="switchNavTab(this, 'cursos')">
+                    <i data-lucide="book-open" style="width: 1.6rem; height: 1.6rem;"></i>
+                    <span>Cursos</span>
+                </button>
+                <button class="header-tab-btn" onclick="switchNavTab(this, 'foco')">
+                    <i data-lucide="timer" style="width: 1.6rem; height: 1.6rem;"></i>
+                    <span>Foco</span>
+                </button>
+                <button class="header-tab-btn" onclick="switchNavTab(this, 'calendario')">
+                    <i data-lucide="calendar" style="width: 1.6rem; height: 1.6rem;"></i>
+                    <span>Calendário</span>
+                </button>
+                <button class="header-tab-btn" onclick="switchNavTab(this, 'stats')">
+                    <i data-lucide="bar-chart-2" style="width: 1.6rem; height: 1.6rem;"></i>
+                    <span>Estatísticas</span>
+                </button>
+            </nav>
+
+            <!-- Actions: Pomodoro Pill & Search -->
+            <div style="display: flex; align-items: center; gap: 1.2rem;">
+                <!-- Live Pomodoro Pill -->
+                <div class="pomodoro-pill" id="pomodoro-pill" onclick="togglePomodoroTimer()" title="Clique para pausar/retomar Pomodoro">
+                    <span class="pomodoro-dot"></span>
+                    <i data-lucide="clock" style="width: 1.6rem; height: 1.6rem; color: var(--app-primary);"></i>
+                    <span id="pomodoro-timer-text">24:45</span>
+                </div>
+
+                <!-- Search Action -->
+                <button class="btn-card-action" onclick="simulateSearch()" style="border-radius: 99rem; padding: 0.8rem 1.6rem;">
+                    <i data-lucide="search" style="width: 1.6rem; height: 1.6rem;"></i>
+                    <span style="font-size: 1.3rem;">Buscar...</span>
+                    <kbd style="font-size: 1rem; opacity: 0.6; background: rgba(0,0,0,0.1); padding: 0.1rem 0.5rem; border-radius: 0.4rem;">Ctrl K</kbd>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP SCREEN -->
+    <main class="app-main">
+        
+        <!-- SPOTLIGHT: RESUME HERO CARD -->
+        <section class="resume-hero">
+            <div class="resume-hero-grid">
+                <div class="resume-hero-content">
+                    <div>
+                        <div class="resume-badge">
+                            <i data-lucide="play-circle" style="width: 1.6rem; height: 1.6rem;"></i>
+                            <span>Continuar de Onde Parou</span>
+                        </div>
+                        <h2 class="resume-title">Caligrafia Tradicional Brasileira</h2>
+                        <div class="resume-lesson-name">
+                            <i data-lucide="film" style="width: 1.8rem; height: 1.8rem; color: var(--app-primary);"></i>
+                            <span>Aula 04 &bull; Traços Fundamentais e Inclinação da Pena</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="progress-bar-wrap">
+                            <div class="progress-bar-fill"></div>
+                        </div>
+                        <div class="resume-meta-row">
+                            <span>Progresso: <strong>68% concluído</strong></span>
+                            <span>Tempo restante: <strong>14:20 / 21:05</strong></span>
+                        </div>
+
+                        <div class="resume-actions">
+                            <button class="btn-play-primary" onclick="alert('Iniciando reprodução no Player...')">
+                                <i data-lucide="play" style="width: 2rem; height: 2rem; fill: currentColor;"></i>
+                                <span>Retomar Aula</span>
+                            </button>
+                            <button class="btn-secondary-link" onclick="alert('Abrindo lista de módulos e materiais...')">
+                                <span>Ver Todos os Módulos</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-hero-media">
+                    <img src="data/uploads/Hands_holding_pen_writing_callig..._202607082208.jpeg" alt="Caligrafia Tradicional">
+                    <div class="resume-overlay-badge">
+                        <i data-lucide="check-circle-2" style="width: 1.4rem; height: 1.4rem; color: var(--app-primary);"></i>
+                        <span>12 de 18 aulas assistidas</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY & HABIT RHYTHM HEATMAP -->
+        <section class="heatmap-card">
+            <div class="heatmap-info">
+                <div class="streak-fire-box">
+                    🔥
+                </div>
+                <div class="streak-meta">
+                    <h3>12 Dias Seguidos de Foco</h3>
+                    <p>Ritmo semanal consistente &bull; 8h 45m de estudo acumulados nesta semana</p>
+                </div>
+            </div>
+
+            <!-- Heatmap Week Squares -->
+            <div class="heatmap-grid" title="Atividade diária nos últimos 14 dias">
+                <div class="heatmap-day active-1" title="Seg: 45 min">S</div>
+                <div class="heatmap-day active-2" title="Ter: 1h 30m">T</div>
+                <div class="heatmap-day active-3" title="Qua: 2h 10m">Q</div>
+                <div class="heatmap-day active-2" title="Qui: 1h 15m">Q</div>
+                <div class="heatmap-day active-3" title="Sex: 2h 00m">S</div>
+                <div class="heatmap-day active-1" title="Sáb: 40 min">S</div>
+                <div class="heatmap-day active-2" title="Dom: 1h 05m">D</div>
+                <div class="heatmap-day active-3" title="Hoje: 1h 40m" style="outline: 2px solid var(--app-primary); outline-offset: 2px;">Hoje</div>
+            </div>
+        </section>
+
+        <!-- COURSES CATALOG -->
+        <section>
+            <div class="section-header-row">
+                <div>
+                    <h2 class="section-title">Meus Cursos &amp; Receitas</h2>
+                    <p style="font-size: 1.5rem; color: var(--app-subtle); margin-top: 0.2rem;">Acesse sua grade de aprendizado contínuo</p>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn-card-action" onclick="alert('Abrindo modal de inclusão de novo curso...')">
+                        <i data-lucide="plus" style="width: 1.6rem; height: 1.6rem; color: var(--app-primary);"></i>
+                        <span>Adicionar Novo Curso</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="courses-grid">
+                <!-- Course 1 -->
+                <article class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="data/uploads/Developer_coding_C_language_2K_202607082342.jpeg" alt="Linguagem C">
+                        <span class="course-tag">Em Andamento</span>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <h3 class="course-title">Linguagem C o Curso Definitivo - Wagner Rambo</h3>
+                            <p class="course-desc">Estruturas de memória, ponteiros, compilação de baixo nível e algoritmos fundamentais.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-stats">
+                                <span><i data-lucide="video" style="width: 1.5rem; height: 1.5rem;"></i> 42 aulas</span>
+                                <span><i data-lucide="clock" style="width: 1.5rem; height: 1.5rem;"></i> 18h</span>
+                            </div>
+                            <button class="btn-card-action">
+                                <span>Estudar</span>
+                                <i data-lucide="arrow-right" style="width: 1.4rem; height: 1.4rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Course 2 -->
+                <article class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="data/uploads/Man_contemplating_with_book_2K_202607082141.jpeg" alt="Dostoiévski">
+                        <span class="course-tag" style="background: var(--app-accent); color: #fff;">Novo</span>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <h3 class="course-title">Fiódor Dostoiévski - Um Curso de Bolso</h3>
+                            <p class="course-desc">Análise literária das grandes obras: Crime e Castigo, Os Irmãos Karamázov e O Idiota.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-stats">
+                                <span><i data-lucide="video" style="width: 1.5rem; height: 1.5rem;"></i> 16 aulas</span>
+                                <span><i data-lucide="clock" style="width: 1.5rem; height: 1.5rem;"></i> 6h</span>
+                            </div>
+                            <button class="btn-card-action">
+                                <span>Iniciar</span>
+                                <i data-lucide="arrow-right" style="width: 1.4rem; height: 1.4rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Course 3 -->
+                <article class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="data/uploads/Man_sitting_at_desk_2K_202607172139.jpeg" alt="Literatura contra o Caos">
+                        <span class="course-tag">85% Concluído</span>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <h3 class="course-title">Literatura para a Vida e Contra o Caos</h3>
+                            <p class="course-desc">Formação do imaginário, leitura ativa e aprofundamento cultural com Rodrigo Gurgel.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-stats">
+                                <span><i data-lucide="video" style="width: 1.5rem; height: 1.5rem;"></i> 24 aulas</span>
+                                <span><i data-lucide="clock" style="width: 1.5rem; height: 1.5rem;"></i> 12h</span>
+                            </div>
+                            <button class="btn-card-action">
+                                <span>Continuar</span>
+                                <i data-lucide="arrow-right" style="width: 1.4rem; height: 1.4rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Course 4 -->
+                <article class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="data/uploads/Man_gesturing_toward_computer_mo..._202608162228.jpeg" alt="Claude Desktop">
+                        <span class="course-tag" style="background: #E33D6C; color: #fff;">Inteligência</span>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <h3 class="course-title">Claude Desktop &amp; Inteligência Aumentada</h3>
+                            <p class="course-desc">Automações com MCP servers, subagentes locais e orquestração de trabalho intelectual.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-stats">
+                                <span><i data-lucide="video" style="width: 1.5rem; height: 1.5rem;"></i> 14 aulas</span>
+                                <span><i data-lucide="clock" style="width: 1.5rem; height: 1.5rem;"></i> 4h 30m</span>
+                            </div>
+                            <button class="btn-card-action">
+                                <span>Explorar</span>
+                                <i data-lucide="arrow-right" style="width: 1.4rem; height: 1.4rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Course 5 -->
+                <article class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="data/uploads/Tarot_cards_on_wooden_table_202607132052.jpeg" alt="Simbologia">
+                        <span class="course-tag" style="background: #663399; color: #fff;">Simbologia</span>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <h3 class="course-title">Arquétipos e Narrativas Simbólicas</h3>
+                            <p class="course-desc">Estruturas narrativas universais e leitura arquetípica em artes visuais e psicologia.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-stats">
+                                <span><i data-lucide="video" style="width: 1.5rem; height: 1.5rem;"></i> 20 aulas</span>
+                                <span><i data-lucide="clock" style="width: 1.5rem; height: 1.5rem;"></i> 8h</span>
+                            </div>
+                            <button class="btn-card-action">
+                                <span>Estudar</span>
+                                <i data-lucide="arrow-right" style="width: 1.4rem; height: 1.4rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Course 6 -->
+                <article class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="data/uploads/Professor_gesturing_at_UML_diagrams_202608201927.jpeg" alt="Arquitetura de Software">
+                        <span class="course-tag">Engenharia</span>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <h3 class="course-title">Modelagem de Sistemas &amp; Arquitetura</h3>
+                            <p class="course-desc">Design patterns, diagramação visual e modelagem orientada a domínio para sistemas web.</p>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-stats">
+                                <span><i data-lucide="video" style="width: 1.5rem; height: 1.5rem;"></i> 30 aulas</span>
+                                <span><i data-lucide="clock" style="width: 1.5rem; height: 1.5rem;"></i> 14h</span>
+                            </div>
+                            <button class="btn-card-action">
+                                <span>Estudar</span>
+                                <i data-lucide="arrow-right" style="width: 1.4rem; height: 1.4rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- FLOATING SPECIFICATION PILL -->
+    <div id="design-spec-pill">
+        <div class="spec-token">
+            <span class="label">Design Ativo</span>
+            <span class="value" id="spec-name">Tangerina Solar (Light)</span>
+        </div>
+        <div class="spec-token">
+            <span class="label">Superfície</span>
+            <span class="value" id="spec-bg">#FCF9F8</span>
+        </div>
+        <div class="spec-token">
+            <span class="label">Cor Primária</span>
+            <span class="value" id="spec-primary">#FF7020</span>
+        </div>
+        <div class="spec-token">
+            <span class="label">Bordas / Cards</span>
+            <span class="value" id="spec-border">Sólido Terroso</span>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Theme Switcher Logic
+        function setTheme(theme) {
+            document.body.setAttribute('data-preview-theme', theme);
+
+            // Update active buttons
+            document.querySelectorAll('.sim-btn').forEach(btn => btn.classList.remove('active'));
+            if (theme === 'tangerina-light') {
+                document.getElementById('btn-tangerina-light').classList.add('active');
+                document.getElementById('sim-current-badge').innerText = 'Tangerina Solar (Modo Claro)';
+                document.getElementById('spec-name').innerText = 'Tangerina Light';
+                document.getElementById('spec-bg').innerText = '#FCF9F8';
+                document.getElementById('spec-primary').innerText = '#FF7020';
+                document.getElementById('spec-border').innerText = 'Sólido Terroso (#DCCEC6)';
+            } else if (theme === 'tangerina-dark') {
+                document.getElementById('btn-tangerina-dark').classList.add('active');
+                document.getElementById('sim-current-badge').innerText = 'Tangerina Noturno (Modo Escuro)';
+                document.getElementById('spec-name').innerText = 'Tangerina Dark';
+                document.getElementById('spec-bg').innerText = '#030607';
+                document.getElementById('spec-primary').innerText = '#FF7020';
+                document.getElementById('spec-border').innerText = 'rgba(220,206,198,0.16)';
+            } else if (theme === 'liquid-glass') {
+                document.getElementById('btn-liquid-glass').classList.add('active');
+                document.getElementById('sim-current-badge').innerText = 'Liquid Glass (Design Atual)';
+                document.getElementById('spec-name').innerText = 'Liquid Glass';
+                document.getElementById('spec-bg').innerText = '#050a14';
+                document.getElementById('spec-primary').innerText = '#007bff (Neon Blue)';
+                document.getElementById('spec-border').innerText = 'Glass 16px Blur';
+            }
+
+            // Re-render icons if needed
+            lucide.createIcons();
+        }
+
+        // Pomodoro Timer Simulation
+        let pomodoroSeconds = 24 * 60 + 45;
+        let pomodoroRunning = true;
+        let timerInterval = null;
+
+        function startPomodoro() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (pomodoroRunning && pomodoroSeconds > 0) {
+                    pomodoroSeconds--;
+                    const m = Math.floor(pomodoroSeconds / 60);
+                    const s = pomodoroSeconds % 60;
+                    document.getElementById('pomodoro-timer-text').innerText = 
+                        `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function togglePomodoroTimer() {
+            pomodoroRunning = !pomodoroRunning;
+            const dot = document.querySelector('.pomodoro-dot');
+            if (pomodoroRunning) {
+                dot.style.animation = 'pulse-dot 1.5s infinite';
+                dot.style.background = 'var(--app-primary)';
+            } else {
+                dot.style.animation = 'none';
+                dot.style.background = '#89766C';
+            }
+        }
+
+        startPomodoro();
+
+        // Nav tabs click
+        function switchNavTab(btn, tabName) {
+            document.querySelectorAll('.header-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // Search shortcut simulation
+        function simulateSearch() {
+            const query = prompt('Buscar receita, curso ou aula (Ex: Caligrafia, Algoritmos, Literatura):');
+            if (query) {
+                alert(`Filtrando catálogo por: "${query}"`);
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                simulateSearch();
+            }
+        });
+    </script>
+</body>
+</html>
+
