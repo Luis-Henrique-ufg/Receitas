@@ -28,49 +28,9 @@
 }
 
 @font-face {
-  font-family: 'GOL Sans Display';
-  src: url('./assets/fonts/GOLSansDisplay-Medium.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'GOL Sans Display';
-  src: url('./assets/fonts/GOLSansDisplay-Medium.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'GOL Sans Text';
   src: url('./assets/fonts/GOLSansText-Regular.woff2') format('woff2');
   font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'GOL Sans Text';
-  src: url('./assets/fonts/GOLSansText-Regular.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'GOL Sans Text';
-  src: url('./assets/fonts/GOLSansText-Regular.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'GOL Sans Text';
-  src: url('./assets/fonts/GOLSansText-Regular.woff2') format('woff2');
-  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -89,50 +49,52 @@
 
 @layer base {
   :root {
-    /* Tangerina Light Mode Tokens */
-    --background: 24 33% 98%;          /* #FCF9F8 (white-1) */
-    --foreground: 200 40% 2%;          /* #030607 (black-1) */
-    --card: 26 29% 94%;                /* #F4EFEB (white-3) */
+    /* Tangerina Light Mode Tokens — Warm Cream Canvas + Crisp Alabaster Surfaces */
+    --background: 24 38% 97%;          /* #FAF6F3 (Warm Cream Canvas) */
+    --foreground: 200 40% 2%;          /* #030607 (Tangerina black-1) */
+    --card: 30 50% 99%;                /* #FFFDFB (Crisp Warm Card Surface) */
     --card-foreground: 200 40% 2%;
-    --popover: 24 33% 98%;
+    --popover: 30 50% 99%;
     --popover-foreground: 200 40% 2%;
-    --primary: 22 100% 56%;            /* #FF7020 (orange-1) */
-    --primary-foreground: 200 40% 2%;  /* Texto escuro no laranja */
-    --secondary: 34 46% 92%;           /* #F4ECE0 (white-2) */
+    --primary: 22 100% 56%;            /* #FF7020 (Tangerina orange-1) */
+    --primary-foreground: 200 40% 2%;  /* #030607 - Contraste editorial no laranja */
+    --secondary: 26 33% 93%;           /* #F3ECE6 (Tangerina white-3 / interactive surface) */
     --secondary-foreground: 200 40% 2%;
-    --muted: 20 22% 82%;               /* #DCCEC6 (brown-4) */
-    --muted-foreground: 23 9% 30%;     /* #534B46 (brown-6) */
-    --accent: 176 100% 32%;            /* #00A196 (green-1 / Smiles Teal) */
+    --muted: 23 24% 88%;               /* #E8DFD8 (Tracks, inactive cells, subtle wells) */
+    --muted-foreground: 23 11% 31%;    /* #584E48 (Tangerina brown-6 - high legibility) */
+    --accent: 176 100% 32%;            /* #00A196 (Smiles Teal / green-1) */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 100% 39%;          /* #C50000 (red-1) */
+    --destructive: 0 100% 39%;          /* #C50000 (Tangerina red-1) */
     --destructive-foreground: 0 0% 100%;
-    --border: 20 22% 82%;               /* #DCCEC6 (brown-4) */
-    --input: 20 22% 82%;
+    --border: 22 24% 85%;              /* #E2D6CE (Refined warm border) */
+    --input: 22 24% 85%;
     --ring: 22 100% 56%;
-    --radius: 1.5rem;                   /* 24px - Tangerina Organic Squircle */
+    --radius: 1.5rem;                  /* 24px - Tangerina Organic Squircle */
+    --app-card-shadow: 0 4px 20px rgba(83, 75, 70, 0.06);
   }
 
   .dark {
-    /* Tangerina Dark Mode Tokens */
+    /* Tangerina Dark Mode Tokens — Warm Obsidian */
     --background: 200 40% 2%;          /* #030607 (black-1) */
     --foreground: 24 33% 98%;          /* #FCF9F8 (white-1) */
-    --card: 0 0% 10%;                  /* #1A1A1A (black-3) */
+    --card: 20 8% 10%;                 /* #1C1918 (Warm dark card) */
     --card-foreground: 24 33% 98%;
-    --popover: 200 40% 2%;
+    --popover: 20 8% 10%;
     --popover-foreground: 24 33% 98%;
     --primary: 22 100% 56%;            /* #FF7020 (orange-1) */
-    --primary-foreground: 200 40% 2%;  /* #030607 - Alto contraste no laranja */
-    --secondary: 24 9% 18%;            /* #322D2A (black-2) */
+    --primary-foreground: 200 40% 2%;  /* #030607 */
+    --secondary: 24 9% 16%;            /* #2D2825 (black-2) */
     --secondary-foreground: 24 33% 98%;
-    --muted: 24 9% 18%;                /* #322D2A */
+    --muted: 24 9% 15%;                /* #2A2523 */
     --muted-foreground: 22 19% 70%;    /* #C2AEA3 (brown-3) */
     --accent: 176 100% 32%;            /* #00A196 */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 24 9% 22%;               /* Borda sutil no dark */
-    --input: 24 9% 22%;
+    --border: 24 9% 19%;               /* #352F2C (Warm subtle dark border) */
+    --input: 24 9% 19%;
     --ring: 22 100% 56%;
+    --app-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -180,12 +142,21 @@ h1, h2, h3, h4, h5, h6 {
   animation: pulse-dot 1.5s infinite;
 }
 
+.tangerina-card {
+  box-shadow: var(--app-card-shadow);
+}
+
 .tangerina-card-hover {
-  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: var(--app-card-shadow);
+  transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.3s cubic-bezier(0.19, 1, 0.22, 1), border-color 0.25s ease;
 }
 
 .tangerina-card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(83, 75, 70, 0.12);
   border-color: hsl(var(--primary));
+}
+
+.dark .tangerina-card-hover:hover {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
 }

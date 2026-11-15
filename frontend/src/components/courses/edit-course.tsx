@@ -21,6 +21,11 @@ import {
 import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi } from "@/services/coursesApi";
+import {
+  PRESET_COURSE_CATEGORIES,
+  getCourseCategoryTag,
+  saveLocalCourseCategory,
+} from "@/utils/courseCategory";
 import { X } from "lucide-react";
 
 type Props = {
@@ -72,7 +77,11 @@ export default function EditCourse({
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentCourse(course);
+      const resolvedTag = getCourseCategoryTag(course);
+      setCurrentCourse({
+        ...course,
+        category: course.category || resolvedTag.label,
+      });
       handleClearFile();
     }
   }, [course, isOpen]);
@@ -109,9 +118,12 @@ export default function EditCourse({
 
     try {
       const imageFile = fileInputRefEdit.current?.files?.[0] || null;
+      const chosenCategory = (currentCourse.category || "").trim();
+      saveLocalCourseCategory(course.id, chosenCategory);
       await coursesApi.update(apiUrl, course.id, {
         name: currentCourse.name,
         path: currentCourse.path,
+        category: chosenCategory,
         imageFile,
         imageUrl: imageFile ? undefined : (currentCourse.urlCover?.trim() || undefined),
       });
@@ -183,28 +195,77 @@ export default function EditCourse({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="name" className="text-xs text-zinc-300 font-medium block mb-1.5">
-              Nome do curso
-            </Label>
-            <Input
-              type="text"
-              id="name"
-              name="name"
-              value={currentCourse?.name || ""}
-              onChange={handleInputChange}
-              className="bg-white/5 border-white/10 text-white"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="name" className="text-xs text-foreground font-medium block mb-1.5">
+                Nome do curso
+              </Label>
+              <Input
+                type="text"
+                id="name"
+                name="name"
+                value={currentCourse?.name || ""}
+                onChange={handleInputChange}
+                className="bg-secondary/50 border-border text-foreground rounded-xl"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="category" className="text-xs text-foreground font-medium block mb-1.5">
+                Categoria (Tag)
+              </Label>
+              <Input
+                type="text"
+                id="category"
+                name="category"
+                value={currentCourse?.category || ""}
+                onChange={handleInputChange}
+                placeholder="Ex: Engenharia, Literatura..."
+                className="bg-secondary/50 border-border text-foreground rounded-xl"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {PRESET_COURSE_CATEGORIES.map((cat) => {
+              const isSelected =
+                (currentCourse?.category || "").trim().toLowerCase() ===
+                cat.label.toLowerCase();
+              return (
+                <button
+                  key={cat.label}
+                  type="button"
+                  onClick={() =>
+                    setCurrentCourse((prev) => ({
+                      ...prev,
+                      category: cat.label,
+                    }))
+                  }
+                  style={
+                    isSelected
+                      ? { backgroundColor: cat.bgColor, color: cat.textColor }
+                      : undefined
+                  }
+                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-transparent shadow-sm"
+                      : "bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground border-border"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              );
+            })}
           </div>
 
           <div>
-            <h3 className="text-sm font-medium text-zinc-300 mb-2">
+            <h3 className="text-xs font-medium text-foreground mb-2">
               Capa do curso (URL ou arquivo local):
             </h3>
-            <Card className="w-full bg-white/[0.02] border-white/10">
+            <Card className="w-full bg-secondary/30 border-border rounded-2xl">
               <CardContent className="pt-4 space-y-3">
                 <div>
-                  <Label htmlFor="capaUrl" className="text-xs text-zinc-300 font-medium block mb-1">
+                  <Label htmlFor="capaUrl" className="text-xs text-muted-foreground font-medium block mb-1">
                     URL da imagem
                   </Label>
                   <Input
@@ -214,18 +275,18 @@ export default function EditCourse({
                     value={currentCourse?.urlCover || ""}
                     onChange={handleUrlChange}
                     placeholder="https://exemplo.com/imagem.jpg"
-                    className="bg-white/5 border-white/10 text-white"
+                    className="bg-card border-border text-foreground rounded-xl"
                   />
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 border-t border-white/10"></div>
-                  <span className="text-[11px] text-zinc-500 uppercase tracking-wider">ou</span>
-                  <div className="flex-1 border-t border-white/10"></div>
+                  <div className="flex-1 border-t border-border"></div>
+                  <span className="text-[11px] text-muted-foreground uppercase tracking-wider">ou</span>
+                  <div className="flex-1 border-t border-border"></div>
                 </div>
 
                 <div>
-                  <Label htmlFor="capaFile" className="text-xs text-zinc-300 font-medium block mb-1">
+                  <Label htmlFor="capaFile" className="text-xs text-muted-foreground font-medium block mb-1">
                     Anexar nova imagem local
                   </Label>
                   <Input
@@ -234,42 +295,42 @@ export default function EditCourse({
                     ref={fileInputRefEdit}
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="bg-white/5 border-white/10 text-white file:text-white file:bg-white/10 file:border-0 file:rounded-md file:mr-2 file:px-2 file:py-1 cursor-pointer"
+                    className="bg-card border-border text-foreground rounded-xl file:text-foreground file:bg-secondary file:border-0 file:rounded-lg file:mr-2 file:px-2.5 file:py-1 cursor-pointer"
                   />
                 </div>
 
                 {filePreview ? (
-                  <div className="flex items-center gap-3 p-2 bg-white/5 rounded-lg border border-white/10">
+                  <div className="flex items-center gap-3 p-2.5 bg-card rounded-xl border border-border">
                     <img
                       src={filePreview}
                       alt="Prévia do novo anexo"
-                      className="w-16 h-10 object-cover rounded border border-white/20"
+                      className="w-16 h-10 object-cover rounded-lg border border-border"
                     />
-                    <div className="flex-1 text-xs text-zinc-300 truncate">
-                      <span className="text-emerald-400 font-medium block">Nova capa selecionada</span>
-                      <span className="text-zinc-500 text-[10px]">Será salva ao confirmar</span>
+                    <div className="flex-1 text-xs text-foreground truncate">
+                      <span className="text-accent font-semibold block">Nova capa selecionada</span>
+                      <span className="text-muted-foreground text-[10px]">Será salva ao confirmar</span>
                     </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       onClick={handleClearFile}
-                      className="h-7 w-7 text-zinc-400 hover:text-white"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
                       title="Descartar anexo"
                     >
                       <X className="w-4 h-4" />
                     </Button>
                   </div>
                 ) : currentCoverSrc ? (
-                  <div className="flex items-center gap-3 p-2 bg-white/[0.03] rounded-lg border border-white/5">
+                  <div className="flex items-center gap-3 p-2.5 bg-card rounded-xl border border-border">
                     <img
                       src={currentCoverSrc}
                       alt="Capa atual"
-                      className="w-16 h-10 object-cover rounded border border-white/10 opacity-80"
+                      className="w-16 h-10 object-cover rounded-lg border border-border opacity-90"
                     />
-                    <div className="flex-1 text-xs text-zinc-400">
-                      <span className="font-medium text-zinc-300 block">Capa atual do curso</span>
-                      <span className="text-[10px] text-zinc-500">
+                    <div className="flex-1 text-xs text-muted-foreground">
+                      <span className="font-medium text-foreground block">Capa atual do curso</span>
+                      <span className="text-[10px] text-muted-foreground">
                         {course.isCoverUrl ? "Link externo" : "Arquivo local no servidor"}
                       </span>
                     </div>
@@ -281,17 +342,17 @@ export default function EditCourse({
 
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <Label htmlFor="path" className="text-xs text-zinc-300 font-medium">
+              <Label htmlFor="path" className="text-xs text-foreground font-medium">
                 Diretório (PATH) do curso
               </Label>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="text-red-400 cursor-pointer underline text-[10px]">
+                    <span className="text-primary cursor-pointer underline text-[10px]">
                       Aviso de segurança
                     </span>
                   </TooltipTrigger>
-                  <TooltipContent className="bg-zinc-900 border-white/15 text-white text-xs max-w-xs">
+                  <TooltipContent className="bg-card border-border text-foreground text-xs max-w-xs">
                     Por motivos de segurança do navegador, o caminho absoluto do sistema deve ser inserido manualmente.
                   </TooltipContent>
                 </Tooltip>
@@ -303,7 +364,7 @@ export default function EditCourse({
               name="path"
               value={currentCourse?.path || ""}
               onChange={handleInputChange}
-              className="bg-white/5 border-white/10 text-white font-mono text-xs"
+              className="bg-secondary/50 border-border text-foreground font-mono text-xs rounded-xl"
             />
           </div>
         </div>

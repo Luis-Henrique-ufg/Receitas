@@ -18,7 +18,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ['"GOL Sans Text"', '"GOL Sans Display"', '"Open Sans"', 'sans-serif'],
+        sans: ['"GOL Sans Display"', '"GOL Sans Text"', '"Open Sans"', 'sans-serif'],
+        body: ['"GOL Sans Text"', '"GOL Sans Display"', 'sans-serif'],
         heading: ['"GOL Sans Display"', '"Montserrat"', 'sans-serif'],
         display: ['"GOL Sans Display"', 'sans-serif'],
       },

@@ -132,50 +132,53 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
   const completedCount = stats?.completed_lessons || 0;
 
   return (
-    <section className="w-full bg-card rounded-3xl border border-border shadow-md overflow-hidden mb-8 lg:mb-10 group">
-      <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] min-h-[22rem] lg:min-h-[26rem]">
-        {/* Left Column: Editorial Content */}
-        <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+    <section className="w-full bg-card rounded-3xl border border-border tangerina-card overflow-hidden group">
+      <div className="grid grid-cols-1 md:grid-cols-[1.15fr_0.85fr] md:min-h-[260px] lg:min-h-[280px]">
+        {/* Left Column: Compact Editorial Content */}
+        <div className="p-6 sm:p-7 lg:px-10 lg:py-8 flex flex-col justify-between gap-5">
           <div>
             {/* Top Badge */}
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold text-primary mb-3 select-none">
+            <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.08em] font-bold text-primary mb-2.5 select-none">
               <PlayCircle className="w-4 h-4 text-primary shrink-0" />
               <span>{isResume ? "Continuar de onde parou" : "Estudo Ativo"}</span>
             </div>
 
-            {/* Course Name */}
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-semibold text-foreground tracking-tight leading-snug mb-3">
+            {/* Course Name — Tangerina Display Medium 32px */}
+            <h2 className="text-2xl sm:text-[28px] lg:text-[32px] font-display font-medium text-foreground tracking-[-0.02em] leading-[1.15] mb-2.5 line-clamp-2">
               {course.name}
             </h2>
 
             {/* Lesson details breadcrumb */}
-            <div className="flex items-center gap-2.5 text-sm sm:text-base text-muted-foreground font-normal mb-6 flex-wrap">
+            <div className="flex items-center gap-2 text-[15px] sm:text-[17px] text-muted-foreground font-normal flex-wrap">
               <Film className="w-4 h-4 text-primary shrink-0" />
               <div className="flex items-center gap-1.5 flex-wrap">
                 {showModule && (
                   <>
-                    <span className="font-medium text-muted-foreground">{cleanedModule}</span>
+                    <span className="font-normal text-muted-foreground">{cleanedModule}</span>
                     <span className="text-muted-foreground/50 select-none">•</span>
                   </>
                 )}
-                <span className="text-foreground font-medium">
+                <span className="text-foreground/90 font-normal">
                   {lesson ? displayTitle : "Explore as aulas deste curso"}
                 </span>
               </div>
             </div>
           </div>
 
-          <div>
-            {/* Progress Bar with Pill Style */}
-            <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden mb-2.5">
+          <div className="pt-1">
+            {/* Progress Bar with High-Contrast Track */}
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
-                style={{ width: `${Math.max(4, Math.min(100, completedPct))}%` }}
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${Math.max(4, Math.min(100, completedPct))}%`,
+                  background: "linear-gradient(90deg, #FF7020 0%, #FF9E66 100%)",
+                }}
               />
             </div>
 
             {/* Progress Meta Row */}
-            <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mb-6 font-normal">
+            <div className="flex items-center justify-between text-[13px] text-muted-foreground mb-5 font-normal">
               <span>
                 Progresso: <strong className="text-foreground font-semibold">{completedPct}% concluído</strong>
               </span>
@@ -195,7 +198,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
               <button
                 type="button"
                 onClick={() => onPlay(course.id, lesson || undefined)}
-                className="inline-flex items-center justify-center gap-2.5 bg-primary text-[#030607] font-semibold text-sm sm:text-base px-7 py-3 rounded-xl shadow-md shadow-primary/25 hover:-translate-y-0.5 hover:brightness-105 active:scale-98 transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2.5 bg-primary text-[#030607] font-semibold text-[14.5px] px-6 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(255,112,32,0.3)] hover:-translate-y-0.5 hover:brightness-105 active:scale-98 transition-all cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current shrink-0" />
                 <span>{isResume ? "Retomar Aula" : "Iniciar Curso"}</span>
@@ -204,7 +207,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
               <button
                 type="button"
                 onClick={() => onPlay(course.id)}
-                className="inline-flex items-center justify-center bg-transparent hover:bg-secondary text-foreground border border-border font-medium text-xs sm:text-sm px-5 py-3 rounded-xl transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center bg-secondary/70 hover:bg-secondary text-foreground border border-border font-medium text-[13.5px] px-5 py-2.5 rounded-xl transition-colors cursor-pointer"
               >
                 <span>Ver Todos os Módulos</span>
               </button>
@@ -212,18 +215,18 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
           </div>
         </div>
 
-        {/* Right Column: Full-Bleed Media */}
-        <div className="relative w-full aspect-video md:aspect-auto md:h-full min-h-[16rem] overflow-hidden bg-card border-t md:border-t-0 md:border-l border-border group-hover:border-primary/30 transition-colors">
+        {/* Right Column: Full-Bleed Media (isolated from grid height via md:absolute) */}
+        <div className="relative w-full h-52 sm:h-60 md:h-auto overflow-hidden bg-[#2a2522] border-t md:border-t-0 md:border-l border-border">
           <img
             src={courseCover}
             alt={course.name}
-            className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-700 ease-out"
+            className="w-full h-full md:absolute md:inset-0 object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:hidden" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:hidden" />
 
           {/* Floating overlay badge */}
           {totalCount > 0 && (
-            <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md text-white text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-2 border border-white/10 shadow-lg">
+            <div className="absolute bottom-4 right-4 z-10 bg-black/75 backdrop-blur-md text-white text-[12px] font-medium px-3.5 py-1.5 rounded-full flex items-center gap-2 border border-white/15 shadow-lg">
               <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>{completedCount} de {totalCount} aulas assistidas</span>
             </div>

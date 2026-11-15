@@ -14,7 +14,7 @@ export function ModeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+      className="h-9 w-9 rounded-full bg-card hover:bg-secondary border border-border text-muted-foreground hover:text-foreground transition-colors shadow-sm"
       title={theme === "light" ? "Alternar para modo escuro" : "Alternar para modo claro"}
     >
       {theme === "light" ? (

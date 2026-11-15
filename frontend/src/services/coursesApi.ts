@@ -4,6 +4,7 @@ import { Course } from "@/models/models";
 export interface CreateCoursePayload {
   name: string;
   path: string;
+  category?: string;
   imageUrl?: string;
   imageFile?: File | null;
 }
@@ -11,6 +12,7 @@ export interface CreateCoursePayload {
 export interface UpdateCoursePayload {
   name: string;
   path: string;
+  category?: string;
   imageUrl?: string;
   imageFile?: File | null;
 }
@@ -46,6 +48,9 @@ export const coursesApi = {
     const formData = new FormData();
     formData.append("name", payload.name);
     formData.append("path", payload.path);
+    if (payload.category !== undefined) {
+      formData.append("category", payload.category);
+    }
     if (payload.imageFile) {
       formData.append("imageFile", payload.imageFile);
     } else if (payload.imageUrl) {
@@ -60,6 +65,9 @@ export const coursesApi = {
     const formData = new FormData();
     formData.append("name", payload.name);
     formData.append("path", payload.path);
+    if (payload.category !== undefined) {
+      formData.append("category", payload.category);
+    }
     if (payload.imageFile) {
       formData.append("imageFile", payload.imageFile);
     } else if (payload.imageUrl) {

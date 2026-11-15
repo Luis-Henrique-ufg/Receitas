@@ -15,6 +15,10 @@ import { toast } from "sonner";
 import useApiUrl from "@/hooks/useApiUrl";
 import { Loader2, Plus, X } from "lucide-react";
 import { coursesApi } from "@/services/coursesApi";
+import {
+  PRESET_COURSE_CATEGORIES,
+  saveLocalCourseCategory,
+} from "@/utils/courseCategory";
 
 type Props = {
   onCreate: () => void;
@@ -22,6 +26,7 @@ type Props = {
 
 export default function AddCourse({ onCreate }: Props) {
   const [courseName, setCourseName] = useState<string>("");
+  const [courseCategory, setCourseCategory] = useState<string>("");
   const [imageURL, setImageURL] = useState<string>("");
   const [coursePath, setCoursePath] = useState<string>("");
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -66,30 +71,27 @@ export default function AddCourse({ onCreate }: Props) {
     }
 
     setIsLoadingManualInsertion(true);
-    let uploadedImageUrl = imageURL.trim();
 
     try {
-      const selectedFile = fileInputRef.current?.files?.[0];
-      if (selectedFile) {
-        toast.info("Enviando imagem de capa...");
-        const uploadRes = await coursesApi.uploadCover(apiUrl, selectedFile);
-        if (uploadRes && uploadRes.url) {
-          uploadedImageUrl = uploadRes.url;
-        } else {
-          throw new Error("Não foi possível salvar o arquivo da imagem.");
-        }
-      }
+      const selectedFile = fileInputRef.current?.files?.[0] || null;
 
-      await coursesApi.create(apiUrl, {
+      const created = await coursesApi.create(apiUrl, {
         name: courseName.trim(),
-        image_url: uploadedImageUrl,
+        category: courseCategory.trim() || undefined,
+        imageFile: selectedFile,
+        imageUrl: selectedFile ? undefined : imageURL.trim() || undefined,
         path: coursePath.trim(),
       });
+
+      if (created?.id && courseCategory.trim()) {
+        saveLocalCourseCategory(created.id, courseCategory.trim());
+      }
 
       toast.success("Curso cadastrado com sucesso!");
       onCreate();
       setIsOpen(false);
       setCourseName("");
+      setCourseCategory("");
       setImageURL("");
       setCoursePath("");
       handleClearFile();
@@ -120,8 +122,8 @@ export default function AddCourse({ onCreate }: Props) {
         }}
       >
         <DialogTrigger asChild>
-          <Button className="rounded-full bg-primary text-[#030607] font-semibold hover:brightness-105 active:scale-[0.98] shadow-md shadow-primary/20 flex items-center gap-2 px-5 py-2.5 cursor-pointer">
-            <Plus className="w-4 h-4" />
+          <Button className="rounded-xl bg-primary text-[#030607] font-semibold text-[14px] hover:brightness-105 hover:-translate-y-0.5 active:scale-[0.98] shadow-[0_4px_14px_rgba(255,112,32,0.3)] flex items-center gap-2 px-5 py-2.5 h-10 transition-all cursor-pointer">
+            <Plus className="w-4 h-4 stroke-[2.3]" />
             <span>Adicionar Novo Curso</span>
           </Button>
         </DialogTrigger>
@@ -132,18 +134,60 @@ export default function AddCourse({ onCreate }: Props) {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
-            <div>
-              <Label htmlFor="nome" className="text-xs text-foreground font-medium block mb-1.5">
-                Nome do curso
-              </Label>
-              <Input
-                type="text"
-                id="nome"
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-                placeholder="Ex: Linguagem C o Curso Definitivo"
-                className="bg-muted/40 border-border text-foreground rounded-xl"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="nome" className="text-xs text-foreground font-medium block mb-1.5">
+                  Nome do curso
+                </Label>
+                <Input
+                  type="text"
+                  id="nome"
+                  value={courseName}
+                  onChange={(e) => setCourseName(e.target.value)}
+                  placeholder="Ex: Linguagem C o Curso Definitivo"
+                  className="bg-secondary/50 border-border text-foreground rounded-xl"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="categoria" className="text-xs text-foreground font-medium block mb-1.5">
+                  Categoria (Tag)
+                </Label>
+                <Input
+                  type="text"
+                  id="categoria"
+                  value={courseCategory}
+                  onChange={(e) => setCourseCategory(e.target.value)}
+                  placeholder="Ex: Engenharia, Literatura..."
+                  className="bg-secondary/50 border-border text-foreground rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {PRESET_COURSE_CATEGORIES.map((cat) => {
+                const isSelected =
+                  courseCategory.trim().toLowerCase() === cat.label.toLowerCase();
+                return (
+                  <button
+                    key={cat.label}
+                    type="button"
+                    onClick={() => setCourseCategory(cat.label)}
+                    style={
+                      isSelected
+                        ? { backgroundColor: cat.bgColor, color: cat.textColor }
+                        : undefined
+                    }
+                    className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-transparent shadow-sm"
+                        : "bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground border-border"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
             </div>
 
             <div>

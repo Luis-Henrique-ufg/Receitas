@@ -8,6 +8,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MoreVertical, ArrowRight, Edit3, Trash2, Video, Clock } from "lucide-react";
 import { getLastViewedLesson } from "@/utils/utils";
+import { getCourseCategoryTag } from "@/utils/courseCategory";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
 
 type Props = {
@@ -84,11 +85,12 @@ export default function CourseItem({
     : "/sem-foto.png";
 
   const lastWatched = getLastViewedLesson(course.id.toString());
-  const ctaLabel = lastWatched ? "Continuar" : "Estudar";
   const completedPct = stats?.completed_percentage ?? 0;
   const isCompleted = completedPct === 100;
+  const ctaLabel = isCompleted ? "Rever" : lastWatched || isHeroCourse ? "Continuar" : "Estudar";
   const totalLessons = stats?.total_lessons ?? 0;
   const totalHours = stats?.remaining_seconds ? Math.max(1, Math.round(stats.remaining_seconds / 3600)) : null;
+  const categoryTag = getCourseCategoryTag(course);
 
   return (
     <article
@@ -96,36 +98,37 @@ export default function CourseItem({
       style={style}
       {...(isEditable ? attributes : {})}
       {...(isEditable ? listeners : {})}
-      className={`group relative overflow-hidden rounded-3xl bg-card border border-border shadow-sm hover:border-primary hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full ${
+      className={`group relative overflow-hidden rounded-3xl bg-card border border-border tangerina-card-hover flex flex-col justify-between h-full ${
         isDragging
           ? "shadow-2xl ring-2 ring-primary z-50 opacity-80"
           : ""
       } ${isEditable ? "cursor-grab active:cursor-grabbing" : ""}`}
     >
       <div className="flex flex-col flex-1">
-        {/* Course Thumbnail with Status Tag and Action Menu */}
-        <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-black/20 border-b border-border/80">
+        {/* Course Thumbnail with Category Tag and Action Menu */}
+        <div className="relative w-full h-44 sm:h-48 overflow-hidden bg-[#2a2522] border-b border-border">
           <div className="w-full h-full cursor-pointer overflow-hidden" onClick={onPlay}>
             <img
-              className="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500 ease-out will-change-transform"
+              className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500 ease-out will-change-transform"
               src={courseCover}
               alt={course.name}
             />
           </div>
 
-          {/* Floating Course Tag Badge */}
-          <div className="absolute top-3.5 left-3.5 z-20 pointer-events-none select-none">
-            {isCompleted ? (
-              <span className="bg-accent text-white text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+          {/* Floating Category Tag Badge */}
+          <div className="absolute top-3.5 left-3.5 z-20 pointer-events-none select-none flex items-center gap-1.5 flex-wrap pr-12">
+            <span
+              style={{
+                backgroundColor: categoryTag.bgColor,
+                color: categoryTag.textColor,
+              }}
+              className="text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.06em] shadow-sm"
+            >
+              {categoryTag.label}
+            </span>
+            {isCompleted && (
+              <span className="bg-accent text-white text-[10.5px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em] shadow-sm">
                 Concluído
-              </span>
-            ) : isHeroCourse || lastWatched ? (
-              <span className="bg-primary text-[#030607] text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                Em Andamento
-              </span>
-            ) : (
-              <span className="bg-secondary/90 text-foreground border border-border text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                Curso
               </span>
             )}
           </div>
@@ -183,25 +186,25 @@ export default function CourseItem({
           <div>
             <h3
               onClick={onPlay}
-              className="text-xl sm:text-2xl font-display font-semibold text-foreground tracking-tight leading-snug line-clamp-2 cursor-pointer hover:text-primary transition-colors text-left"
+              className="text-[19px] sm:text-[20px] font-display font-semibold text-foreground tracking-[-0.02em] leading-[1.28] line-clamp-2 cursor-pointer hover:text-primary transition-colors text-left"
               title={course.name}
             >
               {course.name}
             </h3>
           </div>
 
-          <div className="w-full mt-auto">
+          <div className="w-full mt-auto pt-1">
             <CoursePercentage courseId={course.id} />
           </div>
         </div>
       </div>
 
       {/* Card Footer: Metadata on left, Action pill on right */}
-      <div className="px-5 sm:px-6 py-4 border-t border-border/80 flex items-center justify-between bg-card shrink-0">
-        <div className="flex items-center gap-3.5 text-xs text-muted-foreground font-medium">
+      <div className="px-5 sm:px-6 py-3.5 border-t border-border flex items-center justify-between bg-card shrink-0">
+        <div className="flex items-center gap-3.5 text-[12.5px] text-muted-foreground font-medium">
           {totalLessons > 0 && (
             <span className="flex items-center gap-1.5" title={`${totalLessons} aulas no curso`}>
-              <Video className="w-3.5 h-3.5 text-primary/80 shrink-0" />
+              <Video className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>{totalLessons} aulas</span>
             </span>
           )}
@@ -216,7 +219,7 @@ export default function CourseItem({
         <button
           type="button"
           onClick={onPlay}
-          className="inline-flex items-center gap-1.5 bg-secondary hover:bg-primary text-foreground hover:text-[#030607] border border-border hover:border-primary px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
+          className="inline-flex items-center gap-1.5 bg-secondary hover:bg-primary text-foreground hover:text-[#030607] border border-border hover:border-primary px-4 py-2 rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer active:scale-95"
         >
           <span>{ctaLabel}</span>
           <ArrowRight className="w-3.5 h-3.5 shrink-0" />

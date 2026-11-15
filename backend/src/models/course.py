@@ -12,6 +12,7 @@ class Course(db.Model):
     is_cover_url = db.Column("isCoverUrl", db.Integer, default=0)
     file_cover = db.Column("fileCover", db.String(255), nullable=True)
     url_cover = db.Column("urlCover", db.String(255), nullable=True)
+    category = db.Column(db.String(80), nullable=True)
     position = db.Column(db.Integer, default=0)
 
     # Compatibilidade retroativa para acessos legado
@@ -27,5 +28,6 @@ class Course(db.Model):
             "isCoverUrl": bool(self.is_cover_url),
             "fileCover": self.file_cover,
             "urlCover": self.url_cover,
+            "category": self.category,
             "position": self.position,
         }

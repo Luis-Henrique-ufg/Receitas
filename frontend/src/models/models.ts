@@ -5,6 +5,7 @@ export type Course = {
   name: string;
   path: string;
   urlCover?: string;
+  category?: string | null;
   position?: number;
 };
 

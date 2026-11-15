@@ -19,7 +19,14 @@ def reorder_courses():
 @courses_bp.route("/api/courses/<int:course_id>", methods=["GET"])
 def get_course(course_id):
     course = CourseService.get_by_id(course_id)
-    return jsonify({"id": course.id, "name": course.name, "path": course.path})
+    return jsonify(
+        {
+            "id": course.id,
+            "name": course.name,
+            "path": course.path,
+            "category": course.category,
+        }
+    )
 
 
 @courses_bp.route("/api/courses", methods=["POST"])
@@ -28,6 +35,7 @@ def add_course():
     path = request.form["path"]
     image_url = request.form.get("imageURL")
     image_file = request.files.get("imageFile")
+    category = request.form.get("category")
 
     course = CourseService.create(
         name=name,
@@ -35,8 +43,9 @@ def add_course():
         image_url=image_url,
         image_file=image_file,
         upload_folder=current_app.config["UPLOAD_FOLDER"],
+        category=category,
     )
-    return jsonify({"id": course.id, "name": course.name}), 201
+    return jsonify({"id": course.id, "name": course.name, "category": course.category}), 201
 
 
 @courses_bp.route("/api/courses/<int:course_id>", methods=["PUT"])
@@ -45,6 +54,7 @@ def update_course(course_id):
     path = request.form["path"]
     image_url = request.form.get("imageURL")
     image_file = request.files.get("imageFile")
+    category = request.form.get("category")
 
     course = CourseService.update(
         course_id=course_id,
@@ -53,6 +63,7 @@ def update_course(course_id):
         image_url=image_url,
         image_file=image_file,
         upload_folder=current_app.config["UPLOAD_FOLDER"],
+        category=category,
     )
     return jsonify(course.to_dict())
 

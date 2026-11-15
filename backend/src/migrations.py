@@ -15,6 +15,16 @@ def run_migrations(engine):
         tables = inspector.get_table_names()
 
         with engine.connect() as conn:
+            # 0. Check course columns (category support)
+            if "course" in tables:
+                course_cols = [c["name"] for c in inspector.get_columns("course")]
+                if "category" not in course_cols:
+                    logger.info("Migrating course: adding category column")
+                    conn.execute(
+                        text("ALTER TABLE course ADD COLUMN category VARCHAR(80)")
+                    )
+                    conn.commit()
+
             # 1. Check daily_activity columns
             if "daily_activity" in tables:
                 columns = [c["name"] for c in inspector.get_columns("daily_activity")]

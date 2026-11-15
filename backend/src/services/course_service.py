@@ -32,7 +32,14 @@ class CourseService:
         return Course.query.get_or_404(course_id)
 
     @staticmethod
-    def create(name, path, image_url=None, image_file=None, upload_folder=None):
+    def create(
+        name,
+        path,
+        image_url=None,
+        image_file=None,
+        upload_folder=None,
+        category=None,
+    ):
         file_cover = None
         has_file = bool(image_file and getattr(image_file, "filename", None))
 
@@ -56,12 +63,15 @@ class CourseService:
             url_cover = None
             file_cover = None
 
+        clean_category = str(category).strip() if category and str(category).strip() else None
+
         course = Course(
             name=name,
             path=path,
             is_cover_url=is_cover_url,
             file_cover=file_cover,
             url_cover=url_cover,
+            category=clean_category,
         )
         logger.info("Saving course with file cover: %s", course.file_cover)
         db.session.add(course)
@@ -72,12 +82,20 @@ class CourseService:
 
     @staticmethod
     def update(
-        course_id, name, path, image_url=None, image_file=None, upload_folder=None
+        course_id,
+        name,
+        path,
+        image_url=None,
+        image_file=None,
+        upload_folder=None,
+        category=None,
     ):
         course = Course.query.get_or_404(course_id)
         old_path = course.path
         course.name = name
         course.path = path
+        if category is not None:
+            course.category = str(category).strip() if str(category).strip() else None
 
         has_file = bool(image_file and getattr(image_file, "filename", None))
 

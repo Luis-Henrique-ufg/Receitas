@@ -309,19 +309,19 @@ export default function ActivityHeatmap() {
   }
 
   return (
-    <section className="w-full bg-card rounded-3xl p-6 sm:p-8 border border-border shadow-sm mb-12 sm:mb-14 space-y-6">
+    <section className="w-full bg-card rounded-3xl p-6 sm:p-7 border border-border tangerina-card space-y-6">
       {/* CANONICAL SPOTLIGHT ROW FROM TANGERINA-PREVIEW.HTML */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         {/* Left: Fire Box + Streak Meta */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 border border-primary/25 text-primary text-2xl sm:text-3xl flex items-center justify-center shrink-0 select-none shadow-sm">
+        <div className="flex items-center gap-4 sm:gap-5">
+          <div className="w-14 h-14 sm:w-[60px] sm:h-[60px] rounded-2xl bg-primary/12 border border-primary/25 text-primary text-2xl sm:text-[26px] flex items-center justify-center shrink-0 select-none">
             🔥
           </div>
           <div className="space-y-1">
-            <h3 className="text-xl sm:text-2xl font-display font-semibold text-foreground tracking-tight">
+            <h3 className="text-xl sm:text-[22px] font-display font-semibold text-foreground tracking-[-0.02em] leading-tight">
               {currentStreak} {currentStreak === 1 ? "Dia Seguido de Foco" : "Dias Seguidos de Foco"}
             </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <p className="text-[13.5px] text-muted-foreground">
               Ritmo semanal consistente &bull; {formatDuration(weekSeconds)} de estudo acumulados nesta semana
               {maxStreak > 0 ? ` (Recorde: ${maxStreak} dias)` : ""}
             </p>
@@ -329,7 +329,7 @@ export default function ActivityHeatmap() {
         </div>
 
         {/* Right: Weekly Rhythm Squares + Expand Toggle */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
           {recentDays.map((day) => {
             const dObj = new Date(day.date + "T00:00:00");
             const dayOfWeek = (dObj.getDay() + 6) % 7; // 0 = Mon, 6 = Sun
@@ -339,9 +339,9 @@ export default function ActivityHeatmap() {
             // Tangerina active states: active-1, active-2, active-3
             const levelClass =
               day.level === 0
-                ? "bg-muted/30 text-muted-foreground/60 border-border/50"
+                ? "bg-secondary/70 text-muted-foreground border-border"
                 : day.level === 1
-                ? "bg-primary/20 text-primary font-bold border-primary/30"
+                ? "bg-primary/20 text-primary font-bold border-primary/35"
                 : day.level === 2
                 ? "bg-primary/50 text-foreground font-bold border-primary/60"
                 : "bg-primary text-[#030607] font-bold border-primary shadow-[0_0_10px_rgba(255,112,32,0.3)]";
@@ -353,11 +353,11 @@ export default function ActivityHeatmap() {
                   day.pomodoros > 0 ? ` (${day.pomodoros} pomodoros)` : ""
                 }`}
                 className={cn(
-                  "h-9 sm:h-10 rounded-xl flex items-center justify-center text-xs font-semibold border transition-all duration-200 cursor-default select-none hover:-translate-y-0.5",
+                  "h-9 sm:h-[38px] rounded-[10px] flex items-center justify-center text-[12px] font-semibold border transition-all duration-200 cursor-default select-none hover:-translate-y-0.5",
                   levelClass,
                   isToday
                     ? "px-3 min-w-[52px] ring-2 ring-primary ring-offset-2 ring-offset-card"
-                    : "w-9 sm:w-10"
+                    : "w-9 sm:w-[38px]"
                 )}
               >
                 {isToday ? "Hoje" : letter}
@@ -369,7 +369,7 @@ export default function ActivityHeatmap() {
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground px-3.5 py-2 rounded-full border border-border/80 hover:border-primary/50 bg-background/50 hover:bg-muted transition-all cursor-pointer ml-auto lg:ml-2"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground hover:text-foreground px-3.5 py-2 rounded-full border border-border hover:border-primary/50 bg-secondary/60 hover:bg-secondary transition-all cursor-pointer ml-auto lg:ml-2"
           >
             <span>{isExpanded ? "Ocultar matriz anual" : "Ver matriz de 365 dias"}</span>
             <ChevronDown
