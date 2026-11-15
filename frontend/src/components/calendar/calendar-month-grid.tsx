@@ -3,13 +3,14 @@ import { StudyEvent, EventCategory, CATEGORY_CONFIGS } from "@/models/event";
 import { HeatmapDay } from "@/services/statsApi";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, Layers } from "lucide-react";
+import CategoryIcon from "./category-icon";
 
 interface CalendarMonthGridProps {
   currentDate: Date;
   onChangeMonth: (nextDate: Date) => void;
   events: StudyEvent[];
-  heatmapDays: HeatmapDay[];
+  heatmapDays?: HeatmapDay[];
   categoryFilter: EventCategory | "all";
   onChangeCategoryFilter: (cat: EventCategory | "all") => void;
   onSelectDate: (dateStr: string) => void;
@@ -44,7 +45,6 @@ export default function CalendarMonthGrid({
   currentDate,
   onChangeMonth,
   events,
-  heatmapDays,
   categoryFilter,
   onChangeCategoryFilter,
   onSelectDate,
@@ -59,13 +59,6 @@ export default function CalendarMonthGrid({
       d.getDate()
     ).padStart(2, "0")}`;
   }, []);
-
-  // Map of dateStr -> HeatmapDay for study indicators
-  const studyMap = useMemo(() => {
-    const map = new Map<string, HeatmapDay>();
-    heatmapDays.forEach((d) => map.set(d.date, d));
-    return map;
-  }, [heatmapDays]);
 
   // Filter events by category
   const filteredEvents = useMemo(() => {
@@ -200,13 +193,14 @@ export default function CalendarMonthGrid({
             type="button"
             onClick={() => onChangeCategoryFilter("all")}
             className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer",
+              "px-3 py-1.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer",
               categoryFilter === "all"
                 ? "bg-primary text-[#030607] border-primary font-semibold shadow-sm"
-                : "bg-secondary/60 border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
+                : "bg-secondary/60 border-border text-foreground/85 hover:text-foreground hover:bg-secondary"
             )}
           >
-            Todas
+            <Layers className="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
+            <span>Todas</span>
           </button>
 
           {(Object.keys(CATEGORY_CONFIGS) as EventCategory[]).map((cat) => {
@@ -218,17 +212,17 @@ export default function CalendarMonthGrid({
                 type="button"
                 onClick={() => onChangeCategoryFilter(cat)}
                 className={cn(
-                  "px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer",
-                  conf.bgClass,
-                  conf.borderClass,
-                  conf.textClass,
+                  "px-3 py-1.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer",
                   isSelected
-                    ? "ring-2 ring-primary/40 font-semibold scale-[1.02]"
-                    : "opacity-75 hover:opacity-100"
+                    ? cn(conf.bgClass, conf.borderClass, conf.textClass, "font-semibold shadow-sm ring-1 ring-current/20")
+                    : "bg-secondary/60 border-border text-foreground/85 hover:text-foreground hover:bg-secondary"
                 )}
               >
-                <span className={cn("w-1.5 h-1.5 rounded-full", conf.dotClass)} />
-                {conf.label}
+                <CategoryIcon
+                  category={cat}
+                  className={cn("w-3.5 h-3.5", isSelected ? conf.textClass : conf.iconColorClass)}
+                />
+                <span>{conf.label}</span>
               </button>
             );
           })}
@@ -248,9 +242,6 @@ export default function CalendarMonthGrid({
       <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
         {cells.map((cell) => {
           const dayEvents = eventsByDate.get(cell.dateStr) || [];
-          const studyInfo = studyMap.get(cell.dateStr);
-          const studiedSeconds = studyInfo?.study_seconds || 0;
-          const hasStudied = studiedSeconds > 0;
 
           return (
             <div
@@ -264,7 +255,7 @@ export default function CalendarMonthGrid({
                 cell.isToday && "ring-2 ring-primary/45 border-primary bg-primary/[0.06]"
               )}
             >
-              {/* Day header: Day number + Study Indicator */}
+              {/* Day header: Day number */}
               <div className="flex items-center justify-between gap-1 w-full">
                 <span
                   className={cn(
@@ -278,19 +269,6 @@ export default function CalendarMonthGrid({
                 >
                   {cell.dayNumber}
                 </span>
-
-                {/* Subtle Study indicator badge */}
-                {hasStudied && (
-                  <span
-                    className="inline-flex items-center gap-1 text-[9px] font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/25 font-medium"
-                    title={`Estudo registrado: ${Math.round(studiedSeconds / 60)} min`}
-                  >
-                    <BookOpen className="w-2.5 h-2.5 text-primary shrink-0" />
-                    <span className="hidden sm:inline">
-                      {Math.round(studiedSeconds / 60)}m
-                    </span>
-                  </span>
-                )}
               </div>
 
               {/* Event Chips List */}
@@ -314,6 +292,10 @@ export default function CalendarMonthGrid({
                       )}
                       title={`${event.title}${event.time ? ` às ${event.time}` : ""}`}
                     >
+                      <CategoryIcon
+                        category={event.category}
+                        className="w-2.5 h-2.5 inline-block mr-1 shrink-0 align-[-1.5px]"
+                      />
                       {event.subject_color && (
                         <span
                           className="inline-block w-1.5 h-1.5 rounded-full mr-1 shrink-0 align-middle"

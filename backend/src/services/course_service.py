@@ -39,6 +39,7 @@ class CourseService:
         image_file=None,
         upload_folder=None,
         category=None,
+        cover_position=None,
     ):
         file_cover = None
         has_file = bool(image_file and getattr(image_file, "filename", None))
@@ -64,6 +65,11 @@ class CourseService:
             file_cover = None
 
         clean_category = str(category).strip() if category and str(category).strip() else None
+        clean_cover_position = (
+            str(cover_position).strip()
+            if cover_position and str(cover_position).strip()
+            else "50% 50%"
+        )
 
         course = Course(
             name=name,
@@ -72,6 +78,7 @@ class CourseService:
             file_cover=file_cover,
             url_cover=url_cover,
             category=clean_category,
+            cover_position=clean_cover_position,
         )
         logger.info("Saving course with file cover: %s", course.file_cover)
         db.session.add(course)
@@ -89,6 +96,7 @@ class CourseService:
         image_file=None,
         upload_folder=None,
         category=None,
+        cover_position=None,
     ):
         course = Course.query.get_or_404(course_id)
         old_path = course.path
@@ -96,6 +104,8 @@ class CourseService:
         course.path = path
         if category is not None:
             course.category = str(category).strip() if str(category).strip() else None
+        if cover_position is not None and str(cover_position).strip():
+            course.cover_position = str(cover_position).strip()
 
         has_file = bool(image_file and getattr(image_file, "filename", None))
 

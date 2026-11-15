@@ -25,6 +25,7 @@ def get_course(course_id):
             "name": course.name,
             "path": course.path,
             "category": course.category,
+            "coverPosition": course.cover_position or "50% 50%",
         }
     )
 
@@ -36,6 +37,7 @@ def add_course():
     image_url = request.form.get("imageURL")
     image_file = request.files.get("imageFile")
     category = request.form.get("category")
+    cover_position = request.form.get("coverPosition")
 
     course = CourseService.create(
         name=name,
@@ -44,8 +46,16 @@ def add_course():
         image_file=image_file,
         upload_folder=current_app.config["UPLOAD_FOLDER"],
         category=category,
+        cover_position=cover_position,
     )
-    return jsonify({"id": course.id, "name": course.name, "category": course.category}), 201
+    return jsonify(
+        {
+            "id": course.id,
+            "name": course.name,
+            "category": course.category,
+            "coverPosition": course.cover_position or "50% 50%",
+        }
+    ), 201
 
 
 @courses_bp.route("/api/courses/<int:course_id>", methods=["PUT"])
@@ -55,6 +65,7 @@ def update_course(course_id):
     image_url = request.form.get("imageURL")
     image_file = request.files.get("imageFile")
     category = request.form.get("category")
+    cover_position = request.form.get("coverPosition")
 
     course = CourseService.update(
         course_id=course_id,
@@ -64,6 +75,7 @@ def update_course(course_id):
         image_file=image_file,
         upload_folder=current_app.config["UPLOAD_FOLDER"],
         category=category,
+        cover_position=cover_position,
     )
     return jsonify(course.to_dict())
 

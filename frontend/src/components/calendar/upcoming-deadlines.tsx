@@ -10,6 +10,7 @@ import {
   Download,
   BookOpen,
 } from "lucide-react";
+import CategoryIcon from "./category-icon";
 
 interface UpcomingDeadlinesProps {
   events: StudyEvent[];
@@ -158,13 +159,13 @@ export default function UpcomingDeadlines({
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span
                           className={cn(
-                            "px-2 py-0.5 rounded-full text-[10px] font-medium border inline-flex items-center gap-1",
+                            "px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border inline-flex items-center gap-1.5",
                             conf.bgClass,
                             conf.borderClass,
                             conf.textClass
                           )}
                         >
-                          <span className={cn("w-1.5 h-1.5 rounded-full", conf.dotClass)} />
+                          <CategoryIcon category={event.category} className="w-3 h-3" />
                           {conf.label}
                         </span>
 

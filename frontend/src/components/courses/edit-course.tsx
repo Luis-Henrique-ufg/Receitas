@@ -24,8 +24,11 @@ import { coursesApi } from "@/services/coursesApi";
 import {
   PRESET_COURSE_CATEGORIES,
   getCourseCategoryTag,
+  getCourseCoverPosition,
   saveLocalCourseCategory,
+  saveLocalCourseCoverPosition,
 } from "@/utils/courseCategory";
+import CoverPositionControl from "./cover-position-control";
 import { X } from "lucide-react";
 
 type Props = {
@@ -78,9 +81,11 @@ export default function EditCourse({
   useEffect(() => {
     if (isOpen) {
       const resolvedTag = getCourseCategoryTag(course);
+      const resolvedPos = getCourseCoverPosition(course);
       setCurrentCourse({
         ...course,
         category: course.category || resolvedTag.label,
+        coverPosition: resolvedPos,
       });
       handleClearFile();
     }
@@ -119,11 +124,14 @@ export default function EditCourse({
     try {
       const imageFile = fileInputRefEdit.current?.files?.[0] || null;
       const chosenCategory = (currentCourse.category || "").trim();
+      const chosenPosition = (currentCourse.coverPosition || "50% 50%").trim();
       saveLocalCourseCategory(course.id, chosenCategory);
+      saveLocalCourseCoverPosition(course.id, chosenPosition);
       await coursesApi.update(apiUrl, course.id, {
         name: currentCourse.name,
         path: currentCourse.path,
         category: chosenCategory,
+        coverPosition: chosenPosition,
         imageFile,
         imageUrl: imageFile ? undefined : (currentCourse.urlCover?.trim() || undefined),
       });
@@ -166,6 +174,12 @@ export default function EditCourse({
     ? `${apiUrl}/uploads/${course.fileCover}`
     : null;
 
+  const activePreviewSrc =
+    filePreview ||
+    (currentCourse.urlCover && currentCourse.urlCover.trim()
+      ? currentCourse.urlCover.trim()
+      : currentCoverSrc);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       {(!isControlled || trigger) && (
@@ -186,7 +200,7 @@ export default function EditCourse({
       )}
       <DialogContent
         onPointerDownOutside={(e) => e.preventDefault()}
-        className="md:max-w-[650px] max-w-sm bg-card border border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7"
+        className="md:max-w-[650px] max-w-sm max-h-[90vh] overflow-y-auto bg-card border border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7"
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-display font-semibold text-foreground mb-2">
@@ -304,6 +318,7 @@ export default function EditCourse({
                     <img
                       src={filePreview}
                       alt="Prévia do novo anexo"
+                      style={{ objectPosition: currentCourse.coverPosition || "50% 50%" }}
                       className="w-16 h-10 object-cover rounded-lg border border-border"
                     />
                     <div className="flex-1 text-xs text-foreground truncate">
@@ -326,6 +341,7 @@ export default function EditCourse({
                     <img
                       src={currentCoverSrc}
                       alt="Capa atual"
+                      style={{ objectPosition: currentCourse.coverPosition || "50% 50%" }}
                       className="w-16 h-10 object-cover rounded-lg border border-border opacity-90"
                     />
                     <div className="flex-1 text-xs text-muted-foreground">
@@ -336,6 +352,19 @@ export default function EditCourse({
                     </div>
                   </div>
                 ) : null}
+
+                {activePreviewSrc && (
+                  <CoverPositionControl
+                    imageSrc={activePreviewSrc}
+                    value={currentCourse.coverPosition || "50% 50%"}
+                    onChange={(nextPos) =>
+                      setCurrentCourse((prev) => ({
+                        ...prev,
+                        coverPosition: nextPos,
+                      }))
+                    }
+                  />
+                )}
               </CardContent>
             </Card>
           </div>

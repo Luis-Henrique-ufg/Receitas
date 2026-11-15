@@ -18,7 +18,9 @@ import { coursesApi } from "@/services/coursesApi";
 import {
   PRESET_COURSE_CATEGORIES,
   saveLocalCourseCategory,
+  saveLocalCourseCoverPosition,
 } from "@/utils/courseCategory";
+import CoverPositionControl from "./cover-position-control";
 
 type Props = {
   onCreate: () => void;
@@ -27,6 +29,7 @@ type Props = {
 export default function AddCourse({ onCreate }: Props) {
   const [courseName, setCourseName] = useState<string>("");
   const [courseCategory, setCourseCategory] = useState<string>("");
+  const [coverPosition, setCoverPosition] = useState<string>("50% 50%");
   const [imageURL, setImageURL] = useState<string>("");
   const [coursePath, setCoursePath] = useState<string>("");
   const [filePreview, setFilePreview] = useState<string | null>(null);
@@ -78,13 +81,17 @@ export default function AddCourse({ onCreate }: Props) {
       const created = await coursesApi.create(apiUrl, {
         name: courseName.trim(),
         category: courseCategory.trim() || undefined,
+        coverPosition,
         imageFile: selectedFile,
         imageUrl: selectedFile ? undefined : imageURL.trim() || undefined,
         path: coursePath.trim(),
       });
 
-      if (created?.id && courseCategory.trim()) {
-        saveLocalCourseCategory(created.id, courseCategory.trim());
+      if (created?.id) {
+        if (courseCategory.trim()) {
+          saveLocalCourseCategory(created.id, courseCategory.trim());
+        }
+        saveLocalCourseCoverPosition(created.id, coverPosition);
       }
 
       toast.success("Curso cadastrado com sucesso!");
@@ -92,6 +99,7 @@ export default function AddCourse({ onCreate }: Props) {
       setIsOpen(false);
       setCourseName("");
       setCourseCategory("");
+      setCoverPosition("50% 50%");
       setImageURL("");
       setCoursePath("");
       handleClearFile();
@@ -127,7 +135,7 @@ export default function AddCourse({ onCreate }: Props) {
             <span>Adicionar Novo Curso</span>
           </Button>
         </DialogTrigger>
-        <DialogContent className="md:max-w-[650px] max-w-sm bg-card border border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7">
+        <DialogContent className="md:max-w-[650px] max-w-sm max-h-[90vh] overflow-y-auto bg-card border border-border text-foreground rounded-3xl shadow-2xl p-6 sm:p-7">
           <DialogHeader>
             <DialogTitle className="text-xl font-display font-semibold text-foreground mb-2">
               Cadastro de Novo Curso
@@ -235,6 +243,7 @@ export default function AddCourse({ onCreate }: Props) {
                       <img
                         src={filePreview}
                         alt="Prévia da capa local"
+                        style={{ objectPosition: coverPosition }}
                         className="w-16 h-10 object-cover rounded-lg border border-border"
                       />
                       <div className="flex-1 text-xs text-foreground truncate">
@@ -252,6 +261,14 @@ export default function AddCourse({ onCreate }: Props) {
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
+                  )}
+
+                  {(filePreview || imageURL.trim()) && (
+                    <CoverPositionControl
+                      imageSrc={filePreview || imageURL.trim()}
+                      value={coverPosition}
+                      onChange={setCoverPosition}
+                    />
                   )}
                 </CardContent>
               </Card>

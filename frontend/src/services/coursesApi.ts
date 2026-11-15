@@ -5,6 +5,7 @@ export interface CreateCoursePayload {
   name: string;
   path: string;
   category?: string;
+  coverPosition?: string;
   imageUrl?: string;
   imageFile?: File | null;
 }
@@ -13,6 +14,7 @@ export interface UpdateCoursePayload {
   name: string;
   path: string;
   category?: string;
+  coverPosition?: string;
   imageUrl?: string;
   imageFile?: File | null;
 }
@@ -51,6 +53,9 @@ export const coursesApi = {
     if (payload.category !== undefined) {
       formData.append("category", payload.category);
     }
+    if (payload.coverPosition !== undefined) {
+      formData.append("coverPosition", payload.coverPosition);
+    }
     if (payload.imageFile) {
       formData.append("imageFile", payload.imageFile);
     } else if (payload.imageUrl) {
@@ -67,6 +72,9 @@ export const coursesApi = {
     formData.append("path", payload.path);
     if (payload.category !== undefined) {
       formData.append("category", payload.category);
+    }
+    if (payload.coverPosition !== undefined) {
+      formData.append("coverPosition", payload.coverPosition);
     }
     if (payload.imageFile) {
       formData.append("imageFile", payload.imageFile);

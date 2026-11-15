@@ -186,3 +186,51 @@ export function saveLocalCourseCategory(courseId: number, category: string) {
     // Ignore storage write error
   }
 }
+
+export function parseCoverPosition(posStr?: string | null): { x: number; y: number } {
+  if (!posStr || !posStr.trim()) {
+    return { x: 50, y: 50 };
+  }
+  const matches = posStr.match(/(\d+(?:\.\d+)?)/g);
+  if (matches && matches.length >= 2) {
+    const x = Math.max(0, Math.min(100, Math.round(Number(matches[0]))));
+    const y = Math.max(0, Math.min(100, Math.round(Number(matches[1]))));
+    return { x, y };
+  }
+  return { x: 50, y: 50 };
+}
+
+export function getCourseCoverPosition(course: Course): string {
+  try {
+    const raw = localStorage.getItem("courseCoverPositions");
+    if (raw) {
+      const map = JSON.parse(raw) as Record<string, string>;
+      const saved = map[String(course.id)];
+      if (saved && saved.trim()) {
+        return saved.trim();
+      }
+    }
+  } catch {
+    // Ignore storage read error
+  }
+  if (course.coverPosition && course.coverPosition.trim()) {
+    return course.coverPosition.trim();
+  }
+  return "50% 50%";
+}
+
+export function saveLocalCourseCoverPosition(courseId: number, position: string) {
+  try {
+    const raw = localStorage.getItem("courseCoverPositions");
+    const map = raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    if (position.trim()) {
+      map[String(courseId)] = position.trim();
+    } else {
+      delete map[String(courseId)];
+    }
+    localStorage.setItem("courseCoverPositions", JSON.stringify(map));
+    window.dispatchEvent(new CustomEvent("courseCoverPositionUpdated"));
+  } catch {
+    // Ignore storage write error
+  }
+}

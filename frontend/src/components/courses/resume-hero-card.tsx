@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Play, PlayCircle, Film, CheckCircle2 } from "lucide-react";
 import { Course, Lesson } from "@/models/models";
 import { getMostRecentActiveCourse } from "@/utils/utils";
+import { getCourseCoverPosition } from "@/utils/courseCategory";
 import useApiUrl from "@/hooks/useApiUrl";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
 
@@ -54,9 +55,11 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
     };
 
     window.addEventListener("lastViewedLessonUpdated", handleUpdate);
+    window.addEventListener("courseCoverPositionUpdated", handleUpdate);
     window.addEventListener("storage", handleUpdate);
     return () => {
       window.removeEventListener("lastViewedLessonUpdated", handleUpdate);
+      window.removeEventListener("courseCoverPositionUpdated", handleUpdate);
       window.removeEventListener("storage", handleUpdate);
     };
   }, []);
@@ -100,6 +103,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
     : course.fileCover
     ? `${apiUrl}/uploads/${course.fileCover}`
     : "/sem-foto.png";
+  const coverPosition = getCourseCoverPosition(course);
 
   const lessonElapsed = lesson?.time_elapsed ? Number(lesson.time_elapsed) : 0;
   const durationNum = lesson?.duration ? parseFloat(lesson.duration) : 0;
@@ -220,6 +224,7 @@ export default function ResumeHeroCard({ courses, onPlay }: ResumeHeroCardProps)
           <img
             src={courseCover}
             alt={course.name}
+            style={{ objectPosition: coverPosition }}
             className="w-full h-full md:absolute md:inset-0 object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:hidden" />

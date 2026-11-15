@@ -6,6 +6,7 @@ import { StudyEvent, CATEGORY_CONFIGS } from "@/models/event";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Calendar, ChevronRight, BookOpen, Clock, Plus } from "lucide-react";
+import CategoryIcon from "./category-icon";
 
 function getDaysDiff(targetDateStr: string): number {
   const [year, month, day] = targetDateStr.split("-").map(Number);
@@ -117,13 +118,13 @@ export default function DashboardDeadlinesWidget() {
                 <div className="flex items-center justify-between gap-1.5">
                   <span
                     className={cn(
-                      "px-2.5 py-0.5 rounded-full text-[10px] font-medium border inline-flex items-center gap-1.5",
+                      "px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border inline-flex items-center gap-1.5",
                       conf.bgClass,
                       conf.borderClass,
                       conf.textClass
                     )}
                   >
-                    <span className={cn("w-1.5 h-1.5 rounded-full", conf.dotClass)} />
+                    <CategoryIcon category={ev.category} className="w-3 h-3" />
                     {conf.label}
                   </span>
 

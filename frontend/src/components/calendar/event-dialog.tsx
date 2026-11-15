@@ -19,6 +19,7 @@ import {
 } from "@/models/event";
 import { cn } from "@/lib/utils";
 import { Trash2, CheckCircle2 } from "lucide-react";
+import CategoryIcon from "./category-icon";
 
 interface EventDialogProps {
   isOpen: boolean;
@@ -154,15 +155,15 @@ export default function EventDialog({
                     onClick={() => setCategory(cat)}
                     className={cn(
                       "px-3 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all cursor-pointer",
-                      conf.bgClass,
-                      conf.borderClass,
-                      conf.textClass,
                       isSelected
-                        ? "ring-2 ring-primary/45 font-semibold scale-[1.02]"
-                        : "opacity-70 hover:opacity-100"
+                        ? cn(conf.bgClass, conf.borderClass, conf.textClass, "font-semibold shadow-sm ring-1 ring-current/20")
+                        : "bg-secondary/50 border-border text-foreground/85 hover:text-foreground hover:bg-secondary"
                     )}
                   >
-                    <span className={cn("w-2 h-2 rounded-full", conf.dotClass)} />
+                    <CategoryIcon
+                      category={cat}
+                      className={cn("w-3.5 h-3.5", isSelected ? conf.textClass : conf.iconColorClass)}
+                    />
                     {conf.label}
                   </button>
                 );

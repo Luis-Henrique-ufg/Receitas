@@ -39,35 +39,40 @@ export interface CategoryConfig {
   borderClass: string;
   textClass: string;
   dotClass: string;
+  iconColorClass: string;
 }
 
 export const CATEGORY_CONFIGS: Record<EventCategory, CategoryConfig> = {
   prova: {
     label: "Prova",
-    bgClass: "bg-[#E33D6C]/12 dark:bg-[#E33D6C]/15",
-    borderClass: "border-[#E33D6C]/30",
-    textClass: "text-[#B81D48] dark:text-[#FF85A6]",
+    bgClass: "bg-[#E33D6C]/14 dark:bg-[#E33D6C]/20",
+    borderClass: "border-[#E33D6C]/35 dark:border-[#E33D6C]/45",
+    textClass: "text-[#B81D48] dark:text-[#FF8DA9]",
     dotClass: "bg-[#E33D6C]",
+    iconColorClass: "text-[#E33D6C] dark:text-[#FF7096]",
   },
   entrega: {
     label: "Entrega",
-    bgClass: "bg-primary/12 dark:bg-primary/15",
-    borderClass: "border-primary/30",
-    textClass: "text-[#C84B00] dark:text-primary",
+    bgClass: "bg-primary/14 dark:bg-primary/20",
+    borderClass: "border-primary/35 dark:border-primary/45",
+    textClass: "text-[#C84B00] dark:text-[#FF9E66]",
     dotClass: "bg-primary",
+    iconColorClass: "text-primary",
   },
   revisao: {
     label: "Revisão",
-    bgClass: "bg-accent/12 dark:bg-accent/15",
-    borderClass: "border-accent/30",
-    textClass: "text-[#007A72] dark:text-[#33C7BC]",
+    bgClass: "bg-accent/14 dark:bg-accent/20",
+    borderClass: "border-accent/35 dark:border-accent/45",
+    textClass: "text-[#00756D] dark:text-[#47E0D4]",
     dotClass: "bg-accent",
+    iconColorClass: "text-[#00A196] dark:text-[#33C7BC]",
   },
   lembrete: {
     label: "Lembrete",
-    bgClass: "bg-[#663399]/12 dark:bg-[#663399]/20",
-    borderClass: "border-[#663399]/30 dark:border-[#9B59B6]/35",
-    textClass: "text-[#5B2C86] dark:text-[#D2B4DE]",
-    dotClass: "bg-[#663399] dark:bg-[#9B59B6]",
+    bgClass: "bg-[#8B5CF6]/14 dark:bg-[#8B5CF6]/20",
+    borderClass: "border-[#8B5CF6]/35 dark:border-[#A78BFA]/45",
+    textClass: "text-[#5B2C86] dark:text-[#D8B4FE]",
+    dotClass: "bg-[#8B5CF6]",
+    iconColorClass: "text-[#7C3AED] dark:text-[#C084FC]",
   },
 };

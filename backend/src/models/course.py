@@ -13,12 +13,14 @@ class Course(db.Model):
     file_cover = db.Column("fileCover", db.String(255), nullable=True)
     url_cover = db.Column("urlCover", db.String(255), nullable=True)
     category = db.Column(db.String(80), nullable=True)
+    cover_position = db.Column("coverPosition", db.String(40), nullable=True, default="50% 50%")
     position = db.Column(db.Integer, default=0)
 
     # Compatibilidade retroativa para acessos legado
     isCoverUrl = synonym("is_cover_url")
     fileCover = synonym("file_cover")
     urlCover = synonym("url_cover")
+    coverPosition = synonym("cover_position")
 
     def to_dict(self):
         return {
@@ -29,5 +31,6 @@ class Course(db.Model):
             "fileCover": self.file_cover,
             "urlCover": self.url_cover,
             "category": self.category,
+            "coverPosition": self.cover_position or "50% 50%",
             "position": self.position,
         }

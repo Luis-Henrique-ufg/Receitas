@@ -8,7 +8,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MoreVertical, Edit3, Trash2, Video, Clock } from "lucide-react";
 import { getLastViewedLesson } from "@/utils/utils";
-import { getCourseCategoryTag } from "@/utils/courseCategory";
+import { getCourseCategoryTag, getCourseCoverPosition } from "@/utils/courseCategory";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
 
 type Props = {
@@ -91,6 +91,7 @@ export default function CourseItem({
   const totalLessons = stats?.total_lessons ?? 0;
   const totalHours = stats?.remaining_seconds ? Math.max(1, Math.round(stats.remaining_seconds / 3600)) : null;
   const categoryTag = getCourseCategoryTag(course);
+  const coverPosition = getCourseCoverPosition(course);
 
   return (
     <article
@@ -110,6 +111,7 @@ export default function CourseItem({
           <div className="w-full h-full cursor-pointer overflow-hidden" onClick={onPlay}>
             <img
               className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500 ease-out will-change-transform"
+              style={{ objectPosition: coverPosition }}
               src={courseCover}
               alt={course.name}
             />
