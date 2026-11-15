@@ -146,8 +146,8 @@ export default function CoursesPage() {
 
         <div className="w-full pt-1">
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 sm:gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
                   className="h-80 bg-card border border-border rounded-3xl animate-pulse"

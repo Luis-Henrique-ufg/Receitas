@@ -230,9 +230,9 @@ export function Player({
   return (
     <div
       aria-label={title || "Video Player"}
-      className="w-full h-full bg-black rounded-2xl overflow-hidden shadow-xl glass-panel relative transition-all duration-500"
+      className="w-full h-full bg-[#0A0807] overflow-hidden relative flex items-center justify-center"
     >
-      <div data-vjs-player className="w-full h-full">
+      <div data-vjs-player className="w-full h-full flex items-center justify-center">
         <video
           ref={videoNode}
           crossOrigin="anonymous"

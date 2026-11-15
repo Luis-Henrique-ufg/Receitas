@@ -37,24 +37,27 @@ export default function LastWatchedCard({ courseId }: Props) {
   }
 
   return (
-    <div className="p-4 text-sm border space-y-2">
-      <p className="">
-        <strong>Ultimo Conteúdo aberto:</strong> {lesson.title}{" "}
+    <div className="px-4 py-3 text-xs border-b border-border bg-primary/10 flex items-center justify-between gap-3">
+      <p className="text-foreground truncate">
+        <strong className="font-semibold text-primary">Última aula:</strong>{" "}
+        <span className="text-foreground/90">{lesson.title}</span>
       </p>
-      <div className="space-x-4">
+      <div className="flex items-center gap-1.5 shrink-0">
         <Button
           size="sm"
+          className="h-7 px-2.5 text-[11px] rounded-lg bg-primary text-[#030607] font-semibold hover:brightness-105"
           onClick={() => {
             selectLesson(lesson);
             setLesson(undefined);
           }}
         >
-          Visualizar
+          Ir
         </Button>
 
         <Button
-          variant="secondary"
+          variant="ghost"
           size="sm"
+          className="h-7 px-2 text-[11px] rounded-lg text-muted-foreground hover:text-foreground"
           onClick={() => {
             setLesson(undefined);
           }}

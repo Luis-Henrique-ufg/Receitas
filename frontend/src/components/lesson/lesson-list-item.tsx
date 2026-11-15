@@ -125,34 +125,38 @@ export default function LessonListItem({
   }
 
   const isActive = selectedLessonId === lesson.id;
+  const ext = (lesson.video_url || lesson.pdf_url || "")
+    .split(".")
+    .pop()
+    ?.toLowerCase();
 
   return (
     <div
       key={lesson.id}
       id={`lesson-item-${lesson.id}`}
       className={cn(
-        `relative flex justify-between items-center w-full h-16 my-2 border shadow-sm rounded-xl transition-all duration-300 overflow-hidden group/item cursor-pointer glass-panel-brighten`,
+        "relative flex justify-between items-center w-full min-h-[54px] py-2 border rounded-2xl transition-all duration-200 overflow-hidden group/item cursor-pointer",
         isActive
-          ? "bg-white/10 border-white/25 shadow-sm"
+          ? "bg-primary/12 border-primary/45 shadow-sm"
           : isCompleted
-          ? "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.07]"
-          : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.06]"
+          ? "border-border/80 bg-secondary/40 hover:border-primary/40 hover:bg-secondary/75"
+          : "border-border bg-card hover:border-primary/40 hover:bg-secondary/55"
       )}
     >
       <div
-        className="flex-1 flex gap-3 items-center relative z-10 pl-4 py-2 h-full min-w-0 pr-4"
+        className="flex-1 flex gap-2.5 items-center relative z-10 pl-3 py-1 h-full min-w-0 pr-2"
         onClick={onSelect}
       >
         {isActive ? (
-          <div className="w-8 h-8 flex items-center justify-center bg-[#007bff] text-white rounded-full shrink-0">
-            <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+          <div className="w-7 h-7 flex items-center justify-center bg-primary text-[#030607] rounded-full shrink-0 shadow-sm">
+            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
           </div>
         ) : isCompleted ? (
-          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-emerald-400 text-xs font-heading font-medium">
+          <span className="w-7 h-7 flex items-center justify-center rounded-full bg-accent/15 border border-accent/35 text-accent text-[11px] font-display font-semibold shrink-0">
             {index.toString().padStart(2, "0")}
           </span>
         ) : (
-          <span className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/50 text-xs font-heading font-medium">
+          <span className="w-7 h-7 flex items-center justify-center rounded-full bg-secondary border border-border text-muted-foreground text-[11px] font-display font-semibold shrink-0">
             {index.toString().padStart(2, "0")}
           </span>
         )}
@@ -160,14 +164,16 @@ export default function LessonListItem({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <p className={cn(
-                "flex-1 line-clamp-1 text-left text-sm font-medium transition-colors",
-                isActive
-                  ? "text-white font-semibold"
-                  : isCompleted
-                  ? "text-white/90 group-hover/item:text-white"
-                  : "text-white/70 group-hover/item:text-white"
-              )}>
+              <p
+                className={cn(
+                  "flex-1 line-clamp-1 text-left text-[13px] transition-colors",
+                  isActive
+                    ? "text-foreground font-display font-semibold"
+                    : isCompleted
+                    ? "text-muted-foreground group-hover/item:text-foreground font-medium"
+                    : "text-foreground group-hover/item:text-primary font-medium"
+                )}
+              >
                 {lesson.title}
               </p>
             </TooltipTrigger>
@@ -177,32 +183,30 @@ export default function LessonListItem({
           </Tooltip>
         </TooltipProvider>
 
-        <span className="bg-white/5 border border-white/10 text-white/70 px-2.5 py-0.5 rounded-full text-[10px] uppercase font-semibold tracking-wider shrink-0">
-          {
-            (lesson.video_url || lesson.pdf_url).split(".")[
-              (lesson.video_url || lesson.pdf_url).split(".").length - 1
-            ]
-          }
-        </span>
-        {lesson.duration != "0" && (
-          <span className="bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider">
+        {ext && ext !== "mp4" && (
+          <span className="bg-secondary border border-border text-muted-foreground px-2 py-0.5 rounded-md text-[10px] uppercase font-mono font-semibold tracking-wider shrink-0">
+            {ext}
+          </span>
+        )}
+        {lesson.duration != "0" && Number(lesson.duration) > 0 && (
+          <span className="bg-secondary border border-border text-muted-foreground px-2 py-0.5 rounded-md text-[10.5px] font-mono font-medium shrink-0 tabular-nums">
             {formatDuration(Number(lesson.duration))}
           </span>
         )}
       </div>
-      <div className="shrink-0 flex items-center justify-center relative z-10 pr-6 pl-2">
-        <div className="flex items-center justify-center min-w-[32px] min-h-[32px]">
+      <div className="shrink-0 flex items-center justify-center relative z-10 pr-3 pl-1">
+        <div className="flex items-center justify-center min-w-[28px] min-h-[28px]">
           {isUpdating ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[#007bff]" />
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
           ) : (
-            <Checkbox 
-              checked={isCompleted} 
-              onCheckedChange={toggleIsCompleted} 
+            <Checkbox
+              checked={isCompleted}
+              onCheckedChange={toggleIsCompleted}
               className={cn(
-                "w-5 h-5 transition-all duration-300",
+                "w-4 h-4 transition-all duration-200",
                 isCompleted
-                  ? "border-emerald-500/40 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500 data-[state=checked]:text-white"
-                  : "border-white/30 hover:border-white/60"
+                  ? "border-accent data-[state=checked]:bg-accent data-[state=checked]:border-accent data-[state=checked]:text-white"
+                  : "border-muted-foreground/40 hover:border-primary"
               )}
             />
           )}

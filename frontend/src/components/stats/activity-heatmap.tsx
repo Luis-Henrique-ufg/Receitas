@@ -313,9 +313,10 @@ export default function ActivityHeatmap() {
       {/* CANONICAL SPOTLIGHT ROW FROM TANGERINA-PREVIEW.HTML */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         {/* Left: Fire Box + Streak Meta */}
-        <div className="flex items-center gap-4 sm:gap-5">
-          <div className="w-14 h-14 sm:w-[60px] sm:h-[60px] rounded-2xl bg-primary/12 border border-primary/25 text-primary text-2xl sm:text-[26px] flex items-center justify-center shrink-0 select-none">
-            🔥
+        <div className="flex items-center gap-4 sm:gap-5 group/streak">
+          <div className="relative w-14 h-14 sm:w-[60px] sm:h-[60px] rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-amber-500/15 border border-primary/30 text-primary text-2xl sm:text-[28px] flex items-center justify-center shrink-0 select-none overflow-hidden shadow-[0_4px_16px_rgba(255,112,32,0.15)]">
+            <span className="absolute inset-1.5 rounded-xl bg-primary/20 blur-md animate-flame-halo pointer-events-none" />
+            <span className="relative z-10 animate-flame-dance">🔥</span>
           </div>
           <div className="space-y-1">
             <h3 className="text-xl sm:text-[22px] font-display font-semibold text-foreground tracking-[-0.02em] leading-tight">

@@ -7,14 +7,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronLeft, ChevronRight, Bookmark, Maximize2, Minimize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Bookmark, Maximize2, Minimize2, ArrowLeft } from "lucide-react";
 import LessonAttachments from "@/components/lesson/lesson-attachments";
 import LessonNotes from "@/components/lesson/lesson-notes";
 import CoursePercentage from "@/components/course-percentage";
 import LastWatchedCard from "@/components/lesson/last-watched-card";
 import LessonViewer from "@/components/lesson/lesson-viewer";
 import ModuleList from "@/components/lesson/module-list";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import useCoursePlayer from "@/hooks/useCoursePlayer";
 import useLessonResources from "@/hooks/useLessonResources";
 import { toast } from "sonner";
@@ -27,6 +27,7 @@ import { setLastViewedLesson } from "@/utils/utils";
 
 export default function CoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const currentTab = tabParam === "overview" || !tabParam ? "videos" : tabParam;
@@ -176,39 +177,40 @@ export default function CoursePage() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 xl:gap-4 lg:h-[calc(100vh-85px)] lg:min-h-[500px]">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 xl:gap-4 lg:h-[calc(100vh-96px)] lg:min-h-[540px]">
+      {/* Left Column: Video Theater & Editorial Control Bar */}
       <div
         className={cn(
           "flex flex-col min-w-0 transition-all duration-300",
           isZenMode
-            ? "fixed inset-0 z-[80] bg-background p-3 sm:p-6 justify-between select-none"
-            : "w-full lg:col-span-8 2xl:col-span-9 lg:h-full bg-card border border-border rounded-2xl overflow-hidden flex flex-col justify-between"
+            ? "fixed inset-0 z-[80] bg-background p-3 sm:p-5 justify-between select-none"
+            : "w-full lg:col-span-8 xl:col-span-9 lg:h-full bg-card border border-border rounded-3xl tangerina-card overflow-hidden flex flex-col justify-between"
         )}
       >
         {/* Minimal Zen Top Bar */}
         {isZenMode && (
           <div
             key="zen-top-bar"
-            className="w-full flex items-center justify-between px-5 py-2.5 bg-card/95 backdrop-blur-md rounded-2xl border border-border text-foreground z-20 transition-opacity opacity-90 hover:opacity-100 shrink-0"
+            className="w-full flex items-center justify-between px-5 py-2.5 bg-card/95 backdrop-blur-md rounded-2xl border border-border text-foreground z-20 transition-opacity opacity-95 hover:opacity-100 shrink-0 shadow-sm"
           >
-            <div className="flex items-center gap-3">
-              <span className="bg-muted px-2.5 py-0.5 rounded text-[10px] font-mono tracking-normal font-medium text-foreground border border-border inline-flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="bg-primary/15 px-3 py-1 rounded-full text-[11px] font-display font-semibold text-primary border border-primary/30 inline-flex items-center gap-1.5 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
                 Modo Zen
               </span>
-              <span className="text-sm font-display font-medium truncate max-w-[200px] sm:max-w-md">
+              <span className="text-sm sm:text-base font-display font-semibold text-foreground truncate">
                 {selectedLesson?.title}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 size="sm"
-                variant="ghost"
+                variant="outline"
                 onClick={() => lessonResources.addQuickMarker()}
-                className="text-xs gap-1.5 text-muted-foreground hover:text-foreground h-8"
+                className="text-xs gap-1.5 rounded-xl border-border bg-secondary/70 hover:bg-secondary text-foreground h-8"
                 title="Marcar Timestamp"
               >
-                <Bookmark className="w-3.5 h-3.5 text-muted-foreground" />
+                <Bookmark className="w-3.5 h-3.5 text-primary" />
                 <span className="hidden sm:inline">Marcar</span>
               </Button>
               <Button
@@ -216,26 +218,25 @@ export default function CoursePage() {
                 variant="outline"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                className="h-8 text-xs px-2.5"
+                className="h-8 text-xs px-2.5 rounded-xl border-border bg-secondary/70 hover:bg-secondary"
                 title="Aula Anterior"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </Button>
               <Button
                 size="sm"
-                variant="outline"
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
-                className="h-8 text-xs px-2.5"
+                className="h-8 text-xs px-2.5 rounded-xl bg-primary text-[#030607] hover:brightness-105"
                 title="Próxima Aula"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </Button>
               <Button
                 size="sm"
-                variant="ghost"
+                variant="outline"
                 onClick={() => toggleZenMode(false)}
-                className="text-xs text-muted-foreground hover:text-foreground h-8 px-3 gap-1.5"
+                className="text-xs border-border bg-secondary/70 hover:bg-secondary text-foreground h-8 px-3 gap-1.5 rounded-xl"
                 title="Sair do Modo Zen"
               >
                 <Minimize2 className="w-3.5 h-3.5" />
@@ -245,22 +246,15 @@ export default function CoursePage() {
           </div>
         )}
 
-        {/* Center player container */}
+        {/* Center Video Stage — Seamless Full Utilization */}
         <div
           key="player-wrapper"
           className={cn(
-            "w-full min-w-0 flex-1 flex items-center justify-center min-h-0",
-            isZenMode ? "my-2" : "p-1 sm:p-1.5"
+            "w-full min-w-0 flex-1 flex items-center justify-center min-h-0 bg-[#0A0807] relative overflow-hidden",
+            isZenMode && "my-2.5 rounded-3xl border border-border shadow-2xl"
           )}
         >
-          <div
-            className={cn(
-              "w-full transition-all duration-300",
-              isZenMode
-                ? "max-w-[min(1152px,calc((100vh-130px)*16/9))] rounded-2xl overflow-hidden bg-card border border-border p-1.5 sm:p-2 shadow-2xl flex items-center justify-center"
-                : "h-full max-h-[calc(100vh-155px)] max-w-[calc((100vh-155px)*16/9)] aspect-video flex items-center justify-center"
-            )}
-          >
+          <div className="w-full h-full flex items-center justify-center">
             <LessonViewer
               key={selectedLesson?.id}
               lesson={selectedLesson}
@@ -268,21 +262,32 @@ export default function CoursePage() {
               courseName={selectedLesson?.course_title}
               onLessonComplete={handleLessonComplete}
             />
-
           </div>
         </div>
 
-        {/* Normal Bottom Bar */}
+        {/* Normal Bottom Editorial Bar */}
         {!isZenMode && (
           <div
             key="normal-bottom-bar"
-            className="py-2 px-3 sm:px-4 border-t border-border shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0 bg-card"
+            className="py-3 px-4 sm:px-6 border-t border-border shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0 bg-card"
           >
             <div className="flex-1 min-w-0 pr-2">
-              <div className="text-[10px] sm:text-xs font-mono tracking-normal font-medium text-muted-foreground mb-0.5 truncate">
-                {selectedLesson?.course_title} &gt; {selectedLesson?.module?.split('/').pop()?.trim()}
+              <div className="flex items-center gap-2 text-[11.5px] font-medium text-muted-foreground mb-0.5 truncate">
+                <button
+                  type="button"
+                  onClick={() => navigate("/receitas")}
+                  className="inline-flex items-center gap-1 text-primary hover:underline font-semibold shrink-0 cursor-pointer"
+                >
+                  <ArrowLeft className="w-3 h-3" />
+                  <span>Cursos</span>
+                </button>
+                <span className="opacity-40">&bull;</span>
+                <span className="truncate">{selectedLesson?.module?.split("/").pop()?.trim()}</span>
               </div>
-              <h3 className="text-left font-display font-medium text-sm sm:text-base lg:text-lg tracking-tight text-foreground truncate" title={selectedLesson?.title}>
+              <h3
+                className="text-left font-display font-semibold text-base sm:text-[18px] lg:text-[20px] tracking-[-0.02em] leading-snug text-foreground truncate"
+                title={selectedLesson?.title}
+              >
                 {selectedLesson?.title}
               </h3>
             </div>
@@ -291,15 +296,14 @@ export default function CoursePage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={() => lessonResources.addQuickMarker()}
-                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium"
+                      className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-secondary/70 hover:bg-secondary text-foreground border border-border text-[13px] font-medium transition-colors cursor-pointer"
                     >
-                      <Bookmark className="w-3.5 h-3.5 text-muted-foreground" />
+                      <Bookmark className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span className="hidden sm:inline">Marcar</span>
-                    </Button>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
                     <p className="font-semibold text-xs">Marcar ponto no vídeo</p>
@@ -311,15 +315,14 @@ export default function CoursePage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={() => toggleZenMode(true)}
-                      className="gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 text-xs font-medium"
+                      className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-secondary/70 hover:bg-secondary text-foreground border border-border text-[13px] font-medium transition-colors cursor-pointer"
                     >
-                      <Maximize2 className="w-3.5 h-3.5 text-muted-foreground" />
+                      <Maximize2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                       <span className="hidden sm:inline">Modo Zen</span>
-                    </Button>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
                     <p className="font-semibold text-xs">Modo Zen</p>
@@ -331,16 +334,15 @@ export default function CoursePage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={handlePrevLesson}
                       disabled={!prevLesson}
-                      className="gap-1.5 h-8 sm:h-9 px-3 sm:px-3.5 text-xs font-medium"
+                      className="inline-flex items-center gap-1 h-9 px-3.5 rounded-xl bg-secondary/70 hover:bg-secondary disabled:opacity-40 disabled:pointer-events-none text-foreground border border-border text-[13px] font-medium transition-colors cursor-pointer"
                     >
                       <ChevronLeft className="w-4 h-4 text-muted-foreground" />
                       <span>Anterior</span>
-                    </Button>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
                     {prevLesson ? (
@@ -358,15 +360,15 @@ export default function CoursePage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={handleNextLesson}
                       disabled={!nextLesson}
-                      className="gap-1.5 h-8 sm:h-9 px-3.5 sm:px-4 text-xs font-medium"
+                      className="inline-flex items-center gap-1 h-9 px-4 rounded-xl bg-primary hover:brightness-105 disabled:opacity-40 disabled:pointer-events-none text-[#030607] font-semibold text-[13px] shadow-[0_3px_12px_rgba(255,112,32,0.28)] transition-all cursor-pointer"
                     >
                       <span>Próxima</span>
-                      <ChevronRight className="w-4 h-4 ml-0.5" />
-                    </Button>
+                      <ChevronRight className="w-4 h-4 stroke-[2.2]" />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
                     {nextLesson ? (
@@ -384,26 +386,54 @@ export default function CoursePage() {
           </div>
         )}
       </div>
-      <div className={cn("lg:col-span-4 2xl:col-span-3 flex flex-col lg:h-full h-[550px] bg-card border border-border rounded-2xl overflow-hidden min-w-0", isZenMode && "hidden")}>
-        <div className="p-3 sm:p-3.5 border-b border-border space-y-1.5 shrink-0 bg-card">
-          <h2 className="text-base sm:text-lg font-display font-medium text-foreground line-clamp-1" title={selectedLesson?.course_title}>{selectedLesson?.course_title}</h2>
+
+      {/* Right Column: Curriculum & Study Workspace Sidebar */}
+      <div
+        className={cn(
+          "lg:col-span-4 xl:col-span-3 flex flex-col lg:h-full h-[600px] bg-card border border-border rounded-3xl tangerina-card overflow-hidden min-w-0",
+          isZenMode && "hidden"
+        )}
+      >
+        <div className="p-4 sm:p-5 border-b border-border space-y-2.5 shrink-0 bg-card">
+          <h2
+            className="text-[17px] sm:text-[18px] font-display font-semibold text-foreground tracking-[-0.02em] leading-snug line-clamp-1"
+            title={selectedLesson?.course_title}
+          >
+            {selectedLesson?.course_title}
+          </h2>
           <CoursePercentage courseId={Number(courseId)} fromGlobal />
         </div>
-        <div className="shrink-0 bg-muted/30">
+
+        <div className="shrink-0">
           <LastWatchedCard courseId={courseId} />
         </div>
-        
+
         <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full flex-1 flex flex-col min-h-0">
-          <div className="w-full border-b border-border shrink-0 px-3 py-1.5">
-            <TabsList className="flex w-full bg-transparent p-0 justify-between items-center border-none gap-1">
-              <TabsTrigger value="videos" className="flex-1 rounded-lg py-1 px-1 text-xs font-medium normal-case transition-all duration-300 border border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground bg-transparent hover:text-foreground">Vídeos</TabsTrigger>
-              <TabsTrigger value="attachments" className="flex-1 rounded-lg py-1 px-1 text-xs font-medium normal-case transition-all duration-300 border border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground bg-transparent hover:text-foreground">Materiais</TabsTrigger>
-              <TabsTrigger value="notes" className="flex-1 rounded-lg py-1 px-1 text-xs font-medium normal-case transition-all duration-300 border border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground bg-transparent hover:text-foreground">Anotações</TabsTrigger>
+          <div className="w-full border-b border-border shrink-0 px-4 py-2.5 bg-card">
+            <TabsList className="grid grid-cols-3 w-full bg-secondary/80 p-1 rounded-xl border border-border h-auto gap-1">
+              <TabsTrigger
+                value="videos"
+                className="rounded-lg py-1.5 px-2 text-[12.5px] font-medium normal-case transition-all duration-200 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:font-semibold data-[state=active]:shadow-sm text-muted-foreground bg-transparent hover:text-foreground cursor-pointer"
+              >
+                Vídeos
+              </TabsTrigger>
+              <TabsTrigger
+                value="attachments"
+                className="rounded-lg py-1.5 px-2 text-[12.5px] font-medium normal-case transition-all duration-200 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:font-semibold data-[state=active]:shadow-sm text-muted-foreground bg-transparent hover:text-foreground cursor-pointer"
+              >
+                Materiais
+              </TabsTrigger>
+              <TabsTrigger
+                value="notes"
+                className="rounded-lg py-1.5 px-2 text-[12.5px] font-medium normal-case transition-all duration-200 data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:font-semibold data-[state=active]:shadow-sm text-muted-foreground bg-transparent hover:text-foreground cursor-pointer"
+              >
+                Anotações
+              </TabsTrigger>
             </TabsList>
           </div>
-          
-          <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
-            <TabsContent value="videos" className="m-0 mt-0 h-full outline-none p-2">
+
+          <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative bg-card">
+            <TabsContent value="videos" className="m-0 mt-0 h-full outline-none p-2.5">
               <ModuleList
                 modules={modules}
                 courseId={courseId}

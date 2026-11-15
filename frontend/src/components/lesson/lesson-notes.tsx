@@ -272,7 +272,7 @@ export default function LessonNotes({
       {/* Top Action Bar: View Switcher + Export Button */}
       <div className="flex items-center gap-2">
         {/* View Switcher: Esta Aula vs Todo o Curso */}
-        <div className="flex flex-1 bg-white/[0.04] p-1 rounded-xl border border-white/5 gap-1">
+        <div className="flex flex-1 bg-secondary/80 p-1 rounded-xl border border-border gap-1">
           <button
             type="button"
             onClick={() => {
@@ -280,14 +280,14 @@ export default function LessonNotes({
               handleCancelEdit();
             }}
             className={cn(
-              "flex-1 py-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
+              "flex-1 py-1.5 px-2.5 text-[11px] font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer",
               viewMode === "lesson"
-                ? "bg-[#007bff] text-white shadow-md shadow-blue-900/30 font-bold"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                ? "bg-card text-foreground shadow-sm font-bold"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Film className="w-3.5 h-3.5" />
-            Esta Aula ({notes.length})
+            <Film className="w-3.5 h-3.5 text-primary" />
+            <span>Esta Aula ({notes.length})</span>
           </button>
 
           <button
@@ -297,14 +297,14 @@ export default function LessonNotes({
               handleCancelEdit();
             }}
             className={cn(
-              "flex-1 py-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
+              "flex-1 py-1.5 px-2.5 text-[11px] font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer",
               viewMode === "course"
-                ? "bg-[#007bff] text-white shadow-md shadow-blue-900/30 font-bold"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                ? "bg-card text-foreground shadow-sm font-bold"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <BookOpen className="w-3.5 h-3.5" />
-            Todo o Curso ({courseNotes.length})
+            <BookOpen className="w-3.5 h-3.5 text-primary" />
+            <span>Todo o Curso ({courseNotes.length})</span>
           </button>
         </div>
 
@@ -314,49 +314,49 @@ export default function LessonNotes({
             type="button"
             onClick={handleToggleExportMenu}
             className={cn(
-              "py-2 px-3 rounded-xl border border-white/10 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300",
+              "py-2 px-3 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 cursor-pointer",
               showExportMenu
-                ? "bg-white/15 text-white border-white/20 shadow-md shadow-blue-950/40"
-                : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/20"
+                ? "bg-primary text-[#030607] border-primary shadow-sm"
+                : "bg-secondary/70 text-foreground border-border hover:bg-secondary"
             )}
             title="Baixar anotações (.md ou .txt)"
           >
             <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-[10px]">Baixar</span>
+            <span className="hidden sm:inline text-[11px]">Baixar</span>
           </button>
 
           {showExportMenu && (
-            <div className="absolute right-0 top-full mt-2 w-72 z-50 glass-panel p-3.5 rounded-2xl border border-white/15 shadow-2xl backdrop-blur-2xl bg-[#08101e]/98 space-y-3 animate-in fade-in zoom-in-95 duration-200">
+            <div className="absolute right-0 top-full mt-2 w-72 z-50 p-3.5 rounded-2xl border border-border shadow-2xl bg-card text-foreground space-y-3 animate-in fade-in zoom-in-95 duration-200">
               {/* Header */}
-              <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <div className="flex items-center justify-between pb-2 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-[#007bff]/20 flex items-center justify-center text-[#29C5F6]">
+                  <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center text-primary">
                     <Download className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs font-heading font-semibold text-white">Baixar Anotações</span>
+                  <span className="text-xs font-display font-semibold text-foreground">Baixar Anotações</span>
                 </div>
-                <span className="text-[10px] font-mono text-white/50 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                <span className="text-[10px] font-mono text-muted-foreground bg-secondary px-2 py-0.5 rounded-full border border-border">
                   {exportScope === "course" ? `${courseNotes.length} no total` : `${notes.length} na aula`}
                 </span>
               </div>
 
               {/* Scope Selector: Todo o Curso vs Esta Aula */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40 block">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">
                   Origem das Anotações
                 </label>
-                <div className="grid grid-cols-2 gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/5">
+                <div className="grid grid-cols-2 gap-1 bg-secondary/70 p-1 rounded-xl border border-border">
                   <button
                     type="button"
                     onClick={() => setExportScope("course")}
                     className={cn(
-                      "py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5",
+                      "py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer",
                       exportScope === "course"
-                        ? "bg-[#007bff] text-white shadow-sm font-bold"
-                        : "text-white/60 hover:text-white hover:bg-white/5"
+                        ? "bg-card text-foreground shadow-sm font-bold"
+                        : "text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    <BookOpen className="w-3 h-3" />
+                    <BookOpen className="w-3 h-3 text-primary" />
                     Todo Curso ({courseNotes.length})
                   </button>
 
@@ -365,13 +365,13 @@ export default function LessonNotes({
                     onClick={() => setExportScope("lesson")}
                     disabled={notes.length === 0}
                     className={cn(
-                      "py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5",
+                      "py-1.5 px-2 rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer",
                       exportScope === "lesson"
-                        ? "bg-[#007bff] text-white shadow-sm font-bold"
-                        : "text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent"
+                        ? "bg-card text-foreground shadow-sm font-bold"
+                        : "text-muted-foreground hover:text-foreground disabled:opacity-40"
                     )}
                   >
-                    <Film className="w-3 h-3" />
+                    <Film className="w-3 h-3 text-primary" />
                     Esta Aula ({notes.length})
                   </button>
                 </div>
@@ -379,7 +379,7 @@ export default function LessonNotes({
 
               {/* Format Selection Cards */}
               <div className="space-y-1.5 pt-0.5">
-                <label className="text-[10px] font-semibold uppercase tracking-wider text-white/40 block">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">
                   Formato do Arquivo
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -389,13 +389,13 @@ export default function LessonNotes({
                       handleExport(exportScope, "md");
                       setShowExportMenu(false);
                     }}
-                    className="flex flex-col items-center justify-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#29C5F6]/40 hover:scale-[1.02] transition-all group cursor-pointer text-center"
+                    className="flex flex-col items-center justify-center p-3 rounded-xl border border-border bg-secondary/40 hover:bg-secondary hover:border-primary/50 transition-all group cursor-pointer text-center"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-[#29C5F6]/15 border border-[#29C5F6]/30 flex items-center justify-center text-[#29C5F6] mb-1.5 group-hover:bg-[#29C5F6]/25 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent mb-1.5">
                       <FileText className="w-4 h-4" />
                     </div>
-                    <span className="text-xs font-semibold text-white">Markdown</span>
-                    <span className="text-[10px] text-[#29C5F6]/80 font-mono mt-0.5">.md</span>
+                    <span className="text-xs font-semibold text-foreground">Markdown</span>
+                    <span className="text-[10px] text-accent font-mono mt-0.5">.md</span>
                   </button>
 
                   <button
@@ -404,13 +404,13 @@ export default function LessonNotes({
                       handleExport(exportScope, "txt");
                       setShowExportMenu(false);
                     }}
-                    className="flex flex-col items-center justify-center p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-[#007bff]/40 hover:scale-[1.02] transition-all group cursor-pointer text-center"
+                    className="flex flex-col items-center justify-center p-3 rounded-xl border border-border bg-secondary/40 hover:bg-secondary hover:border-primary/50 transition-all group cursor-pointer text-center"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-[#007bff]/15 border border-[#007bff]/30 flex items-center justify-center text-blue-400 mb-1.5 group-hover:bg-[#007bff]/25 transition-colors">
+                    <div className="w-9 h-9 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary mb-1.5">
                       <FileCode className="w-4 h-4" />
                     </div>
-                    <span className="text-xs font-semibold text-white">Texto Puro</span>
-                    <span className="text-[10px] text-blue-400/80 font-mono mt-0.5">.txt</span>
+                    <span className="text-xs font-semibold text-foreground">Texto Puro</span>
+                    <span className="text-[10px] text-primary font-mono mt-0.5">.txt</span>
                   </button>
                 </div>
               </div>
@@ -424,36 +424,41 @@ export default function LessonNotes({
         <div className="space-y-4">
           <div className="flex flex-col gap-2">
             <Textarea
-              className="bg-white/5 border-white/10 text-white min-h-24 focus-visible:ring-[#007bff]"
+              placeholder="Escreva uma anotação no segundo atual da aula... (Ctrl+Enter para salvar)"
+              className="bg-secondary/40 border-border text-foreground placeholder:text-muted-foreground min-h-24 rounded-xl focus-visible:ring-primary"
               value={newNote}
               onChange={(e) => onNewNoteChange(e.target.value)}
               onKeyDown={handleKeyDown}
             />
             <div className="flex justify-end items-center gap-3">
               <span
-                className={`text-emerald-400 text-xs font-medium transition-opacity duration-300 ${
+                className={`text-accent text-xs font-semibold transition-opacity duration-300 ${
                   showSavedState ? "opacity-100" : "opacity-0"
                 }`}
               >
                 Salvo!
               </span>
-              <Button onClick={handleSave} size="sm">
+              <Button
+                onClick={handleSave}
+                size="sm"
+                className="rounded-xl bg-primary text-[#030607] font-semibold hover:brightness-105"
+              >
                 Salvar Anotação
               </Button>
             </div>
           </div>
 
-          <div className="space-y-3 mt-4 p-1 pb-8">
+          <div className="space-y-3 mt-4 pb-8">
             {isLoading ? (
-              <p className="text-white/50 text-center py-4 text-xs">
+              <p className="text-muted-foreground text-center py-4 text-xs">
                 Carregando anotações da aula...
               </p>
             ) : notes.length === 0 ? (
-              <div className="text-center py-8 px-4 border border-white/5 rounded-xl bg-white/[0.02]">
-                <p className="text-white/50 text-xs">
+              <div className="text-center py-8 px-4 border border-dashed border-border rounded-2xl bg-secondary/35">
+                <p className="text-foreground/80 font-medium text-xs">
                   Nenhuma anotação nesta aula ainda.
                 </p>
-                <p className="text-white/30 text-[11px] mt-1">
+                <p className="text-muted-foreground text-[11px] mt-1">
                   Escreva no campo acima para salvar um ponto importante.
                 </p>
               </div>
@@ -461,12 +466,12 @@ export default function LessonNotes({
               notes.map((note) => (
                 <div
                   key={note.id}
-                  className="glass-panel glass-panel-hover p-3.5 rounded-xl group border border-white/10"
+                  className="bg-secondary/40 hover:bg-secondary/65 p-3.5 rounded-2xl group border border-border transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <button
                       onClick={() => onSeek(note.time)}
-                      className="inline-flex items-center gap-1.5 text-[11px] font-mono font-medium text-white/70 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full hover:bg-white/15 hover:text-white hover:border-white/20 transition-all"
+                      className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-primary bg-primary/12 border border-primary/25 px-2.5 py-0.5 rounded-full hover:bg-primary hover:text-[#030607] transition-all cursor-pointer"
                       title="Ir para este momento no vídeo"
                     >
                       <Clock className="w-3 h-3" /> {formatTime(note.time)}
@@ -477,7 +482,7 @@ export default function LessonNotes({
                         <button
                           type="button"
                           onClick={() => handleStartEdit(note)}
-                          className="text-white/60 hover:text-white transition-colors p-1 rounded hover:bg-white/10"
+                          className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-card cursor-pointer"
                           title="Editar anotação"
                         >
                           <Pencil className="w-3.5 h-3.5" />
@@ -486,7 +491,7 @@ export default function LessonNotes({
                       <button
                         type="button"
                         onClick={() => onDelete(note.id)}
-                        className="text-red-400 hover:text-red-300 transition-colors p-1 rounded hover:bg-white/10"
+                        className="text-destructive hover:text-destructive/80 transition-colors p-1 rounded hover:bg-card cursor-pointer"
                         title="Excluir anotação"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -508,28 +513,28 @@ export default function LessonNotes({
                             handleCancelEdit();
                           }
                         }}
-                        className="bg-black/40 border-white/20 text-white text-sm min-h-20 focus-visible:ring-[#007bff]"
+                        className="bg-card border-border text-foreground text-sm min-h-20 rounded-xl focus-visible:ring-primary"
                         autoFocus
                       />
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
                           onClick={handleCancelEdit}
-                          className="px-2.5 py-1 text-xs text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors flex items-center gap-1"
+                          className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-card rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                         >
                           <X className="w-3 h-3" /> Cancelar
                         </button>
                         <button
                           type="button"
                           onClick={() => handleSaveEdit(note.id)}
-                          className="px-3 py-1 text-xs font-semibold bg-[#007bff] text-white hover:bg-[#007bff]/80 rounded-md transition-colors shadow-sm flex items-center gap-1"
+                          className="px-3 py-1 text-xs font-semibold bg-primary text-[#030607] hover:brightness-105 rounded-lg transition-colors shadow-sm flex items-center gap-1 cursor-pointer"
                         >
                           <Check className="w-3 h-3" /> Salvar
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed">
+                    <p className="text-foreground text-[13.5px] whitespace-pre-wrap leading-relaxed">
                       {note.content}
                     </p>
                   )}
@@ -543,24 +548,24 @@ export default function LessonNotes({
         <div className="space-y-3">
           {/* Campo de Busca Global */}
           <div className="relative">
-            <Search className="w-4 h-4 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
             <Input
               type="text"
               placeholder="Buscar em todas as anotações do curso..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 text-xs bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              className="pl-9 h-9 text-xs bg-secondary/40 border-border text-foreground placeholder:text-muted-foreground rounded-xl"
             />
           </div>
 
-          <div className="space-y-3 mt-3 p-1 pb-8">
+          <div className="space-y-3 mt-3 pb-8">
             {isCourseNotesLoading ? (
-              <p className="text-white/50 text-center py-6 text-xs">
+              <p className="text-muted-foreground text-center py-6 text-xs">
                 Carregando todas as anotações do curso...
               </p>
             ) : filteredCourseNotes.length === 0 ? (
-              <div className="text-center py-8 px-4 border border-white/5 rounded-xl bg-white/[0.02]">
-                <p className="text-white/50 text-xs">
+              <div className="text-center py-8 px-4 border border-dashed border-border rounded-2xl bg-secondary/35">
+                <p className="text-muted-foreground text-xs">
                   {searchQuery.trim()
                     ? "Nenhuma anotação encontrada para essa busca."
                     : "Nenhuma anotação cadastrada no curso ainda."}
@@ -573,10 +578,10 @@ export default function LessonNotes({
                   <div
                     key={note.id}
                     className={cn(
-                      "glass-panel glass-panel-hover p-3.5 rounded-xl group border",
+                      "p-3.5 rounded-2xl group border transition-colors",
                       isCurrent
-                        ? "border-white/25 bg-white/[0.05]"
-                        : "border-white/10 hover:border-white/20"
+                        ? "border-primary/40 bg-primary/8"
+                        : "border-border bg-secondary/40 hover:bg-secondary/65"
                     )}
                   >
                     {/* Header do Card: Aula + Timestamp + Ações */}
@@ -590,14 +595,14 @@ export default function LessonNotes({
                             }
                           }}
                           className={cn(
-                            "text-left inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-0.5 rounded-full transition-colors truncate max-w-full",
+                            "text-left inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-0.5 rounded-full transition-colors truncate max-w-full cursor-pointer",
                             isCurrent
-                              ? "bg-white/15 text-white border border-white/25"
-                              : "bg-white/5 text-white/80 border border-white/10 hover:bg-white/10 hover:text-white"
+                              ? "bg-primary/15 text-primary border border-primary/30 font-semibold"
+                              : "bg-card text-foreground border border-border hover:border-primary/40"
                           )}
                           title={`Ir para aula: ${note.lesson_title}`}
                         >
-                          <Film className="w-3 h-3 shrink-0" />
+                          <Film className="w-3 h-3 shrink-0 text-primary" />
                           <span className="truncate">{note.lesson_title}</span>
                         </button>
 
@@ -608,7 +613,7 @@ export default function LessonNotes({
                               onSelectLessonAndSeek(note.lesson_id, note.time);
                             }
                           }}
-                          className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-white/70 bg-white/5 border border-white/10 px-2.5 py-0.5 rounded-full hover:bg-white/15 hover:text-white hover:border-white/20 transition-all shrink-0"
+                          className="inline-flex items-center gap-1 text-[10.5px] font-mono font-semibold text-primary bg-primary/12 border border-primary/25 px-2 py-0.5 rounded-full hover:bg-primary hover:text-[#030607] transition-all shrink-0 cursor-pointer"
                           title="Pular para o tempo da anotação"
                         >
                           <Clock className="w-2.5 h-2.5" />
@@ -621,7 +626,7 @@ export default function LessonNotes({
                           <button
                             type="button"
                             onClick={() => handleStartEdit(note)}
-                            className="text-white/60 hover:text-white transition-colors p-1 rounded hover:bg-white/10"
+                            className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-card cursor-pointer"
                             title="Editar anotação"
                           >
                             <Pencil className="w-3.5 h-3.5" />
@@ -630,7 +635,7 @@ export default function LessonNotes({
                         <button
                           type="button"
                           onClick={() => onDelete(note.id)}
-                          className="text-red-400 hover:text-red-300 transition-colors p-1 rounded hover:bg-white/10"
+                          className="text-destructive hover:text-destructive/80 transition-colors p-1 rounded hover:bg-card cursor-pointer"
                           title="Excluir anotação"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -652,28 +657,28 @@ export default function LessonNotes({
                               handleCancelEdit();
                             }
                           }}
-                          className="bg-black/40 border-white/20 text-white text-sm min-h-20 focus-visible:ring-[#007bff]"
+                          className="bg-card border-border text-foreground text-sm min-h-20 rounded-xl focus-visible:ring-primary"
                           autoFocus
                         />
                         <div className="flex justify-end gap-2">
                           <button
                             type="button"
                             onClick={handleCancelEdit}
-                            className="px-2.5 py-1 text-xs text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors flex items-center gap-1"
+                            className="px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-card rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                           >
                             <X className="w-3 h-3" /> Cancelar
                           </button>
                           <button
                             type="button"
                             onClick={() => handleSaveEdit(note.id)}
-                            className="px-3 py-1 text-xs font-semibold bg-[#007bff] text-white hover:bg-[#007bff]/80 rounded-md transition-colors shadow-sm flex items-center gap-1"
+                            className="px-3 py-1 text-xs font-semibold bg-primary text-[#030607] hover:brightness-105 rounded-lg transition-colors shadow-sm flex items-center gap-1 cursor-pointer"
                           >
                             <Check className="w-3 h-3" /> Salvar
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed">
+                      <p className="text-foreground text-[13.5px] whitespace-pre-wrap leading-relaxed">
                         {note.content}
                       </p>
                     )}

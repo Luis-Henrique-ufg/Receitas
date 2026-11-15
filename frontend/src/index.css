@@ -142,6 +142,46 @@ h1, h2, h3, h4, h5, h6 {
   animation: pulse-dot 1.5s infinite;
 }
 
+@keyframes flame-dance {
+  0%, 100% {
+    transform: scale(1) rotate(0deg) translateY(0);
+    filter: drop-shadow(0 3px 8px rgba(255, 112, 32, 0.45));
+  }
+  25% {
+    transform: scale(1.08, 1.14) rotate(-4deg) translateY(-2px);
+    filter: drop-shadow(0 6px 14px rgba(255, 112, 32, 0.7));
+  }
+  50% {
+    transform: scale(0.97, 1.05) rotate(3deg) translateY(-1px);
+    filter: drop-shadow(0 4px 10px rgba(255, 171, 59, 0.6));
+  }
+  75% {
+    transform: scale(1.1, 1.16) rotate(-2deg) translateY(-2.5px);
+    filter: drop-shadow(0 7px 16px rgba(234, 54, 0, 0.75));
+  }
+}
+
+@keyframes flame-halo {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.12);
+  }
+}
+
+.animate-flame-dance {
+  display: inline-block;
+  transform-origin: 50% 85%;
+  animation: flame-dance 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-flame-halo {
+  animation: flame-halo 2.2s ease-in-out infinite;
+}
+
 .tangerina-card {
   box-shadow: var(--app-card-shadow);
 }

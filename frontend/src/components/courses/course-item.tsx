@@ -6,7 +6,7 @@ import useApiUrl from "@/hooks/useApiUrl";
 import CoursePercentage from "../course-percentage";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MoreVertical, ArrowRight, Edit3, Trash2, Video, Clock } from "lucide-react";
+import { MoreVertical, Edit3, Trash2, Video, Clock } from "lucide-react";
 import { getLastViewedLesson } from "@/utils/utils";
 import { getCourseCategoryTag } from "@/utils/courseCategory";
 import { coursesApi, CourseCompletionStats } from "@/services/coursesApi";
@@ -200,16 +200,16 @@ export default function CourseItem({
       </div>
 
       {/* Card Footer: Metadata on left, Action pill on right */}
-      <div className="px-5 sm:px-6 py-3.5 border-t border-border flex items-center justify-between bg-card shrink-0">
-        <div className="flex items-center gap-3.5 text-[12.5px] text-muted-foreground font-medium">
+      <div className="px-5 sm:px-6 py-3.5 border-t border-border flex items-center justify-between gap-4 bg-card shrink-0">
+        <div className="flex items-center gap-3 text-[12.5px] text-muted-foreground font-medium min-w-0 pr-2">
           {totalLessons > 0 && (
-            <span className="flex items-center gap-1.5" title={`${totalLessons} aulas no curso`}>
+            <span className="flex items-center gap-1.5 shrink-0" title={`${totalLessons} aulas no curso`}>
               <Video className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>{totalLessons} aulas</span>
             </span>
           )}
           {totalHours && (
-            <span className="flex items-center gap-1.5 hidden sm:flex" title={`Duração estimada de ${totalHours} horas`}>
+            <span className="flex items-center gap-1 shrink-0" title={`Duração estimada de ${totalHours} horas`}>
               <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
               <span>{totalHours}h</span>
             </span>
@@ -219,10 +219,9 @@ export default function CourseItem({
         <button
           type="button"
           onClick={onPlay}
-          className="inline-flex items-center gap-1.5 bg-secondary hover:bg-primary text-foreground hover:text-[#030607] border border-border hover:border-primary px-4 py-2 rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer active:scale-95"
+          className="inline-flex items-center justify-center bg-secondary hover:bg-primary text-foreground hover:text-[#030607] border border-border hover:border-primary px-4 py-1.5 rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 shrink-0"
         >
           <span>{ctaLabel}</span>
-          <ArrowRight className="w-3.5 h-3.5 shrink-0" />
         </button>
       </div>
 

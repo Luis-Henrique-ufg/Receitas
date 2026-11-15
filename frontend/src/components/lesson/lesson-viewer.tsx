@@ -101,10 +101,10 @@ export default function LessonViewer({
   }
 
   return (
-    <div className="shrink-0 w-full">
+    <div className="w-full h-full flex items-center justify-center">
       {isDocument ? (
         <iframe
-          className="w-full h-full aspect-[9/16]"
+          className="w-full h-full border-0 bg-white"
           src={`${apiUrl}${getResourcePath(lesson)}`}
         ></iframe>
       ) : (

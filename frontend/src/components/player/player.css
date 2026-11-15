@@ -1,9 +1,15 @@
 .video-js {
-  background-color: transparent !important;
-  border-radius: 1rem;
+  background-color: #0A0807 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
-
+.video-js.vjs-fluid,
+.video-js.vjs-16-9,
+.video-js.vjs-4-3 {
+  padding-top: 0 !important;
+  height: 100% !important;
+}
 
 /* Fix Fullscreen Cursor */
 .vjs-fullscreen.video-js, .vjs-fullscreen.video-js * {
@@ -14,37 +20,38 @@
 }
 
 .video-js .vjs-tech {
-  border-radius: 1rem;
+  object-fit: contain !important;
 }
 
 .video-js .vjs-big-play-button {
-  background-color: rgba(0, 123, 255, 0.8) !important;
-  border-color: rgba(0, 123, 255, 1) !important;
+  background-color: #FF7020 !important;
+  color: #030607 !important;
+  border-color: #FF7020 !important;
   border-radius: 50% !important;
-  width: 80px !important;
-  height: 80px !important;
-  line-height: 80px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+  width: 72px !important;
+  height: 72px !important;
+  line-height: 72px !important;
+  transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1) !important;
+  box-shadow: 0 8px 28px rgba(255, 112, 32, 0.45) !important;
 }
 
 .video-js .vjs-big-play-button:hover {
-  background-color: rgba(0, 123, 255, 1) !important;
-  transform: scale(1.05) translate(-50%, -50%); /* vjs-big-play-centered uses translate to center */
+  background-color: #FF8540 !important;
+  transform: scale(1.06) translate(-47%, -47%);
 }
 
 .video-js:hover .vjs-big-play-button,
 .video-js .vjs-big-play-button:focus {
-  background-color: rgba(0, 123, 255, 1) !important;
+  background-color: #FF7020 !important;
 }
 
 .video-js .vjs-control-bar {
-  background-color: rgba(0, 0, 0, 0.6) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  padding: 0 10px;
+  background-color: rgba(10, 8, 7, 0.78) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  padding: 0 12px;
+  height: 44px !important;
+  align-items: center;
 }
 
 .vjs-slider {

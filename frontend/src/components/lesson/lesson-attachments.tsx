@@ -15,15 +15,15 @@ const getFileExtension = (filename: string) => {
 
 const renderFileIcon = (ext: string) => {
   if (["html", "htm", "js", "ts", "jsx", "tsx", "py", "c", "cpp", "java", "json"].includes(ext)) {
-    return <FileCode className="w-5 h-5 text-amber-400 shrink-0" />;
+    return <FileCode className="w-5 h-5 text-primary shrink-0" />;
   }
   if (["pdf", "txt", "doc", "docx", "md"].includes(ext)) {
-    return <FileText className="w-5 h-5 text-rose-400 shrink-0" />;
+    return <FileText className="w-5 h-5 text-rose-500 shrink-0" />;
   }
   if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) {
-    return <FileArchive className="w-5 h-5 text-emerald-400 shrink-0" />;
+    return <FileArchive className="w-5 h-5 text-accent shrink-0" />;
   }
-  return <File className="w-5 h-5 text-sky-400 shrink-0" />;
+  return <File className="w-5 h-5 text-primary shrink-0" />;
 };
 
 export default function LessonAttachments({
@@ -33,23 +33,23 @@ export default function LessonAttachments({
 }: Props) {
   if (isLoading) {
     return (
-      <div className="p-6 border rounded-xl border-dashed border-white/20 flex flex-col items-center justify-center text-white/50 bg-white/5 space-y-2">
-        <p className="text-sm">Carregando materiais e anexos...</p>
+      <div className="p-6 border rounded-2xl border-dashed border-border flex flex-col items-center justify-center text-muted-foreground bg-secondary/40 space-y-2">
+        <p className="text-xs font-medium">Carregando materiais e anexos...</p>
       </div>
     );
   }
 
   if (!attachments || attachments.length === 0) {
     return (
-      <div className="p-6 border rounded-xl border-dashed border-white/20 flex flex-col items-center justify-center text-white/50 bg-white/5 space-y-2">
-        <FileText className="w-8 h-8 opacity-40 text-white" />
-        <p className="text-sm">Nenhum material ou anexo disponível para esta aula.</p>
+      <div className="p-6 border rounded-2xl border-dashed border-border flex flex-col items-center justify-center text-muted-foreground bg-secondary/35 space-y-2 text-center">
+        <FileText className="w-7 h-7 text-muted-foreground/60" />
+        <p className="text-xs font-medium">Nenhum material complementar para esta aula.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {attachments.map((file, i) => {
         const ext = getFileExtension(file.name);
         const fileUrl = `${apiUrl}/serve-content?path=${encodeURIComponent(file.path)}`;
@@ -57,15 +57,15 @@ export default function LessonAttachments({
         return (
           <div
             key={i}
-            className="flex items-center justify-between p-3.5 glass-panel glass-panel-interactive rounded-xl hover:bg-white/10 border border-white/10 transition-all duration-300 gap-3"
+            className="flex items-center justify-between p-3.5 bg-secondary/40 hover:bg-secondary/75 rounded-2xl border border-border transition-all duration-200 gap-3"
           >
             <div className="flex items-center gap-3 min-w-0 flex-1">
               {renderFileIcon(ext)}
-              <span className="text-white/90 font-medium text-sm truncate" title={file.name}>
+              <span className="text-foreground font-medium text-[13px] truncate" title={file.name}>
                 {file.name}
               </span>
               {ext && (
-                <span className="bg-white/10 border border-white/15 text-white/70 px-1.5 py-0.5 rounded text-[10px] font-mono uppercase font-bold tracking-wider shrink-0">
+                <span className="bg-card border border-border text-muted-foreground px-1.5 py-0.5 rounded text-[10px] font-mono uppercase font-semibold tracking-wider shrink-0">
                   {ext}
                 </span>
               )}
@@ -79,8 +79,8 @@ export default function LessonAttachments({
                 rel="noopener noreferrer"
                 title="Baixar arquivo"
               >
-                <Button size="sm" variant="secondary" className="gap-1.5 h-8 text-xs font-medium bg-white/10 hover:bg-white/20 text-white border-none">
-                  <Download className="w-3.5 h-3.5 text-[#007bff]" />
+                <Button size="sm" variant="secondary" className="gap-1.5 h-8 text-xs font-semibold bg-card hover:bg-primary text-foreground hover:text-[#030607] border border-border hover:border-primary rounded-xl">
+                  <Download className="w-3.5 h-3.5 text-current" />
                   Baixar
                 </Button>
               </a>
