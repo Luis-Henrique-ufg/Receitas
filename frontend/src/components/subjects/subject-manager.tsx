@@ -28,14 +28,14 @@ import {
 } from "@/components/ui/dialog";
 
 const PRESET_COLORS = [
-  { name: "Esmeralda", hex: "#10b981" },
-  { name: "Azul Elétrico", hex: "#3b82f6" },
-  { name: "Âmbar", hex: "#f59e0b" },
-  { name: "Violeta", hex: "#8b5cf6" },
-  { name: "Coral / Rosa", hex: "#f43f5e" },
-  { name: "Ciano", hex: "#06b6d4" },
-  { name: "Lima", hex: "#84cc16" },
-  { name: "Ardósia", hex: "#64748b" },
+  { name: "Laranja Tangerina", hex: "#FF7020" },
+  { name: "Verde Smiles", hex: "#00A196" },
+  { name: "Rosa Solar", hex: "#E33D6C" },
+  { name: "Roxo Tangerina", hex: "#663399" },
+  { name: "Amarelo Sol", hex: "#FFAB3B" },
+  { name: "Laranja Intenso", hex: "#EA3600" },
+  { name: "Verde Folha", hex: "#2AC500" },
+  { name: "Magenta", hex: "#B70B6C" },
 ];
 
 export default function SubjectManager() {
@@ -201,13 +201,13 @@ export default function SubjectManager() {
   return (
     <div className="space-y-6">
       {/* Header with Title and Add Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h2 className="text-xl font-heading font-bold text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-blue-400" />
+          <h2 className="text-lg sm:text-xl font-display font-semibold text-foreground tracking-[-0.015em] flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-primary" />
             Matérias de Estudo
           </h2>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Cadastre disciplinas, semestres e cores para classificar seus pomodoros e tempo de foco.
           </p>
         </div>
@@ -216,23 +216,23 @@ export default function SubjectManager() {
             <Button
               variant="outline"
               onClick={handleOpenReassign}
-              className="bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border-white/10 text-xs gap-1.5"
+              className="bg-secondary/60 hover:bg-secondary text-foreground border-border text-xs gap-1.5 rounded-xl"
             >
-              <ArrowRightLeft className="w-3.5 h-3.5" /> Atribuir Tempo Sem Matéria
+              <ArrowRightLeft className="w-3.5 h-3.5 text-primary" /> Atribuir Tempo Sem Matéria
             </Button>
           )}
           <Button
             onClick={handleOpenCreate}
-            className="bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white gap-2 shadow-lg shadow-blue-600/20 text-xs transition-all duration-200"
+            className="bg-primary hover:brightness-105 text-[#030607] font-semibold gap-2 shadow-[0_4px_14px_rgba(255,112,32,0.3)] text-xs rounded-xl transition-all duration-200"
           >
-            <Plus className="w-4 h-4" /> Nova Matéria
+            <Plus className="w-4 h-4 stroke-[2.5]" /> Nova Matéria
           </Button>
         </div>
       </div>
 
       {/* Active Subjects List */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+        <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">
           <span>Disciplinas Ativas ({activeSubjects.length})</span>
         </div>
 
@@ -241,24 +241,24 @@ export default function SubjectManager() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="h-16 rounded-xl bg-white/[0.03] animate-pulse border border-white/10"
+                className="h-16 rounded-2xl bg-secondary/40 animate-pulse border border-border"
               />
             ))}
           </div>
         ) : activeSubjects.length === 0 ? (
-          <div className="p-8 text-center rounded-xl border border-dashed border-white/15 bg-white/[0.02]">
-            <BookOpen className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
-            <p className="text-sm font-medium text-zinc-300">Nenhuma matéria ativa</p>
-            <p className="text-xs text-zinc-500 mt-1">
+          <div className="p-8 text-center rounded-2xl border border-dashed border-border bg-secondary/25">
+            <BookOpen className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm font-semibold text-foreground">Nenhuma matéria ativa</p>
+            <p className="text-xs text-muted-foreground mt-1">
               Cadastre suas disciplinas (ex: Estatística, Algoritmos, Cálculo) para começar a vincular aos seus pomodoros.
             </p>
             <Button
               variant="outline"
               size="sm"
               onClick={handleOpenCreate}
-              className="mt-4 text-xs gap-1.5"
+              className="mt-4 text-xs gap-1.5 rounded-xl bg-card border-border hover:bg-secondary text-foreground"
             >
-              <Plus className="w-3.5 h-3.5" /> Adicionar Primeira Matéria
+              <Plus className="w-3.5 h-3.5 text-primary" /> Adicionar Primeira Matéria
             </Button>
           </div>
         ) : (
@@ -266,7 +266,7 @@ export default function SubjectManager() {
             {activeSubjects.map((subject) => (
               <div
                 key={subject.id}
-                className="flex items-center justify-between p-3.5 rounded-xl border border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] transition-all"
+                className="flex items-center justify-between p-4 rounded-2xl border border-border bg-secondary/35 hover:border-primary/35 hover:bg-secondary/65 transition-all"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
@@ -274,20 +274,20 @@ export default function SubjectManager() {
                     style={{ backgroundColor: subject.color }}
                   />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">
+                    <p className="text-sm font-semibold text-foreground truncate">
                       {subject.name}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {subject.code && (
                         <Badge
                           variant="secondary"
-                          className="text-[10px] py-0 px-1.5 font-mono bg-white/10 text-zinc-300 border-none"
+                          className="text-[10px] py-0 px-1.5 font-mono bg-card text-foreground border border-border"
                         >
                           {subject.code}
                         </Badge>
                       )}
                       {subject.semester && (
-                        <span className="text-[11px] text-zinc-400">
+                        <span className="text-[11px] text-muted-foreground">
                           {subject.semester}
                         </span>
                       )}
@@ -301,7 +301,7 @@ export default function SubjectManager() {
                     size="icon"
                     onClick={() => handleOpenEdit(subject)}
                     title="Editar Matéria"
-                    className="h-8 w-8 text-zinc-400 hover:text-white"
+                    className="h-8 w-8 rounded-xl text-muted-foreground hover:text-foreground hover:bg-card"
                   >
                     <Pencil className="w-3.5 h-3.5" />
                   </Button>
@@ -310,7 +310,7 @@ export default function SubjectManager() {
                     size="icon"
                     onClick={() => handleToggleArchive(subject)}
                     title="Arquivar (semestre antigo)"
-                    className="h-8 w-8 text-zinc-400 hover:text-amber-400"
+                    className="h-8 w-8 rounded-xl text-muted-foreground hover:text-primary hover:bg-card"
                   >
                     <Archive className="w-3.5 h-3.5" />
                   </Button>
@@ -319,7 +319,7 @@ export default function SubjectManager() {
                     size="icon"
                     onClick={() => handleDelete(subject)}
                     title="Excluir Matéria"
-                    className="h-8 w-8 text-zinc-400 hover:text-rose-400"
+                    className="h-8 w-8 rounded-xl text-muted-foreground hover:text-destructive hover:bg-card"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
@@ -332,10 +332,10 @@ export default function SubjectManager() {
 
       {/* Archived Subjects Section */}
       {archivedSubjects.length > 0 && (
-        <div className="pt-4 border-t border-white/10">
+        <div className="pt-4 border-t border-border">
           <button
             onClick={() => setShowArchived(!showArchived)}
-            className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             <span>Matérias Arquivadas ({archivedSubjects.length})</span>
             {showArchived ? (
@@ -350,7 +350,7 @@ export default function SubjectManager() {
               {archivedSubjects.map((subject) => (
                 <div
                   key={subject.id}
-                  className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-black/30 opacity-70 hover:opacity-100 transition-opacity"
+                  className="flex items-center justify-between p-3.5 rounded-2xl border border-border/60 bg-muted/25 opacity-75 hover:opacity-100 transition-opacity"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -358,11 +358,11 @@ export default function SubjectManager() {
                       style={{ backgroundColor: subject.color }}
                     />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-zinc-300 truncate">
+                      <p className="text-sm font-medium text-foreground/85 truncate">
                         {subject.name}
                       </p>
                       {subject.semester && (
-                        <p className="text-[11px] text-zinc-500">
+                        <p className="text-[11px] text-muted-foreground">
                           {subject.semester}
                         </p>
                       )}
@@ -373,7 +373,7 @@ export default function SubjectManager() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleToggleArchive(subject)}
-                      className="text-xs h-7 text-zinc-400 hover:text-white gap-1"
+                      className="text-xs h-7 rounded-lg text-muted-foreground hover:text-foreground gap-1"
                     >
                       <ArchiveRestore className="w-3.5 h-3.5" /> Desarquivar
                     </Button>
@@ -381,7 +381,7 @@ export default function SubjectManager() {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDelete(subject)}
-                      className="h-7 w-7 text-zinc-500 hover:text-rose-400"
+                      className="h-7 w-7 rounded-lg text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
@@ -395,57 +395,57 @@ export default function SubjectManager() {
 
       {/* Modal / Dialog for Create & Edit */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+        <DialogContent className="max-w-md bg-card border-border text-foreground rounded-3xl shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-heading font-bold">
+            <DialogTitle className="text-lg font-display font-semibold text-foreground">
               {editingSubject ? "Editar Matéria" : "Nova Matéria de Estudo"}
             </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-xs">
+            <DialogDescription className="text-muted-foreground text-xs">
               Configure os dados da disciplina para identificação visual nas estatísticas e no Pomodoro.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                Nome da Matéria <span className="text-rose-400">*</span>
+              <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                Nome da Matéria <span className="text-primary">*</span>
               </label>
               <Input
                 placeholder="Ex: Estatística Aplicada, Cálculo II..."
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500"
+                className="bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground rounded-xl"
                 autoFocus
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
                   Código (Opcional)
                 </label>
                 <Input
                   placeholder="Ex: INF0124"
                   value={formCode}
                   onChange={(e) => setFormCode(e.target.value)}
-                  className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500"
+                  className="bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground rounded-xl"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
                   Semestre (Opcional)
                 </label>
                 <Input
                   placeholder="Ex: 2026/2"
                   value={formSemester}
                   onChange={(e) => setFormSemester(e.target.value)}
-                  className="bg-white/5 border-white/15 text-white placeholder:text-zinc-500"
+                  className="bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground rounded-xl"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-zinc-300 block mb-2">
+              <label className="text-xs font-medium text-muted-foreground block mb-2">
                 Cor de Identificação
               </label>
               <div className="flex flex-wrap gap-2.5 items-center">
@@ -456,7 +456,7 @@ export default function SubjectManager() {
                     onClick={() => setFormColor(preset.hex)}
                     style={{ backgroundColor: preset.hex }}
                     title={preset.name}
-                    className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110 relative border border-white/20"
+                    className="w-7 h-7 rounded-full flex items-center justify-center transition-transform hover:scale-110 relative border border-black/10 dark:border-white/20 cursor-pointer"
                   >
                     {formColor.toLowerCase() === preset.hex.toLowerCase() && (
                       <Check className="w-4 h-4 text-white drop-shadow-md stroke-[3]" />
@@ -464,7 +464,7 @@ export default function SubjectManager() {
                   </button>
                 ))}
                 {/* Custom Color Input */}
-                <div className="flex items-center gap-1.5 ml-2 border border-white/15 rounded-lg px-2 py-1 bg-white/5">
+                <div className="flex items-center gap-1.5 ml-2 border border-border rounded-xl px-2.5 py-1 bg-secondary/50">
                   <input
                     type="color"
                     value={formColor}
@@ -472,7 +472,7 @@ export default function SubjectManager() {
                     className="w-5 h-5 rounded cursor-pointer bg-transparent border-0"
                     title="Cor Personalizada"
                   />
-                  <span className="font-mono text-[11px] text-zinc-300 uppercase">
+                  <span className="font-mono text-[11px] text-foreground uppercase">
                     {formColor}
                   </span>
                 </div>
@@ -480,21 +480,21 @@ export default function SubjectManager() {
             </div>
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0 pt-2 border-t border-white/10">
+          <DialogFooter className="gap-2 sm:gap-0 pt-2 border-t border-border">
             <Button
               variant="outline"
               onClick={() => setIsDialogOpen(false)}
               disabled={isSaving}
-              className="text-xs"
+              className="text-xs rounded-xl bg-secondary/50 border-border text-foreground hover:bg-secondary"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleSaveSubject}
               disabled={isSaving}
-              className="bg-blue-600 hover:bg-blue-500 text-white text-xs gap-1.5"
+              className="bg-primary hover:brightness-105 text-[#030607] font-semibold text-xs gap-1.5 rounded-xl shadow-[0_4px_14px_rgba(255,112,32,0.3)]"
             >
-              <Check className="w-4 h-4" />
+              <Check className="w-4 h-4 stroke-[2.5]" />
               {isSaving ? "Salvando..." : "Salvar Matéria"}
             </Button>
           </DialogFooter>
@@ -503,27 +503,27 @@ export default function SubjectManager() {
 
       {/* Reassign "Sem matéria" Dialog */}
       <Dialog open={isReassignOpen} onOpenChange={setIsReassignOpen}>
-        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+        <DialogContent className="max-w-md bg-card border-border text-foreground rounded-3xl shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <ArrowRightLeft className="w-5 h-5 text-blue-400" />
+            <DialogTitle className="flex items-center gap-2 text-foreground font-display font-semibold">
+              <ArrowRightLeft className="w-5 h-5 text-primary" />
               Atribuir Tempo de "Sem matéria"
             </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-xs">
+            <DialogDescription className="text-muted-foreground text-xs">
               Transfira todo o histórico de tempo e pomodoros acumulados sem matéria para uma das suas disciplinas ativas.
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-4 space-y-4">
             <div className="space-y-2">
-              <label className="text-xs text-zinc-300 font-medium">Matéria Destino</label>
+              <label className="text-xs text-muted-foreground font-medium">Matéria Destino</label>
               <select
                 value={selectedTargetSubjectId ?? ""}
                 onChange={(e) => setSelectedTargetSubjectId(Number(e.target.value))}
-                className="w-full h-10 px-3 rounded-xl bg-white/5 border border-white/15 text-white text-sm focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="w-full h-10 px-3 rounded-xl bg-secondary/50 border border-border text-foreground text-sm focus:outline-none focus:border-primary cursor-pointer"
               >
                 {activeSubjects.map((s) => (
-                  <option key={s.id} value={s.id} className="bg-[#0f172a] text-white">
+                  <option key={s.id} value={s.id} className="bg-card text-foreground">
                     {s.name} {s.code ? `(${s.code})` : ""}
                   </option>
                 ))}
@@ -531,13 +531,13 @@ export default function SubjectManager() {
             </div>
           </div>
 
-          <DialogFooter className="flex justify-end gap-2 pt-2 border-t border-white/10">
+          <DialogFooter className="flex justify-end gap-2 pt-2 border-t border-border">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setIsReassignOpen(false)}
-              className="text-xs border-white/15 text-zinc-300 hover:bg-white/10"
+              className="text-xs rounded-xl border-border bg-secondary/50 text-foreground hover:bg-secondary"
             >
               Cancelar
             </Button>
@@ -546,7 +546,7 @@ export default function SubjectManager() {
               size="sm"
               onClick={handleConfirmReassign}
               disabled={isReassigning || !selectedTargetSubjectId || activeSubjects.length === 0}
-              className="text-xs bg-[#007bff] hover:bg-white hover:text-[#007bff] text-white font-semibold transition-all duration-200"
+              className="text-xs bg-primary hover:brightness-105 text-[#030607] font-semibold rounded-xl shadow-[0_4px_14px_rgba(255,112,32,0.3)] transition-all duration-200"
             >
               {isReassigning ? "Atribuindo..." : "Confirmar Atribuição"}
             </Button>

@@ -81,14 +81,14 @@ export default function UpcomingDeadlines({
   }, [subjects]);
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-5 border border-white/10 shadow-xl space-y-4">
-      <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+    <div className="w-full bg-card rounded-3xl p-5 sm:p-6 border border-border tangerina-card space-y-4">
+      <div className="flex items-center justify-between gap-2 border-b border-border pb-3.5">
         <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-blue-400" />
-          <h2 className="text-sm font-semibold text-white tracking-tight">
+          <CalendarDays className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-display font-semibold text-foreground tracking-tight">
             Próximos prazos
           </h2>
-          <span className="text-[11px] font-mono tabular-nums px-2 py-0.5 rounded-full bg-white/10 text-zinc-300">
+          <span className="text-[11px] font-mono tabular-nums px-2 py-0.5 rounded-full bg-primary/12 text-primary font-semibold border border-primary/25">
             {upcomingList.length}
           </span>
         </div>
@@ -99,29 +99,29 @@ export default function UpcomingDeadlines({
             size="sm"
             onClick={onExportIcs}
             disabled={isExporting}
-            className="h-8 px-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 gap-1.5"
+            className="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl gap-1.5"
             title="Exportar calendário em formato .ics para Google Calendar, Apple Calendar ou Outlook"
           >
-            <Download className="w-3.5 h-3.5 text-zinc-400" />
+            <Download className="w-3.5 h-3.5 text-primary" />
             <span className="hidden sm:inline">Exportar .ics</span>
           </Button>
         </div>
       </div>
 
       {upcomingList.length === 0 ? (
-        <div className="py-8 text-center space-y-2">
-          <p className="text-xs text-zinc-400">Nenhum prazo pendente no momento.</p>
+        <div className="py-8 text-center space-y-3">
+          <p className="text-xs text-muted-foreground">Nenhum prazo pendente no momento.</p>
           <Button
             variant="outline"
             size="sm"
             onClick={onNewEvent}
-            className="text-xs bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300"
+            className="text-xs bg-secondary/50 border-border hover:bg-secondary text-foreground rounded-xl"
           >
             Agendar primeiro prazo
           </Button>
         </div>
       ) : (
-        <div className="space-y-2.5 max-h-[580px] overflow-y-auto pr-1">
+        <div className="space-y-2.5 max-h-[580px] overflow-y-auto pr-1 custom-scrollbar">
           {upcomingList.map((event) => {
             const conf = CATEGORY_CONFIGS[event.category] || CATEGORY_CONFIGS.lembrete;
             const diffDays = getDaysDiff(event.date);
@@ -135,8 +135,8 @@ export default function UpcomingDeadlines({
               <div
                 key={event.id}
                 className={cn(
-                  "p-3 rounded-xl border transition-all duration-200 group relative",
-                  "bg-white/[0.03] hover:bg-white/[0.07] border-white/10"
+                  "p-3.5 rounded-2xl border transition-all duration-200 group relative",
+                  "bg-secondary/35 hover:bg-secondary/75 border-border"
                 )}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -145,7 +145,7 @@ export default function UpcomingDeadlines({
                     <button
                       type="button"
                       onClick={() => onToggleDone(event.id)}
-                      className="mt-0.5 text-zinc-500 hover:text-emerald-400 transition-colors shrink-0 cursor-pointer"
+                      className="mt-0.5 text-muted-foreground hover:text-accent transition-colors shrink-0 cursor-pointer"
                       title="Marcar como concluído"
                     >
                       <CheckCircle2 className="w-4 h-4" />
@@ -168,15 +168,15 @@ export default function UpcomingDeadlines({
                           {conf.label}
                         </span>
 
-                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-white/5 border-white/10 text-zinc-300 inline-flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-card border-border text-foreground/85 inline-flex items-center gap-1.5">
                           {countdown.urgent && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                           )}
                           {countdown.text}
                         </span>
 
                         {event.time && (
-                          <span className="text-[10px] text-zinc-400 flex items-center gap-1 font-mono">
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
                             <Clock className="w-2.5 h-2.5" />
                             {event.time}
                           </span>
@@ -184,33 +184,33 @@ export default function UpcomingDeadlines({
                       </div>
 
                       <h3
-                        className="text-xs font-medium text-white truncate group-hover:text-blue-300 transition-colors"
+                        className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors"
                         title={event.title}
                       >
                         {event.title}
                       </h3>
 
                       {subjectName ? (
-                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-300 truncate">
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground truncate">
                           {subjectColor ? (
                             <span
                               className="w-2 h-2 rounded-full shrink-0"
                               style={{ backgroundColor: subjectColor }}
                             />
                           ) : (
-                            <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
+                            <BookOpen className="w-3 h-3 text-muted-foreground shrink-0" />
                           )}
                           <span className="truncate">{subjectName}</span>
                         </div>
                       ) : course ? (
-                        <div className="flex items-center gap-1 text-[11px] text-zinc-400 truncate">
-                          <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
+                        <div className="flex items-center gap-1 text-[11px] text-muted-foreground truncate">
+                          <BookOpen className="w-3 h-3 text-muted-foreground shrink-0" />
                           <span className="truncate">{course.name}</span>
                         </div>
                       ) : null}
 
                       {event.notes && (
-                        <p className="text-[11px] text-zinc-400 line-clamp-1 italic">
+                        <p className="text-[11px] text-muted-foreground line-clamp-1 italic">
                           {event.notes}
                         </p>
                       )}
@@ -219,7 +219,7 @@ export default function UpcomingDeadlines({
 
                   {/* Data formatada à direita */}
                   <div className="text-right shrink-0">
-                    <span className="text-[11px] font-mono tabular-nums text-zinc-400 block">
+                    <span className="text-[11px] font-mono tabular-nums text-muted-foreground block">
                       {event.date.split("-").slice(1).reverse().join("/")}
                     </span>
                   </div>

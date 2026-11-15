@@ -115,10 +115,10 @@ export default function EventDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         onPointerDownOutside={(e) => e.preventDefault()}
-        className="glass-panel border-white/15 bg-zinc-950/90 text-white max-w-lg p-6 sm:rounded-2xl"
+        className="bg-card border border-border text-foreground max-w-lg p-6 sm:rounded-3xl shadow-2xl"
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-heading font-bold text-white tracking-tight">
+          <DialogTitle className="text-xl font-display font-semibold text-foreground tracking-tight">
             {eventToEdit ? "Editar evento" : "Novo evento"}
           </DialogTitle>
         </DialogHeader>
@@ -126,7 +126,7 @@ export default function EventDialog({
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* Título */}
           <div className="space-y-1.5">
-            <Label htmlFor="event-title" className="text-xs text-zinc-300 font-medium">
+            <Label htmlFor="event-title" className="text-xs text-muted-foreground font-medium">
               Título
             </Label>
             <Input
@@ -134,7 +134,7 @@ export default function EventDialog({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Prova de Estatística, Entrega de Trabalho..."
-              className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-blue-500/50"
+              className="bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground rounded-xl focus:border-primary"
               required
               autoFocus
             />
@@ -142,7 +142,7 @@ export default function EventDialog({
 
           {/* Categoria */}
           <div className="space-y-1.5">
-            <Label className="text-xs text-zinc-300 font-medium">Categoria</Label>
+            <Label className="text-xs text-muted-foreground font-medium">Categoria</Label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {CATEGORIES.map((cat) => {
                 const conf = CATEGORY_CONFIGS[cat];
@@ -153,13 +153,13 @@ export default function EventDialog({
                     type="button"
                     onClick={() => setCategory(cat)}
                     className={cn(
-                      "px-3 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all",
+                      "px-3 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all cursor-pointer",
                       conf.bgClass,
                       conf.borderClass,
                       conf.textClass,
                       isSelected
-                        ? "ring-2 ring-white/40 font-semibold scale-[1.02]"
-                        : "opacity-60 hover:opacity-100"
+                        ? "ring-2 ring-primary/45 font-semibold scale-[1.02]"
+                        : "opacity-70 hover:opacity-100"
                     )}
                   >
                     <span className={cn("w-2 h-2 rounded-full", conf.dotClass)} />
@@ -173,7 +173,7 @@ export default function EventDialog({
           {/* Data e Horário */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="event-date" className="text-xs text-zinc-300 font-medium">
+              <Label htmlFor="event-date" className="text-xs text-muted-foreground font-medium">
                 Data
               </Label>
               <Input
@@ -181,12 +181,12 @@ export default function EventDialog({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="bg-white/5 border-white/10 text-white [color-scheme:dark]"
+                className="bg-secondary/50 border-border text-foreground rounded-xl focus:border-primary dark:[color-scheme:dark]"
                 required
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="event-time" className="text-xs text-zinc-300 font-medium">
+              <Label htmlFor="event-time" className="text-xs text-muted-foreground font-medium">
                 Horário (opcional)
               </Label>
               <Input
@@ -194,14 +194,14 @@ export default function EventDialog({
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="bg-white/5 border-white/10 text-white [color-scheme:dark]"
+                className="bg-secondary/50 border-border text-foreground rounded-xl focus:border-primary dark:[color-scheme:dark]"
               />
             </div>
           </div>
 
           {/* Matéria relacionada (opcional) */}
           <div className="space-y-1.5">
-            <Label htmlFor="event-subject" className="text-xs text-zinc-300 font-medium">
+            <Label htmlFor="event-subject" className="text-xs text-muted-foreground font-medium">
               Matéria relacionada (opcional)
             </Label>
             <select
@@ -210,9 +210,9 @@ export default function EventDialog({
               onChange={(e) =>
                 setSubjectId(e.target.value ? Number(e.target.value) : null)
               }
-              className="w-full h-10 px-3 rounded-md bg-white/5 border border-white/10 text-sm text-zinc-200 focus:outline-none focus:border-blue-500/50"
+              className="w-full h-10 px-3 rounded-xl bg-secondary/50 border border-border text-sm text-foreground focus:outline-none focus:border-primary cursor-pointer"
             >
-              <option value="" className="bg-zinc-900 text-zinc-300">
+              <option value="" className="bg-card text-muted-foreground">
                 Nenhuma (evento avulso)
               </option>
               {subjects
@@ -221,7 +221,7 @@ export default function EventDialog({
                   <option
                     key={subj.id}
                     value={subj.id}
-                    className="bg-zinc-900 text-white"
+                    className="bg-card text-foreground"
                   >
                     {subj.name} {subj.code ? `(${subj.code})` : ""}
                   </option>
@@ -231,7 +231,7 @@ export default function EventDialog({
 
           {/* Notas */}
           <div className="space-y-1.5">
-            <Label htmlFor="event-notes" className="text-xs text-zinc-300 font-medium">
+            <Label htmlFor="event-notes" className="text-xs text-muted-foreground font-medium">
               Notas e observações
             </Label>
             <Textarea
@@ -239,7 +239,7 @@ export default function EventDialog({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Ex: Tópicos a revisar, link do formulário, sala da prova..."
-              className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 min-h-[70px] text-xs resize-none"
+              className="bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground min-h-[70px] text-xs rounded-xl resize-none focus:border-primary"
             />
           </div>
 
@@ -250,10 +250,10 @@ export default function EventDialog({
                 type="button"
                 onClick={() => setDone(!done)}
                 className={cn(
-                  "flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors",
+                  "flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-xl border transition-colors cursor-pointer",
                   done
-                    ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
-                    : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                    ? "bg-accent/15 border-accent/35 text-[#007A72] dark:text-[#33C7BC]"
+                    : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground"
                 )}
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -262,7 +262,7 @@ export default function EventDialog({
             </div>
           )}
 
-          <DialogFooter className="flex flex-row items-center justify-between gap-2 pt-4 border-t border-white/10 sm:justify-between">
+          <DialogFooter className="flex flex-row items-center justify-between gap-2 pt-4 border-t border-border sm:justify-between">
             {eventToEdit && onDelete ? (
               <Button
                 type="button"
@@ -270,7 +270,7 @@ export default function EventDialog({
                 size="sm"
                 onClick={handleDelete}
                 disabled={isSubmitting}
-                className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 gap-1.5 h-9 px-3 text-xs"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5 h-9 px-3 text-xs rounded-xl"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Excluir</span>
@@ -286,7 +286,7 @@ export default function EventDialog({
                 size="sm"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="bg-white/5 border-white/10 hover:bg-white/10 text-xs text-zinc-300 h-9"
+                className="bg-secondary/50 border-border hover:bg-secondary text-xs text-foreground h-9 rounded-xl"
               >
                 Cancelar
               </Button>
@@ -294,7 +294,7 @@ export default function EventDialog({
                 type="submit"
                 size="sm"
                 disabled={isSubmitting || !title.trim()}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs h-9 px-4"
+                className="bg-primary hover:brightness-105 text-[#030607] font-semibold text-xs h-9 px-4 rounded-xl shadow-[0_4px_14px_rgba(255,112,32,0.3)]"
               >
                 {eventToEdit ? "Salvar alterações" : "Criar evento"}
               </Button>

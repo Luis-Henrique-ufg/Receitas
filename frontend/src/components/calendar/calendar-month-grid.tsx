@@ -155,12 +155,12 @@ export default function CalendarMonthGrid({
   };
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-5 sm:p-6 border border-white/10 shadow-xl space-y-5">
+    <div className="w-full bg-card rounded-3xl p-5 sm:p-6 border border-border tangerina-card space-y-5">
       {/* Top Bar: Month navigation + Category filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         {/* Navigation */}
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-heading font-bold text-white tracking-tight min-w-[180px]">
+          <h2 className="text-lg sm:text-xl font-display font-semibold text-foreground tracking-[-0.015em] min-w-[180px]">
             {MONTH_NAMES[month]} de {year}
           </h2>
 
@@ -169,7 +169,7 @@ export default function CalendarMonthGrid({
               variant="outline"
               size="icon"
               onClick={handlePrevMonth}
-              className="w-8 h-8 rounded-lg bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300"
+              className="w-8 h-8 rounded-xl bg-secondary/60 border-border hover:bg-secondary text-muted-foreground hover:text-foreground"
               title="Mês anterior"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function CalendarMonthGrid({
               variant="outline"
               size="sm"
               onClick={handleToday}
-              className="h-8 px-2.5 text-xs rounded-lg bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300 font-medium"
+              className="h-8 px-3 text-xs rounded-xl bg-secondary/60 border-border hover:bg-secondary text-foreground font-medium"
             >
               Hoje
             </Button>
@@ -186,7 +186,7 @@ export default function CalendarMonthGrid({
               variant="outline"
               size="icon"
               onClick={handleNextMonth}
-              className="w-8 h-8 rounded-lg bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300"
+              className="w-8 h-8 rounded-xl bg-secondary/60 border-border hover:bg-secondary text-muted-foreground hover:text-foreground"
               title="Próximo mês"
             >
               <ChevronRight className="w-4 h-4" />
@@ -200,10 +200,10 @@ export default function CalendarMonthGrid({
             type="button"
             onClick={() => onChangeCategoryFilter("all")}
             className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors",
+              "px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer",
               categoryFilter === "all"
-                ? "bg-white/20 border-white/30 text-white font-semibold"
-                : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+                ? "bg-primary text-[#030607] border-primary font-semibold shadow-sm"
+                : "bg-secondary/60 border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
             )}
           >
             Todas
@@ -218,13 +218,13 @@ export default function CalendarMonthGrid({
                 type="button"
                 onClick={() => onChangeCategoryFilter(cat)}
                 className={cn(
-                  "px-2.5 py-1 rounded-lg text-xs font-medium border flex items-center gap-1 transition-colors",
+                  "px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer",
                   conf.bgClass,
                   conf.borderClass,
                   conf.textClass,
                   isSelected
-                    ? "ring-2 ring-white/40 font-semibold scale-[1.02]"
-                    : "opacity-60 hover:opacity-100"
+                    ? "ring-2 ring-primary/40 font-semibold scale-[1.02]"
+                    : "opacity-75 hover:opacity-100"
                 )}
               >
                 <span className={cn("w-1.5 h-1.5 rounded-full", conf.dotClass)} />
@@ -236,7 +236,7 @@ export default function CalendarMonthGrid({
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-xs font-semibold text-zinc-400 pb-1">
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground pb-1">
         {WEEK_DAYS.map((d) => (
           <div key={d} className="py-1">
             {d}
@@ -245,7 +245,7 @@ export default function CalendarMonthGrid({
       </div>
 
       {/* Month Days Grid */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2">
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
         {cells.map((cell) => {
           const dayEvents = eventsByDate.get(cell.dateStr) || [];
           const studyInfo = studyMap.get(cell.dateStr);
@@ -257,11 +257,11 @@ export default function CalendarMonthGrid({
               key={cell.dateStr}
               onClick={() => onSelectDate(cell.dateStr)}
               className={cn(
-                "min-h-[70px] sm:min-h-[80px] lg:min-h-[82px] xl:min-h-[95px] p-1 sm:p-1.5 rounded-xl border flex flex-col justify-between transition-all cursor-pointer group",
+                "min-h-[70px] sm:min-h-[82px] lg:min-h-[86px] xl:min-h-[96px] p-1.5 sm:p-2 rounded-2xl border flex flex-col justify-between transition-all cursor-pointer group",
                 cell.isCurrentMonth
-                  ? "bg-white/[0.02] hover:bg-white/[0.06] border-white/10"
-                  : "bg-black/30 border-white/5 opacity-40 hover:opacity-75",
-                cell.isToday && "ring-1 ring-white/25 border-white/25 bg-white/[0.04]"
+                  ? "bg-secondary/25 hover:bg-secondary/60 border-border"
+                  : "bg-muted/20 border-border/50 opacity-45 hover:opacity-75",
+                cell.isToday && "ring-2 ring-primary/45 border-primary bg-primary/[0.06]"
               )}
             >
               {/* Day header: Day number + Study Indicator */}
@@ -270,10 +270,10 @@ export default function CalendarMonthGrid({
                   className={cn(
                     "text-xs font-mono tabular-nums leading-none",
                     cell.isToday
-                      ? "px-1.5 py-0.5 rounded-md bg-white/15 border border-white/20 text-white font-semibold"
+                      ? "px-1.5 py-0.5 rounded-md bg-primary text-[#030607] font-bold shadow-sm"
                       : cell.isCurrentMonth
-                      ? "text-zinc-200 group-hover:text-white"
-                      : "text-zinc-500"
+                      ? "text-foreground/85 font-medium group-hover:text-foreground"
+                      : "text-muted-foreground"
                   )}
                 >
                   {cell.dayNumber}
@@ -282,10 +282,10 @@ export default function CalendarMonthGrid({
                 {/* Subtle Study indicator badge */}
                 {hasStudied && (
                   <span
-                    className="inline-flex items-center gap-1 text-[9px] font-mono text-zinc-300 bg-white/5 px-1.5 py-0.5 rounded border border-white/10"
+                    className="inline-flex items-center gap-1 text-[9px] font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/25 font-medium"
                     title={`Estudo registrado: ${Math.round(studiedSeconds / 60)} min`}
                   >
-                    <BookOpen className="w-2.5 h-2.5 text-zinc-400 shrink-0" />
+                    <BookOpen className="w-2.5 h-2.5 text-primary shrink-0" />
                     <span className="hidden sm:inline">
                       {Math.round(studiedSeconds / 60)}m
                     </span>
@@ -294,7 +294,7 @@ export default function CalendarMonthGrid({
               </div>
 
               {/* Event Chips List */}
-              <div className="space-y-1 w-full mt-1 flex-1 overflow-hidden">
+              <div className="space-y-1 w-full mt-1.5 flex-1 overflow-hidden">
                 {dayEvents.slice(0, 3).map((event) => {
                   const conf =
                     CATEGORY_CONFIGS[event.category] || CATEGORY_CONFIGS.lembrete;
@@ -306,11 +306,11 @@ export default function CalendarMonthGrid({
                         onEditEvent(event);
                       }}
                       className={cn(
-                        "px-1.5 py-0.5 rounded text-[10px] font-medium border truncate transition-all block text-left cursor-pointer",
+                        "px-1.5 py-0.5 rounded-md text-[10px] font-medium border truncate transition-all block text-left cursor-pointer",
                         conf.bgClass,
                         conf.borderClass,
                         conf.textClass,
-                        event.done && "line-through opacity-50 text-zinc-400"
+                        event.done && "line-through opacity-50 text-muted-foreground"
                       )}
                       title={`${event.title}${event.time ? ` às ${event.time}` : ""}`}
                     >
@@ -329,7 +329,7 @@ export default function CalendarMonthGrid({
                 })}
 
                 {dayEvents.length > 3 && (
-                  <div className="text-[9px] text-zinc-400 font-mono text-center">
+                  <div className="text-[9px] text-muted-foreground font-mono text-center">
                     +{dayEvents.length - 3} mais
                   </div>
                 )}

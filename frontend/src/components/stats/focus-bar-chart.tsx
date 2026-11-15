@@ -110,6 +110,16 @@ function getStackedSegmentPath(
   return `M ${x + r} ${y} H ${x + w - r} A ${r} ${r} 0 0 1 ${x + w} ${y + r} V ${y + h} H ${x} V ${y + r} A ${r} ${r} 0 0 1 ${x + r} ${y} Z`;
 }
 
+function resolveChartColor(color?: string | null, subjectId?: number | null): string {
+  if (!color || color === "#64748b") {
+    return subjectId === null ? "#00A196" : "#FF7020";
+  }
+  if (color.toLowerCase() === "#3b82f6") {
+    return "#FF7020";
+  }
+  return color;
+}
+
 export default function FocusBarChart() {
   const { apiUrl } = useApiUrl();
   const [period, setPeriod] = useState<PeriodType>("day");
@@ -380,17 +390,17 @@ export default function FocusBarChart() {
       : null;
 
   return (
-    <div className="w-full bg-card rounded-3xl p-6 sm:p-8 border border-border shadow-sm relative overflow-hidden">
+    <div className="w-full bg-card rounded-3xl p-6 sm:p-8 border border-border tangerina-card relative overflow-hidden">
       {/* Top Header: Title, Total, Controls Toolbar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-border">
         <div className="flex items-center gap-2.5">
           <BarChart3 className="w-5 h-5 text-primary shrink-0" />
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-base font-semibold text-foreground tracking-tight">
+              <h2 className="text-base sm:text-lg font-display font-semibold text-foreground tracking-[-0.01em]">
                 Tempo de foco
               </h2>
-              <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-foreground bg-muted border border-border px-2.5 py-0.5 rounded-full tabular-nums">
+              <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-primary bg-primary/12 border border-primary/25 px-2.5 py-0.5 rounded-full tabular-nums">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 {formatDuration(visibleTotalSeconds)}
               </div>
@@ -405,7 +415,7 @@ export default function FocusBarChart() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Day count switcher (14 vs 30 days) if in day mode */}
           {period === "day" && (
-            <div className="inline-flex items-center p-0.5 rounded-full bg-muted/40 border border-border text-xs">
+            <div className="inline-flex items-center p-0.5 rounded-full bg-secondary/70 border border-border text-xs">
               <button
                 type="button"
                 onClick={() => setDayLimit(14)}
@@ -413,7 +423,7 @@ export default function FocusBarChart() {
                   "px-2.5 py-1 rounded-full transition-all text-xs font-medium",
                   dayLimit === 14
                     ? "bg-card text-foreground border border-border font-semibold shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent"
                 )}
               >
                 14d
@@ -425,7 +435,7 @@ export default function FocusBarChart() {
                   "px-2.5 py-1 rounded-full transition-all text-xs font-medium",
                   dayLimit === 30
                     ? "bg-card text-foreground border border-border font-semibold shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent"
                 )}
               >
                 30d
@@ -434,7 +444,7 @@ export default function FocusBarChart() {
           )}
 
           {/* Period Selector (Dia | Sem | Mês | Ano) */}
-          <div className="inline-flex items-center p-0.5 rounded-full bg-muted/40 border border-border text-xs">
+          <div className="inline-flex items-center p-0.5 rounded-full bg-secondary/70 border border-border text-xs">
             {(["day", "week", "month", "year"] as PeriodType[]).map((p) => {
               const labelMap: Record<PeriodType, string> = {
                 day: "Dia",
@@ -448,10 +458,10 @@ export default function FocusBarChart() {
                   type="button"
                   onClick={() => handlePeriodChange(p)}
                   className={cn(
-                    "px-3 py-1 rounded-full transition-all font-medium text-xs",
+                    "px-3 py-1 rounded-full transition-all font-medium text-xs cursor-pointer",
                     period === p
-                      ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-primary text-[#030607] font-semibold shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   )}
                 >
                   {labelMap[p]}
@@ -461,13 +471,13 @@ export default function FocusBarChart() {
           </div>
 
           {/* Time Navigator (< Range Label >) */}
-          <div className="flex items-center gap-1 bg-muted/40 border border-border rounded-full p-0.5">
+          <div className="flex items-center gap-1 bg-secondary/70 border border-border rounded-full p-0.5">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setOffset((prev) => prev - 1)}
               title="Período Anterior"
-              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-full"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
@@ -482,7 +492,7 @@ export default function FocusBarChart() {
               onClick={() => setOffset((prev) => prev + 1)}
               disabled={offset >= 0}
               title="Próximo Período"
-              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:hover:bg-transparent rounded-full"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-full"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
@@ -495,7 +505,7 @@ export default function FocusBarChart() {
               size="icon"
               onClick={() => setOffset(0)}
               title="Voltar ao período atual"
-              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-full"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </Button>
@@ -509,8 +519,8 @@ export default function FocusBarChart() {
             className={cn(
               "cursor-pointer px-3 py-1.5 rounded-full text-xs transition-all duration-300 flex items-center gap-2 select-none",
               showAverageLine
-                ? "bg-muted text-foreground border border-border font-medium shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent"
+                ? "bg-secondary text-foreground border border-border font-medium shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent"
             )}
           >
             <span
@@ -534,8 +544,8 @@ export default function FocusBarChart() {
             className={cn(
               "inline-flex items-center rounded-full transition-all duration-300",
               showGoalLine
-                ? "bg-muted text-foreground border border-border font-medium shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent"
+                ? "bg-secondary text-foreground border border-border font-medium shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent"
             )}
           >
             <button
@@ -548,7 +558,7 @@ export default function FocusBarChart() {
                 className={cn(
                   "w-2 h-2 rounded-full transition-all shrink-0",
                   showGoalLine
-                    ? "bg-amber-500"
+                    ? "bg-accent"
                     : "bg-muted-foreground"
                 )}
               />
@@ -573,7 +583,7 @@ export default function FocusBarChart() {
       {/* Main Bar Chart Section */}
       <div className="pt-4 relative">
         {isLoading && !data ? (
-          <div className="h-60 rounded-2xl bg-muted/20 animate-pulse flex items-center justify-center border border-border">
+          <div className="h-60 rounded-2xl bg-secondary/40 animate-pulse flex items-center justify-center border border-border">
             <span className="text-xs text-muted-foreground">Carregando dados de foco...</span>
           </div>
         ) : (
@@ -629,14 +639,14 @@ export default function FocusBarChart() {
                     x={paddingLeft + 6}
                     y={avgY - 5}
                     textAnchor="start"
-                    className="text-[10px] fill-primary font-sans font-medium select-none"
+                    className="text-[10px] fill-primary font-sans font-semibold select-none"
                   >
                     Média: {formatDuration(averageSeconds)}
                   </text>
                 </g>
               )}
 
-              {/* Goal Line (Amber Dashed, Right-aligned label) */}
+              {/* Goal Line (Tangerina Smiles Teal Dashed, Right-aligned label) */}
               {goalY !== null && (
                 <g>
                   <line
@@ -644,7 +654,7 @@ export default function FocusBarChart() {
                     y1={goalY}
                     x2={svgWidth - paddingRight}
                     y2={goalY}
-                    stroke="#eab308"
+                    stroke="#00A196"
                     strokeWidth="1.5"
                     strokeDasharray="5 4"
                     opacity="0.9"
@@ -653,7 +663,7 @@ export default function FocusBarChart() {
                     x={svgWidth - paddingRight - 4}
                     y={goalY - 5}
                     textAnchor="end"
-                    className="text-[10px] fill-amber-500 font-sans font-medium select-none"
+                    className="text-[10px] fill-[#007A72] dark:fill-[#33C7BC] font-sans font-semibold select-none"
                   >
                     Meta: {formatDuration(currentGoalSeconds)}
                   </text>
@@ -683,7 +693,7 @@ export default function FocusBarChart() {
                       width={slotWidth}
                       height={plotHeight + paddingBottom}
                       fill="transparent"
-                      className="group-hover:fill-white/[0.02] transition-colors"
+                      className="group-hover:fill-primary/[0.04] transition-colors"
                     />
 
                     {/* Stack segments */}
@@ -704,11 +714,11 @@ export default function FocusBarChart() {
                         <path
                           key={`${bar.key}-${item.subject_id ?? "none"}`}
                           d={pathData}
-                          fill={item.color || "#64748b"}
+                          fill={resolveChartColor(item.color, item.subject_id)}
                           className={cn(
                             "transition-all duration-200",
                             isHovered
-                              ? "brightness-125 filter drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]"
+                              ? "brightness-110 filter drop-shadow-[0_2px_8px_rgba(255,112,32,0.28)]"
                               : "opacity-95"
                           )}
                         />
@@ -792,7 +802,7 @@ export default function FocusBarChart() {
 
         {/* Hovered Bar Interactive Popover / Tooltip */}
         {hoveredBar && (
-          <div className="min-h-[44px] mt-2 p-3 rounded-2xl border border-border bg-muted/40 flex items-center justify-between text-xs text-foreground animate-in fade-in duration-150">
+          <div className="min-h-[44px] mt-2 p-3 rounded-2xl border border-border bg-secondary/50 flex items-center justify-between text-xs text-foreground animate-in fade-in duration-150">
             <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-foreground">
@@ -819,7 +829,7 @@ export default function FocusBarChart() {
                     >
                       <div
                         className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm"
-                        style={{ backgroundColor: item.color }}
+                        style={{ backgroundColor: resolveChartColor(item.color, item.subject_id) }}
                       />
                       <span className="text-muted-foreground">{item.name}:</span>
                       <span className="font-mono font-medium text-foreground tabular-nums">
@@ -854,8 +864,8 @@ export default function FocusBarChart() {
                     className={cn(
                       "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer",
                       isHidden
-                        ? "bg-muted/10 border-border/50 text-muted-foreground line-through opacity-50"
-                        : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                        ? "bg-secondary/20 border-border/50 text-muted-foreground line-through opacity-50"
+                        : "bg-secondary/60 border-border text-foreground hover:bg-secondary"
                     )}
                   >
                     <div
@@ -863,7 +873,7 @@ export default function FocusBarChart() {
                         "w-2 h-2 rounded-full flex-shrink-0",
                         isHidden && "grayscale"
                       )}
-                      style={{ backgroundColor: sub.color }}
+                      style={{ backgroundColor: resolveChartColor(sub.color, sub.id) }}
                     />
                     <span>{sub.name}</span>
                     {sub.study_seconds > 0 && (

@@ -85,25 +85,27 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 pb-20">
-      <div className="flex items-center gap-3 pb-2 border-b border-border">
-        <Settings className="w-5 h-5 text-primary shrink-0" />
+    <div className="w-full space-y-6 pb-20">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-primary/12 border border-primary/25 flex items-center justify-center shrink-0">
+          <Settings className="w-5 h-5 text-primary" />
+        </div>
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
+          <h1 className="text-2xl sm:text-[28px] font-display font-medium text-foreground tracking-[-0.02em] leading-[1.15]">
             Configurações
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Gerencie disciplinas, sessões de foco contínuo e conexão com o servidor.
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+            Gerencie disciplinas, sessões de foco contínuo e conexão com o servidor
           </p>
         </div>
       </div>
 
       <Tabs defaultValue="subjects" className="w-full">
-        <TabsList className="bg-card border border-border p-1 rounded-xl mb-6 flex flex-wrap items-center gap-1 shadow-sm">
+        <TabsList className="bg-secondary/80 dark:bg-card border border-border p-1 rounded-full mb-6 inline-flex flex-wrap items-center gap-1 h-auto shadow-sm">
           <TabsTrigger
             value="subjects"
             title="Matérias Acadêmicas"
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-[#030607] data-[state=active]:font-semibold text-muted-foreground hover:text-foreground hover:bg-card/60 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none cursor-pointer"
           >
             <BookOpen className="w-4 h-4 shrink-0" />
             <span>Matérias</span>
@@ -111,7 +113,7 @@ export default function SettingsPage() {
           <TabsTrigger
             value="pomodoro"
             title="Sessões de Foco & Pomodoro"
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-[#030607] data-[state=active]:font-semibold text-muted-foreground hover:text-foreground hover:bg-card/60 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none cursor-pointer"
           >
             <Timer className="w-4 h-4 shrink-0" />
             <span>Foco</span>
@@ -119,7 +121,7 @@ export default function SettingsPage() {
           <TabsTrigger
             value="sync"
             title="Sincronização & Backup"
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-[#030607] data-[state=active]:font-semibold text-muted-foreground hover:text-foreground hover:bg-card/60 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none cursor-pointer"
           >
             <ArrowRightLeft className="w-4 h-4 shrink-0" />
             <span>Backup</span>
@@ -127,7 +129,7 @@ export default function SettingsPage() {
           <TabsTrigger
             value="connection"
             title="Conexão & API"
-            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-muted-foreground hover:text-foreground hover:bg-muted/60 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none"
+            className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-[#030607] data-[state=active]:font-semibold text-muted-foreground hover:text-foreground hover:bg-card/60 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border border-transparent select-none cursor-pointer"
           >
             <Server className="w-4 h-4 shrink-0" />
             <span>API</span>
@@ -136,17 +138,17 @@ export default function SettingsPage() {
 
         {/* Tab 1: Matérias */}
         <TabsContent value="subjects" className="outline-none focus:outline-none">
-          <div className="bg-card p-6 rounded-2xl border border-border shadow-md">
+          <div className="bg-card p-6 sm:p-8 rounded-3xl border border-border tangerina-card">
             <SubjectManager />
           </div>
         </TabsContent>
 
         {/* Tab 2: Pomodoro Flow Preferences */}
         <TabsContent value="pomodoro" className="outline-none focus:outline-none">
-          <div className="bg-card p-6 rounded-2xl border border-border shadow-md space-y-8 max-w-2xl">
+          <div className="bg-card p-6 sm:p-8 rounded-3xl border border-border tangerina-card space-y-8 max-w-3xl">
             {/* Behavior on finish */}
             <div className="space-y-3">
-              <h2 className="text-base font-display font-semibold text-foreground">
+              <h2 className="text-base sm:text-lg font-display font-semibold text-foreground tracking-[-0.01em]">
                 Ao terminar o tempo de foco:
               </h2>
               <p className="text-xs text-muted-foreground">
@@ -164,17 +166,17 @@ export default function SettingsPage() {
                         toast.success(`Comportamento atualizado para "${opt.title}"`);
                       }}
                       className={cn(
-                        "p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3",
+                        "p-4 rounded-2xl border cursor-pointer transition-all flex items-start gap-3",
                         isSelected
-                          ? "border-primary bg-primary/10 shadow-sm"
-                          : "border-border bg-muted/20 hover:bg-muted/40 hover:border-border"
+                          ? "border-primary bg-primary/[0.08] shadow-sm"
+                          : "border-border bg-secondary/35 hover:bg-secondary/70"
                       )}
                     >
                       <div
                         className={cn(
                           "w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors",
                           isSelected
-                            ? "border-primary bg-primary text-primary-foreground"
+                            ? "border-primary bg-primary text-[#030607]"
                             : "border-border bg-transparent"
                         )}
                       >
@@ -183,11 +185,11 @@ export default function SettingsPage() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">
+                          <span className="text-sm font-semibold text-foreground">
                             {opt.title}
                           </span>
                           {opt.badge && (
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary">
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/12 border border-primary/30 text-primary font-semibold">
                               {opt.badge}
                             </span>
                           )}
@@ -204,12 +206,12 @@ export default function SettingsPage() {
 
             {/* Durations */}
             <div className="space-y-4 pt-6 border-t border-border">
-              <h2 className="text-base font-display font-semibold text-foreground">
+              <h2 className="text-base sm:text-lg font-display font-semibold text-foreground tracking-[-0.01em]">
                 Duração dos Ciclos (minutos)
               </h2>
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Foco Inicial</label>
+                  <label className="text-xs font-medium text-muted-foreground">Foco Inicial</label>
                   <Input
                     type="number"
                     min={1}
@@ -218,11 +220,11 @@ export default function SettingsPage() {
                     onChange={(e) =>
                       updateDurations({ focus: Math.max(1, Number(e.target.value)) })
                     }
-                    className="bg-muted/40 border-border text-foreground font-mono"
+                    className="bg-secondary/50 border-border text-foreground font-mono rounded-xl"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Pausa Curta</label>
+                  <label className="text-xs font-medium text-muted-foreground">Pausa Curta</label>
                   <Input
                     type="number"
                     min={1}
@@ -231,11 +233,11 @@ export default function SettingsPage() {
                     onChange={(e) =>
                       updateDurations({ short_break: Math.max(1, Number(e.target.value)) })
                     }
-                    className="bg-muted/40 border-border text-foreground font-mono"
+                    className="bg-secondary/50 border-border text-foreground font-mono rounded-xl"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Pausa Longa</label>
+                  <label className="text-xs font-medium text-muted-foreground">Pausa Longa</label>
                   <Input
                     type="number"
                     min={1}
@@ -244,7 +246,7 @@ export default function SettingsPage() {
                     onChange={(e) =>
                       updateDurations({ long_break: Math.max(1, Number(e.target.value)) })
                     }
-                    className="bg-muted/40 border-border text-foreground font-mono"
+                    className="bg-secondary/50 border-border text-foreground font-mono rounded-xl"
                   />
                 </div>
               </div>
@@ -253,7 +255,7 @@ export default function SettingsPage() {
             {/* Sound notification toggle */}
             <div className="flex items-center justify-between pt-6 border-t border-border">
               <div>
-                <p className="text-sm font-medium text-foreground">Avisos Sonoros</p>
+                <p className="text-sm font-semibold text-foreground">Avisos Sonoros</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Emitir sinal sonoro suave ao completar o tempo de foco ou pausa.
                 </p>
@@ -262,11 +264,11 @@ export default function SettingsPage() {
                 variant="outline"
                 size="sm"
                 onClick={toggleSound}
-                className="gap-2 text-xs"
+                className="gap-2 text-xs rounded-xl bg-secondary/50 border-border hover:bg-secondary text-foreground"
               >
                 {soundEnabled ? (
                   <>
-                    <Volume2 className="w-4 h-4 text-emerald-500" /> Ativado
+                    <Volume2 className="w-4 h-4 text-accent" /> Ativado
                   </>
                 ) : (
                   <>
@@ -285,8 +287,8 @@ export default function SettingsPage() {
 
         {/* Tab 4: Conexão API */}
         <TabsContent value="connection" className="outline-none focus:outline-none">
-          <div className="bg-card p-6 rounded-2xl border border-border shadow-md max-w-xl">
-            <h2 className="text-lg font-display font-bold text-foreground mb-1">
+          <div className="bg-card p-6 sm:p-8 rounded-3xl border border-border tangerina-card max-w-2xl">
+            <h2 className="text-lg font-display font-semibold text-foreground tracking-[-0.015em] mb-1">
               Endereço da API Backend
             </h2>
             <p className="text-xs text-muted-foreground mb-6">
@@ -308,7 +310,7 @@ export default function SettingsPage() {
                         <Input
                           placeholder="ex: http://localhost:9823"
                           type="url"
-                          className="bg-muted/40 border-border text-foreground placeholder:text-muted-foreground font-mono text-sm"
+                          className="bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground font-mono text-sm rounded-xl"
                           {...field}
                         />
                       </FormControl>
@@ -319,16 +321,16 @@ export default function SettingsPage() {
                     </FormItem>
                   )}
                 />
-                <div className="space-x-3 flex justify-end pt-2 border-t border-border">
+                <div className="space-x-3 flex justify-end pt-3 border-t border-border">
                   <Button
                     type="button"
                     onClick={resetApiUrl}
                     variant="outline"
-                    className="text-xs"
+                    className="text-xs rounded-xl bg-secondary/50 border-border hover:bg-secondary text-foreground"
                   >
                     Restaurar Padrão
                   </Button>
-                  <Button type="submit" className="text-xs font-semibold">
+                  <Button type="submit" className="text-xs font-semibold rounded-xl bg-primary hover:brightness-105 text-[#030607] shadow-[0_4px_14px_rgba(255,112,32,0.3)]">
                     Salvar Conexão
                   </Button>
                 </div>

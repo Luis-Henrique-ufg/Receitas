@@ -260,14 +260,14 @@ export default function PomodoroWidget() {
 
           {/* Big Time Display */}
           <div className="text-center py-1">
-            <div className="text-4xl font-mono font-bold tracking-tight text-white tabular-nums select-none">
+            <div className="text-4xl font-mono font-bold tracking-tight text-foreground tabular-nums select-none">
               {isOvertime
                 ? `+${formatSeconds(overtimeSeconds)}`
                 : formatSeconds(timeLeft)}
             </div>
 
             {/* Subject badge */}
-            <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-[11px] text-zinc-300 max-w-[220px] truncate">
+            <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary/60 border border-border text-[11px] text-foreground/85 max-w-[220px] truncate">
               <div
                 className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: subjectDisplayColor }}
@@ -276,31 +276,31 @@ export default function PomodoroWidget() {
             </div>
 
             {intention && (
-              <p className="text-[11px] text-zinc-400 italic mt-1 truncate">
+              <p className="text-[11px] text-muted-foreground italic mt-1 truncate">
                 &quot;{intention}&quot;
               </p>
             )}
           </div>
 
           {/* Action Controls: Symmetrical, equal heights, zero jiggle */}
-          <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-white/10">
+          <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-border">
             {/* Left Slot: Stop (if active) or Reset (if idle) */}
             {isRunning || isOvertime ? (
               <Button
                 variant="outline"
                 size="icon"
                 onClick={handleStopSession}
-                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-200 hover:text-white shrink-0 cursor-pointer"
+                className="h-9 w-9 rounded-xl border-border bg-secondary/50 hover:bg-secondary text-xs text-foreground shrink-0 cursor-pointer"
                 title="Parar e Gravar"
               >
-                <Square className="w-3.5 h-3.5 fill-current text-rose-400" />
+                <Square className="w-3.5 h-3.5 fill-current text-destructive" />
               </Button>
             ) : (
               <Button
                 variant="outline"
                 size="icon"
                 onClick={reset}
-                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-400 hover:text-white shrink-0 cursor-pointer"
+                className="h-9 w-9 rounded-xl border-border bg-secondary/50 hover:bg-secondary text-xs text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                 title="Reiniciar"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -332,20 +332,20 @@ export default function PomodoroWidget() {
                 variant="outline"
                 size="icon"
                 onClick={handleStartBreak}
-                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white shrink-0 cursor-pointer"
+                className="h-9 w-9 rounded-xl border-border bg-secondary/50 hover:bg-secondary text-xs text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                 title="Fazer Intervalo de Descanso"
               >
-                <Coffee className="w-3.5 h-3.5 text-zinc-300" />
+                <Coffee className="w-3.5 h-3.5" />
               </Button>
             ) : (
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setMode("focus")}
-                className="h-9 w-9 rounded-xl border-white/15 bg-white/5 hover:bg-white/10 text-xs text-zinc-300 hover:text-white shrink-0 cursor-pointer"
+                className="h-9 w-9 rounded-xl border-border bg-secondary/50 hover:bg-secondary text-xs text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
                 title="Voltar ao Foco"
               >
-                <Timer className="w-3.5 h-3.5 text-zinc-300" />
+                <Timer className="w-3.5 h-3.5" />
               </Button>
             )}
           </div>
@@ -354,7 +354,7 @@ export default function PomodoroWidget() {
           <button
             type="button"
             onClick={handleOpenFocusScreen}
-            className="w-full mt-3 pt-2.5 border-t border-white/10 text-xs text-blue-400 hover:text-white flex items-center justify-center gap-1 font-medium transition-colors cursor-pointer"
+            className="w-full mt-3 pt-2.5 border-t border-border text-xs text-primary hover:brightness-110 flex items-center justify-center gap-1 font-semibold transition-colors cursor-pointer"
           >
             <span>Abrir tela de Foco</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -369,13 +369,13 @@ export default function PomodoroWidget() {
           if (!open) handleConfirmInactivityDiscount(false);
         }}
       >
-        <DialogContent className="max-w-md bg-[#0a0f1d] border-white/15 text-white">
+        <DialogContent className="max-w-md bg-card border-border text-foreground rounded-3xl shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <AlertTriangle className="w-5 h-5 text-blue-400" />
+            <DialogTitle className="flex items-center gap-2 text-foreground font-display font-semibold">
+              <AlertTriangle className="w-5 h-5 text-primary" />
               Inatividade Detectada
             </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-xs">
+            <DialogDescription className="text-muted-foreground text-xs">
               Detectamos que você esteve inativo por{" "}
               {inactivityModalData
                 ? Math.round(inactivityModalData.idleSeconds / 60)
@@ -384,13 +384,13 @@ export default function PomodoroWidget() {
               esse período da sua sessão de foco?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex flex-row justify-end gap-2 pt-2 border-t border-white/10">
+          <DialogFooter className="flex flex-row justify-end gap-2 pt-2 border-t border-border">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => handleConfirmInactivityDiscount(false)}
-              className="text-xs border-white/15 text-zinc-300"
+              className="text-xs border-border bg-secondary/50 text-foreground hover:bg-secondary rounded-full"
             >
               Manter Tempo Total
             </Button>

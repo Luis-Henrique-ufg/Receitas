@@ -173,41 +173,41 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6 pb-20">
+    <div className="w-full space-y-6 pb-20">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Calendar className="w-6 h-6 text-primary shrink-0" />
-            <div>
-              <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-                Agenda de Estudos
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Planejamento de provas, entregas e preparação integrada aos cursos
-              </p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-primary/12 border border-primary/25 flex items-center justify-center shrink-0">
+            <Calendar className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-[28px] font-display font-medium text-foreground tracking-[-0.02em] leading-[1.15]">
+              Agenda de Estudos
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+              Planejamento de provas, entregas e preparação integrada aos cursos
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Button
             variant="outline"
             size="sm"
             onClick={handleEnableNotifications}
-            className="h-9 px-3 text-xs gap-1.5 rounded-xl transition-all duration-200"
+            className="h-9 px-3.5 text-xs gap-1.5 rounded-xl bg-card hover:bg-secondary border-border text-foreground transition-all duration-200"
             title="Ativar lembretes do navegador para os prazos"
           >
-            <Bell className="w-3.5 h-3.5 text-muted-foreground" />
+            <Bell className="w-3.5 h-3.5 text-primary" />
             <span>Lembretes</span>
           </Button>
 
           <Button
             size="sm"
             onClick={() => handleOpenNewDialog()}
-            className="h-9 px-4 text-xs font-semibold gap-1.5 rounded-xl transition-all duration-200 shadow-md"
+            className="h-9 px-4 text-xs font-semibold gap-1.5 rounded-xl bg-primary hover:brightness-105 text-[#030607] shadow-[0_4px_14px_rgba(255,112,32,0.3)] transition-all duration-200"
           >
-            <Plus className="w-4 h-4 transition-colors" />
+            <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Novo evento</span>
           </Button>
         </div>

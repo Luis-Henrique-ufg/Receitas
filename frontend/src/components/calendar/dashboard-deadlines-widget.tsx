@@ -52,15 +52,15 @@ export default function DashboardDeadlinesWidget() {
   }, [apiUrl]);
 
   return (
-    <div className="w-full bg-card rounded-3xl p-6 sm:p-7 border border-border shadow-sm space-y-4">
+    <div className="w-full bg-card rounded-3xl p-6 sm:p-7 border border-border tangerina-card space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <Calendar className="w-5 h-5 text-primary" />
-          <h2 className="text-base font-semibold text-foreground tracking-tight">
+          <h2 className="text-base sm:text-lg font-display font-semibold text-foreground tracking-[-0.01em]">
             Próximos prazos
           </h2>
           {upcomingEvents.length > 0 && (
-            <span className="text-[11px] font-mono tabular-nums px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground font-medium">
+            <span className="text-[11px] font-mono tabular-nums px-2.5 py-0.5 rounded-full bg-primary/12 border border-primary/25 text-primary font-semibold">
               {upcomingEvents.length}
             </span>
           )}
@@ -70,7 +70,7 @@ export default function DashboardDeadlinesWidget() {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/agenda")}
-          className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted gap-1 font-medium rounded-full"
+          className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary gap-1 font-medium rounded-full"
         >
           <span>Ver agenda completa</span>
           <ChevronRight className="w-3.5 h-3.5" />
@@ -82,12 +82,12 @@ export default function DashboardDeadlinesWidget() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-20 rounded-2xl bg-muted/40 animate-pulse border border-border"
+              className="h-20 rounded-2xl bg-secondary/50 animate-pulse border border-border"
             />
           ))}
         </div>
       ) : upcomingEvents.length === 0 ? (
-        <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border gap-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-secondary/35 border border-border gap-3">
           <p className="text-xs text-muted-foreground">
             Nenhum prazo agendado para os próximos dias.
           </p>
@@ -95,7 +95,7 @@ export default function DashboardDeadlinesWidget() {
             variant="outline"
             size="sm"
             onClick={() => navigate("/agenda")}
-            className="h-8 text-xs bg-card border-border hover:bg-muted text-foreground gap-1.5 rounded-full"
+            className="h-8 text-xs bg-card border-border hover:bg-secondary text-foreground gap-1.5 rounded-full"
           >
             <Plus className="w-3.5 h-3.5 text-primary" />
             <span>Adicionar evento</span>
@@ -112,7 +112,7 @@ export default function DashboardDeadlinesWidget() {
               <div
                 key={ev.id}
                 onClick={() => navigate("/agenda")}
-                className="p-4 rounded-2xl border border-border bg-muted/20 hover:bg-muted/40 hover:border-primary/40 transition-all cursor-pointer space-y-2 group"
+                className="p-4 rounded-2xl border border-border bg-secondary/35 hover:bg-secondary/75 hover:border-primary/40 transition-all cursor-pointer space-y-2 group"
               >
                 <div className="flex items-center justify-between gap-1.5">
                   <span
@@ -129,7 +129,7 @@ export default function DashboardDeadlinesWidget() {
 
                   <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-card border-border text-foreground inline-flex items-center gap-1.5">
                     {countdown.urgent && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     )}
                     {countdown.text}
                   </span>
