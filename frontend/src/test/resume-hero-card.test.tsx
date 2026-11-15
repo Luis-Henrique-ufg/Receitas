@@ -42,7 +42,7 @@ describe("ResumeHeroCard Component", () => {
     const onPlay = vi.fn();
     render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
 
-    expect(screen.getByText("Comece a estudar")).toBeInTheDocument();
+    expect(screen.getByText("Estudo Ativo")).toBeInTheDocument();
     expect(screen.getByText("Claude Impressionador")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Iniciar Curso/i })).toBeInTheDocument();
 
@@ -50,7 +50,7 @@ describe("ResumeHeroCard Component", () => {
     expect(onPlay).toHaveBeenCalledWith(1, undefined);
   });
 
-  it("renders resume state with clean lesson hierarchy and 'Retomar em' when elapsed > 0", async () => {
+  it("renders resume state with clean lesson hierarchy and 'Retomar Aula' when history exists", async () => {
     localStorage.setItem(
       "1",
       JSON.stringify({
@@ -64,28 +64,22 @@ describe("ResumeHeroCard Component", () => {
     const onPlay = vi.fn();
     render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
 
-    expect(screen.getByText("Continuar de onde parei")).toBeInTheDocument();
+    expect(screen.getByText("Continuar de onde parou")).toBeInTheDocument();
     expect(screen.getByText("Claude Impressionador")).toBeInTheDocument();
     // Cleaned titles without numeric prefixes
     expect(screen.getByText("Módulo 1")).toBeInTheDocument();
     expect(screen.getByText("Introdução aos Modelos")).toBeInTheDocument();
-    // New 'Retomar em' badge
-    expect(screen.getByText(/Retomar em/i)).toBeInTheDocument();
-    expect(screen.getByText("02:30")).toBeInTheDocument();
-    // 'assistidos' is no longer displayed
-    expect(screen.queryByText("assistidos")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^Continuar$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Retomar Aula/i })).toBeInTheDocument();
 
-    // Check lesson number formatting
     await waitFor(() => {
-      expect(screen.getByText(/Aula 1 de 40/i)).toBeInTheDocument();
+      expect(screen.getByText(/Progresso:/i)).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /^Continuar$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Retomar Aula/i }));
     expect(onPlay).toHaveBeenCalled();
   });
 
-  it("hides elapsed position badge when time_elapsed is zero", () => {
+  it("renders with clean progress display when time_elapsed is zero", () => {
     localStorage.setItem(
       "1",
       JSON.stringify({
@@ -99,8 +93,7 @@ describe("ResumeHeroCard Component", () => {
     const onPlay = vi.fn();
     render(<ResumeHeroCard courses={mockCourses} onPlay={onPlay} />);
 
-    expect(screen.getByText("Continuar de onde parei")).toBeInTheDocument();
-    expect(screen.queryByText(/Retomar em/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/assistidos/i)).not.toBeInTheDocument();
+    expect(screen.getByText("Continuar de onde parou")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Retomar Aula/i })).toBeInTheDocument();
   });
 });

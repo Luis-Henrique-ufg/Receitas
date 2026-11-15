@@ -4,7 +4,7 @@ import { BarChart3 } from "lucide-react";
 
 export default function AnalyticsPage() {
   return (
-    <div className="w-full mb-4 space-y-6 max-w-7xl mx-auto pb-20 animate-in fade-in duration-300">
+    <div className="w-full mb-4 space-y-6 max-w-[1800px] mx-auto px-3 sm:px-6 lg:px-8 pb-20 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border">
         <div>
@@ -26,4 +26,3 @@ export default function AnalyticsPage() {
     </div>
   );
 }
-

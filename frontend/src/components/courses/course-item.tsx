@@ -183,7 +183,7 @@ export default function CourseItem({
           <div>
             <h3
               onClick={onPlay}
-              className="text-lg sm:text-xl font-display font-semibold text-foreground tracking-tight leading-snug line-clamp-2 cursor-pointer hover:text-primary transition-colors text-left"
+              className="text-xl sm:text-2xl font-display font-semibold text-foreground tracking-tight leading-snug line-clamp-2 cursor-pointer hover:text-primary transition-colors text-left"
               title={course.name}
             >
               {course.name}

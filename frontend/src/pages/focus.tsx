@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Play,
   Pause,
@@ -9,17 +9,12 @@ import {
   Minimize2,
   Volume2,
   VolumeX,
-  Target,
-  Clock,
   Sparkles,
   ChevronDown,
-  Trash2,
-  Flame,
   Check,
   Settings2,
 } from "lucide-react";
 import { usePomodoroStore, PomodoroMode } from "@/store/usePomodoroStore";
-import { pomodoroApi, PomodoroSessionItem } from "@/services/pomodoroApi";
 import { subjectsApi } from "@/services/subjectsApi";
 import { Subject } from "@/models/models";
 import useApiUrl from "@/hooks/useApiUrl";
@@ -33,15 +28,6 @@ function formatSeconds(totalSecs: number): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
-function formatDurationHuman(totalSecs: number): string {
-  const h = Math.floor(totalSecs / 3600);
-  const m = Math.floor((totalSecs % 3600) / 60);
-  if (h > 0) {
-    return `${h}h${m > 0 ? ` ${m}m` : ""}`;
-  }
-  return `${m}m`;
-}
-
 export default function FocusPage() {
   const { apiUrl } = useApiUrl();
   const {
@@ -53,8 +39,6 @@ export default function FocusPage() {
     durations,
     currentSubjectId,
     currentSubjectName,
-    intention,
-    setIntention,
     soundEnabled,
     completionBehavior,
     start,
@@ -69,24 +53,14 @@ export default function FocusPage() {
   } = usePomodoroStore();
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [todaySessions, setTodaySessions] = useState<PomodoroSessionItem[]>([]);
-  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [isImmersive, setIsImmersive] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
-  const [editingSessionSubjectId, setEditingSessionSubjectId] = useState<number | null>(null);
 
   // Local settings draft
   const [draftFocus, setDraftFocus] = useState(durations.focus);
   const [draftShortBreak, setDraftShortBreak] = useState(durations.short_break);
   const [draftLongBreak, setDraftLongBreak] = useState(durations.long_break);
-
-  const intentionInputRef = useRef<HTMLInputElement>(null);
-
-  const todayIso = useMemo(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  }, []);
 
   // Fetch subjects
   const fetchSubjects = useCallback(async () => {
@@ -98,60 +72,13 @@ export default function FocusPage() {
     }
   }, [apiUrl]);
 
-  // Fetch today's sessions
-  const fetchTodaySessions = useCallback(async () => {
-    try {
-      setIsLoadingSessions(true);
-      const data = await pomodoroApi.getSessions(apiUrl, todayIso);
-      setTodaySessions(data);
-    } catch (err) {
-      console.error("Erro ao carregar sessões de hoje:", err);
-    } finally {
-      setIsLoadingSessions(false);
-    }
-  }, [apiUrl, todayIso]);
-
   useEffect(() => {
     void fetchSubjects();
-    void fetchTodaySessions();
-
-    const handleUpdate = () => {
-      void fetchTodaySessions();
-    };
-
-    window.addEventListener("statsUpdated", handleUpdate);
-    window.addEventListener("pomodoroSessionCompleted", handleUpdate);
     window.addEventListener("subjectsUpdated", fetchSubjects);
-
     return () => {
-      window.removeEventListener("statsUpdated", handleUpdate);
-      window.removeEventListener("pomodoroSessionCompleted", handleUpdate);
       window.removeEventListener("subjectsUpdated", fetchSubjects);
     };
-  }, [fetchSubjects, fetchTodaySessions]);
-
-  // Daily goal calculation (default 2h = 7200s or from stored goals)
-  const dailyGoalSeconds = useMemo(() => {
-    try {
-      const saved = localStorage.getItem("receitas_focus_goals");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed?.day) return parsed.day;
-      }
-    } catch {
-      // ignore
-    }
-    return 2 * 3600; // 2 hours
-  }, []);
-
-  const totalTodayStudySeconds = useMemo(() => {
-    return todaySessions.reduce((acc, s) => acc + (s.duration_seconds || 0), 0);
-  }, [todaySessions]);
-
-  const dailyGoalPercent = Math.min(
-    100,
-    Math.round((totalTodayStudySeconds / dailyGoalSeconds) * 100)
-  );
+  }, [fetchSubjects]);
 
   // Ring progress
   const ringProgress = useMemo(() => {
@@ -167,10 +94,10 @@ export default function FocusPage() {
     return subjects.find((s) => s.id === currentSubjectId) || null;
   }, [subjects, currentSubjectId]);
 
-  const activeSubjectColor = activeSubject ? activeSubject.color : "#64748b";
+  const activeSubjectColor = activeSubject ? activeSubject.color : "#FF7020";
   const activeSubjectName = activeSubject
     ? activeSubject.name
-    : currentSubjectName || "Sem matéria";
+    : currentSubjectName || "Geral";
 
   // Actions
   const handleStopAndRecord = () => {
@@ -191,44 +118,10 @@ export default function FocusPage() {
       long_break: Math.max(1, draftLongBreak),
     });
     setIsSettingsOpen(false);
-    toast.success("Configurações de tempo atualizadas!");
+    toast.success("Configurações atualizadas!");
   };
 
-  // Inline subject reassignment for past sessions
-  const handleReassignSessionSubject = async (
-    sessionId: number,
-    newSubjectId: number | null
-  ) => {
-    try {
-      const updated = await pomodoroApi.updateSession(apiUrl, sessionId, {
-        subject_id: newSubjectId,
-      });
-      setTodaySessions((prev) =>
-        prev.map((s) => (s.id === sessionId ? updated : s))
-      );
-      setEditingSessionSubjectId(null);
-      window.dispatchEvent(new CustomEvent("statsUpdated"));
-      window.dispatchEvent(new CustomEvent("subjectsUpdated"));
-      toast.success(`Matéria atribuída: ${updated.subject_name}`);
-    } catch {
-      toast.error("Erro ao atualizar matéria da sessão.");
-    }
-  };
-
-  // Delete session
-  const handleDeleteSession = async (sessionId: number) => {
-    if (!confirm("Tem certeza que deseja excluir esta sessão de foco?")) return;
-    try {
-      await pomodoroApi.deleteSession(apiUrl, sessionId);
-      setTodaySessions((prev) => prev.filter((s) => s.id !== sessionId));
-      window.dispatchEvent(new CustomEvent("statsUpdated"));
-      toast.success("Sessão excluída.");
-    } catch {
-      toast.error("Erro ao excluir sessão.");
-    }
-  };
-
-  // Global Keyboard Shortcuts
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -264,8 +157,8 @@ export default function FocusPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isRunning, isOvertime, isImmersive]);
 
-  // SVG Ring constants (r = 120)
-  const radius = 120;
+  // SVG Ring constants (r = 130)
+  const radius = 130;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset =
     circumference - (ringProgress / 100) * circumference;
@@ -273,91 +166,77 @@ export default function FocusPage() {
   return (
     <div
       className={cn(
-        "w-full transition-all duration-300",
+        "w-full transition-all duration-300 flex flex-col items-center justify-center",
         isImmersive
-          ? "fixed inset-0 z-[100] bg-[#050a14] flex flex-col items-center justify-center p-6 select-none"
-          : "max-w-7xl mx-auto space-y-6 pb-20 animate-in fade-in duration-300"
+          ? "fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-6 select-none"
+          : "max-w-xl mx-auto py-8 sm:py-14 animate-in fade-in duration-300"
       )}
     >
-      {/* Top Header Bar (Hidden in Immersive Mode) */}
-      {!isImmersive && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border">
-          <div>
-            <h1 className="text-2xl font-display font-bold text-foreground tracking-tight flex items-center gap-2.5">
-              <Clock className="w-6 h-6 text-primary shrink-0" />
-              <span>Sessão de Foco</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-              Timer circular imersivo, intenção de estudo e controle detalhado do seu dia.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className={cn(
-                "border-border text-xs gap-1.5 transition-colors",
-                isSettingsOpen
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-card text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Settings2 className="w-3.5 h-3.5" />
-              <span>Ajustes</span>
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsImmersive(true)}
-              className="border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground text-xs gap-1.5 shadow-sm"
-              title="Modo Imersivo em Tela Cheia (F)"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-              <span>Modo Imersivo</span>
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Immersive Exit Button */}
-      {isImmersive && (
-        <div className="absolute top-6 right-6 z-20">
+      {/* Top Controls Bar (Ajustes e Tela Cheia) */}
+      <div className={cn(
+        "w-full flex items-center justify-end gap-2 mb-6",
+        isImmersive ? "absolute top-6 right-6 z-20" : ""
+      )}>
+        {!isImmersive && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={() => setIsImmersive(false)}
-            className="border-border bg-card/90 hover:bg-card text-foreground text-xs gap-1.5 backdrop-blur-md"
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+            className={cn(
+              "text-xs gap-1.5 transition-colors rounded-full px-3",
+              isSettingsOpen
+                ? "bg-primary text-primary-foreground font-semibold"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+            title="Ajustes de tempo"
           >
-            <Minimize2 className="w-3.5 h-3.5" />
-            <span>Sair do Modo Imersivo (Esc)</span>
+            <Settings2 className="w-4 h-4" />
+            <span>Ajustes</span>
           </Button>
-        </div>
-      )}
+        )}
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsImmersive(!isImmersive)}
+          className="text-muted-foreground hover:text-foreground hover:bg-muted text-xs gap-1.5 rounded-full px-3"
+          title={isImmersive ? "Sair da Tela Cheia (Esc)" : "Modo Tela Cheia (F)"}
+        >
+          {isImmersive ? (
+            <>
+              <Minimize2 className="w-4 h-4" />
+              <span>Sair</span>
+            </>
+          ) : (
+            <>
+              <Maximize2 className="w-4 h-4" />
+              <span>Imersivo</span>
+            </>
+          )}
+        </Button>
+      </div>
 
       {/* Settings Drawer (When opened) */}
       {isSettingsOpen && !isImmersive && (
-        <div className="p-5 rounded-2xl border border-border bg-card shadow-md animate-in slide-in-from-top-2 duration-200">
+        <div className="w-full p-5 rounded-3xl border border-border bg-card shadow-sm mb-6 animate-in slide-in-from-top-2 duration-200">
           <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Settings2 className="w-4 h-4 text-primary" />
-              Configurações de Foco e Pomodoro
+              Configurações
             </h3>
             <button
               type="button"
               onClick={() => setIsSettingsOpen(false)}
-              className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer"
+              className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
             >
               Fechar
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-3 gap-3 mb-4">
             <div>
               <label className="text-xs text-muted-foreground block mb-1">
-                Foco (minutos):
+                Foco (min)
               </label>
               <input
                 type="number"
@@ -370,7 +249,7 @@ export default function FocusPage() {
             </div>
             <div>
               <label className="text-xs text-muted-foreground block mb-1">
-                Pausa Curta (minutos):
+                Pausa Curta
               </label>
               <input
                 type="number"
@@ -383,7 +262,7 @@ export default function FocusPage() {
             </div>
             <div>
               <label className="text-xs text-muted-foreground block mb-1">
-                Pausa Longa (minutos):
+                Pausa Longa
               </label>
               <input
                 type="number"
@@ -396,7 +275,7 @@ export default function FocusPage() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-border">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border">
             <div className="flex items-center gap-4 flex-wrap">
               <button
                 type="button"
@@ -404,11 +283,11 @@ export default function FocusPage() {
                 className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 {soundEnabled ? (
-                  <Volume2 className="w-4 h-4 text-emerald-500" />
+                  <Volume2 className="w-4 h-4 text-primary" />
                 ) : (
                   <VolumeX className="w-4 h-4 text-muted-foreground" />
                 )}
-                <span>{soundEnabled ? "Sons ativados" : "Sons desativados"}</span>
+                <span>{soundEnabled ? "Som ativo" : "Sem som"}</span>
               </button>
 
               <button
@@ -430,8 +309,8 @@ export default function FocusPage() {
                 />
                 <span>
                   {completionBehavior === "flow"
-                    ? "Fluxo contínuo (prolongamento +MM:SS)"
-                    : "Pausar automaticamente"}
+                    ? "Fluxo contínuo"
+                    : "Pausar ao terminar"}
                 </span>
               </button>
             </div>
@@ -439,145 +318,113 @@ export default function FocusPage() {
             <Button
               size="sm"
               onClick={handleSaveSettings}
-              className="font-medium text-xs gap-1.5 transition-colors self-end"
+              className="font-medium text-xs gap-1.5 self-end"
             >
-              <Check className="w-3.5 h-3.5" /> Salvar Ajustes
+              <Check className="w-3.5 h-3.5" /> Salvar
             </Button>
           </div>
         </div>
       )}
 
-      {/* Main Grid: Left = Big Timer & Intention, Right = Today's Sessions & Goal */}
-      <div
-        className={cn(
-          "w-full",
-          isImmersive
-            ? "flex flex-col items-center justify-center max-w-xl mx-auto"
-            : "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
-        )}
-      >
-        {/* Left Column: Big Timer Canvas */}
-        <div
-          className={cn(
-            "flex flex-col items-center justify-center p-6 sm:p-8 rounded-3xl bg-card border border-border shadow-md relative overflow-hidden",
-            isImmersive ? "w-full border-none bg-transparent shadow-none" : "lg:col-span-7 xl:col-span-7"
-          )}
-        >
-          {/* Mode Selector Tabs */}
-          <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-2xl border border-border mb-6 select-none">
-            {(["focus", "short_break", "long_break"] as PomodoroMode[]).map(
-              (m) => (
-                <button
-                  key={m}
-                  onClick={() => setMode(m)}
-                  className={cn(
-                    "px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer border",
-                    mode === m
-                      ? "bg-primary text-primary-foreground font-semibold border-primary shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border-transparent hover:bg-muted"
-                  )}
-                >
-                  {m === "focus"
-                    ? "Foco"
-                    : m === "short_break"
-                    ? "Pausa Curta"
-                    : "Pausa Longa"}
-                </button>
-              )
-            )}
-          </div>
-
-          {/* Big SVG Circular Progress Timer */}
-          <div className="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center my-2">
-            <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 260 260">
-              {/* Background track */}
-              <circle
-                cx="130"
-                cy="130"
-                r={radius}
-                className="stroke-muted"
-                strokeWidth="10"
-                fill="transparent"
-              />
-              {/* Animated Progress ring */}
-              <circle
-                cx="130"
-                cy="130"
-                r={radius}
+      {/* Main Immersive Pomodoro Card */}
+      <div className={cn(
+        "w-full flex flex-col items-center justify-center p-8 sm:p-12 rounded-3xl transition-all",
+        isImmersive
+          ? "bg-transparent border-none shadow-none"
+          : "bg-card border border-border shadow-sm"
+      )}>
+        {/* Mode Selector Tabs */}
+        <div className="flex items-center gap-1.5 bg-muted/40 p-1.5 rounded-full border border-border mb-8 select-none">
+          {(["focus", "short_break", "long_break"] as PomodoroMode[]).map(
+            (m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
                 className={cn(
-                  "transition-all duration-300 stroke-primary",
-                  isOvertime ? "stroke-orange-400 opacity-90" : ""
-                )}
-                strokeWidth="10"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                fill="transparent"
-              />
-            </svg>
-
-            {/* Content inside the ring */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              {/* Overtime indicator badge */}
-              {isOvertime ? (
-                <span className="px-3 py-1 rounded-full text-[11px] font-medium text-primary bg-primary/10 border border-primary/30 mb-2 inline-flex items-center gap-1.5 animate-pulse">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Prolongamento</span>
-                </span>
-              ) : (
-                <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                  {mode === "focus" ? "Tempo de Foco" : "Intervalo"}
-                </span>
-              )}
-
-              {/* Main Clock Numbers */}
-              <div
-                className={cn(
-                  "text-5xl sm:text-6xl font-mono font-bold tracking-tight text-foreground tabular-nums select-none",
-                  isOvertime && "text-primary"
+                  "px-4 py-1.5 rounded-full text-xs transition-all cursor-pointer border",
+                  mode === m
+                    ? "bg-primary text-primary-foreground font-semibold border-primary shadow-sm"
+                    : "text-muted-foreground hover:text-foreground border-transparent hover:bg-muted"
                 )}
               >
-                {isOvertime
-                  ? `+${formatSeconds(overtimeSeconds)}`
-                  : formatSeconds(timeLeft)}
-              </div>
+                {m === "focus"
+                  ? "Foco"
+                  : m === "short_break"
+                  ? "Pausa Curta"
+                  : "Pausa Longa"}
+              </button>
+            )
+          )}
+        </div>
 
-              {/* Subject Tag inside the circle */}
-              <div className="mt-3 flex items-center gap-2">
-                <div
-                  className="w-2.5 h-2.5 rounded-full shadow-sm"
-                  style={{ backgroundColor: activeSubjectColor }}
-                />
-                <span className="text-xs font-medium text-muted-foreground truncate max-w-[150px]">
-                  {activeSubjectName}
-                </span>
-              </div>
+        {/* Big SVG Circular Progress Timer */}
+        <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center my-2">
+          <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 280 280">
+            {/* Background track */}
+            <circle
+              cx="140"
+              cy="140"
+              r={radius}
+              className="stroke-muted"
+              strokeWidth="8"
+              fill="transparent"
+            />
+            {/* Animated Progress ring */}
+            <circle
+              cx="140"
+              cy="140"
+              r={radius}
+              className={cn(
+                "transition-all duration-300 stroke-primary",
+                isOvertime ? "stroke-orange-400 opacity-90" : ""
+              )}
+              strokeWidth="8"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              fill="transparent"
+            />
+          </svg>
+
+          {/* Content inside the ring */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            {/* Overtime indicator badge */}
+            {isOvertime ? (
+              <span className="px-3 py-1 rounded-full text-[11px] font-medium text-primary bg-primary/10 border border-primary/30 mb-2 inline-flex items-center gap-1.5 animate-pulse">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Prolongamento</span>
+              </span>
+            ) : null}
+
+            {/* Main Clock Numbers */}
+            <div
+              className={cn(
+                "text-6xl sm:text-7xl font-mono font-bold tracking-tight text-foreground tabular-nums select-none",
+                isOvertime && "text-primary"
+              )}
+            >
+              {isOvertime
+                ? `+${formatSeconds(overtimeSeconds)}`
+                : formatSeconds(timeLeft)}
             </div>
-          </div>
 
-          {/* Subject & Intention Inputs Section */}
-          <div className="w-full max-w-md mt-6 space-y-3">
-            {/* Subject Selector Dropdown Pill */}
-            <div className="relative">
+            {/* Subject Selector Pill Inside/Under Timer */}
+            <div className="relative mt-4">
               <button
                 type="button"
                 onClick={() => setIsSubjectDropdownOpen(!isSubjectDropdownOpen)}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-border bg-muted/40 hover:bg-muted text-xs font-medium text-foreground transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/40 hover:bg-muted text-xs font-medium text-foreground transition-colors cursor-pointer"
               >
-                <div className="flex items-center gap-2 truncate">
-                  <div
-                    className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm"
-                    style={{ backgroundColor: activeSubjectColor }}
-                  />
-                  <span className="truncate">
-                    Matéria: <strong className="text-foreground font-semibold">{activeSubjectName}</strong>
-                  </span>
-                </div>
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <div
+                  className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
+                  style={{ backgroundColor: activeSubjectColor }}
+                />
+                <span className="truncate max-w-[140px]">{activeSubjectName}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
 
               {isSubjectDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1.5 z-30 rounded-xl border border-border bg-card p-1.5 shadow-xl max-h-48 overflow-y-auto">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-30 w-52 rounded-2xl border border-border bg-card p-1.5 shadow-xl max-h-52 overflow-y-auto">
                   <button
                     type="button"
                     onClick={() => {
@@ -585,14 +432,14 @@ export default function FocusPage() {
                       setIsSubjectDropdownOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left",
+                      "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer text-left",
                       currentSubjectId === null
                         ? "bg-primary text-primary-foreground font-medium"
                         : "text-foreground hover:bg-muted"
                     )}
                   >
-                    <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground shrink-0" />
-                    <span>Sem matéria</span>
+                    <div className="w-2 h-2 rounded-full bg-muted-foreground shrink-0" />
+                    <span>Geral (sem matéria)</span>
                   </button>
                   {subjects.map((sub) => (
                     <button
@@ -603,7 +450,7 @@ export default function FocusPage() {
                         setIsSubjectDropdownOpen(false);
                       }}
                       className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left",
+                        "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer text-left",
                         currentSubjectId === sub.id
                           ? "bg-primary text-primary-foreground font-medium"
                           : "text-foreground hover:bg-muted"
@@ -611,7 +458,7 @@ export default function FocusPage() {
                     >
                       <div className="flex items-center gap-2 truncate">
                         <div
-                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          className="w-2 h-2 rounded-full shrink-0"
                           style={{ backgroundColor: sub.color }}
                         />
                         <span className="truncate">{sub.name}</span>
@@ -624,272 +471,81 @@ export default function FocusPage() {
                 </div>
               )}
             </div>
-
-            {/* Intention Input */}
-            <div>
-              <input
-                ref={intentionInputRef}
-                type="text"
-                value={intention}
-                onChange={(e) => setIntention(e.target.value)}
-                placeholder="O que vou estudar?"
-                className="w-full bg-muted/40 border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Action Buttons Toolbar: Symmetrical, equal heights, zero jiggle */}
-          <div className="flex items-center justify-center gap-2.5 mt-6 w-full max-w-md">
-            {/* Left Slot: Stop & Record (when active/overtime) or Reset (when idle) */}
-            {isRunning || isOvertime ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleStopAndRecord}
-                className="flex-1 h-11 rounded-xl border-border bg-card hover:bg-muted text-xs text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
-                title="Parar e Gravar Sessão (S)"
-              >
-                <Square className="w-3.5 h-3.5 fill-current text-rose-500 shrink-0" />
-                <span className="truncate">Parar</span>
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={reset}
-                className="flex-1 h-11 rounded-xl border-border bg-card hover:bg-muted text-xs text-muted-foreground hover:text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
-                title="Reiniciar Ciclo"
-              >
-                <RotateCcw className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">Reiniciar</span>
-              </Button>
-            )}
-
-            {/* Center Slot: Play / Pause */}
-            <Button
-              onClick={isRunning ? pause : start}
-              className="flex-1 h-11 rounded-xl font-semibold text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
-              title={isRunning ? "Pausar Timer (Espaço)" : "Iniciar Timer (Espaço)"}
-            >
-              {isRunning ? (
-                <>
-                  <Pause className="w-3.5 h-3.5 fill-current transition-colors shrink-0" />
-                  <span className="truncate">Pausar</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5 fill-current transition-colors shrink-0" />
-                  <span className="truncate">Iniciar</span>
-                </>
-              )}
-            </Button>
-
-            {/* Right Slot: Mode Switch (Fazer Intervalo / Voltar ao Foco) */}
-            {mode === "focus" ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleStartBreak}
-                className="flex-1 h-11 rounded-xl border-border bg-card hover:bg-muted text-xs text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
-                title="Fazer Intervalo de Descanso (B)"
-              >
-                <Coffee className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <span className="truncate">Intervalo</span>
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setMode("focus")}
-                className="flex-1 h-11 rounded-xl border-border bg-card hover:bg-muted text-xs text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
-                title="Voltar ao Modo Foco"
-              >
-                <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <span className="truncate">Foco</span>
-              </Button>
-            )}
-          </div>
-
-          {/* Keyboard Shortcuts Hint Bar */}
-          <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-6 select-none font-mono">
-            <span>[Espaço] Iniciar/Pausar</span>
-            <span>•</span>
-            <span>[S] Parar</span>
-            <span>•</span>
-            <span>[B] Intervalo</span>
-            <span>•</span>
-            <span>[F] Imersivo</span>
           </div>
         </div>
 
-        {/* Right Column: Today's Sessions & Daily Goal Ring (Hidden in Immersive Mode) */}
-        {!isImmersive && (
-          <div className="lg:col-span-5 xl:col-span-5 space-y-6">
-            {/* Daily Goal Card */}
-            <div className="p-5 rounded-2xl border border-border bg-card shadow-md">
-              <div className="flex items-center justify-between pb-3 border-b border-border">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                  <Target className="w-4 h-4 text-primary" /> Meta Diária
-                </span>
-                <span className="text-xs font-mono font-medium text-primary tabular-nums">
-                  {dailyGoalPercent}% concluído
-                </span>
-              </div>
+        {/* Action Controls Toolbar */}
+        <div className="flex items-center justify-center gap-3 mt-8 w-full max-w-sm">
+          {/* Left Button: Stop/Reset */}
+          {isRunning || isOvertime ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleStopAndRecord}
+              className="flex-1 h-12 rounded-2xl border-border bg-card hover:bg-muted text-xs text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
+              title="Parar e Gravar"
+            >
+              <Square className="w-4 h-4 fill-current text-rose-500 shrink-0" />
+              <span>Parar</span>
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={reset}
+              className="flex-1 h-12 rounded-2xl border-border bg-card hover:bg-muted text-xs text-muted-foreground hover:text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
+              title="Reiniciar"
+            >
+              <RotateCcw className="w-4 h-4 shrink-0" />
+              <span>Reiniciar</span>
+            </Button>
+          )}
 
-              <div className="mt-4 flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-2xl font-bold font-mono text-foreground tabular-nums tracking-tight">
-                    {formatDurationHuman(totalTodayStudySeconds)}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    de {formatDurationHuman(dailyGoalSeconds)} planejadas para hoje
-                  </div>
-                </div>
+          {/* Center Button: Play/Pause */}
+          <Button
+            onClick={isRunning ? pause : start}
+            className="flex-1 h-12 rounded-2xl font-semibold text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+            title={isRunning ? "Pausar" : "Iniciar"}
+          >
+            {isRunning ? (
+              <>
+                <Pause className="w-4 h-4 fill-current shrink-0" />
+                <span>Pausar</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 fill-current shrink-0" />
+                <span>Iniciar</span>
+              </>
+            )}
+          </Button>
 
-                <div className="w-14 h-14 rounded-full border-4 border-border flex items-center justify-center relative">
-                  <div
-                    className="absolute inset-0 rounded-full border-4 border-primary transition-all duration-500"
-                    style={{
-                      clipPath: `polygon(50% 50%, 50% 0%, ${
-                        dailyGoalPercent >= 25 ? "100% 0%," : ""
-                      }${dailyGoalPercent >= 50 ? "100% 100%," : ""}${
-                        dailyGoalPercent >= 75 ? "0% 100%," : ""
-                      }${dailyGoalPercent >= 100 ? "0% 0%," : ""}50% 0%)`,
-                    }}
-                  />
-                  <Flame className="w-5 h-5 text-primary" />
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="w-full bg-muted h-2 rounded-full overflow-hidden mt-4">
-                <div
-                  className="h-full bg-primary transition-all duration-500 rounded-full"
-                  style={{ width: `${dailyGoalPercent}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Today's Sessions List Card */}
-            <div className="p-5 rounded-2xl border border-border bg-card shadow-md">
-              <div className="flex items-center justify-between pb-3 border-b border-border">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-primary" /> Sessões de Hoje ({todaySessions.length})
-                </span>
-                {todaySessions.length > 0 && (
-                  <span className="text-xs font-mono text-muted-foreground tabular-nums">
-                    {formatDurationHuman(totalTodayStudySeconds)}
-                  </span>
-                )}
-              </div>
-
-              <div className="mt-4 space-y-2.5 max-h-[420px] overflow-y-auto custom-scrollbar pr-1">
-                {isLoadingSessions ? (
-                  <div className="space-y-2">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="h-16 rounded-xl bg-muted/40 animate-pulse border border-border"
-                      />
-                    ))}
-                  </div>
-                ) : todaySessions.length === 0 ? (
-                  <div className="p-6 text-center rounded-xl border border-dashed border-border bg-muted/20">
-                    <Clock className="w-6 h-6 text-muted-foreground mx-auto mb-2 opacity-40" />
-                    <p className="text-xs font-medium text-muted-foreground">
-                      Nenhuma sessão concluída hoje
-                    </p>
-                  </div>
-                ) : (
-                  todaySessions.map((session) => {
-                    const isEditing = editingSessionSubjectId === session.id;
-
-                    return (
-                      <div
-                        key={session.id}
-                        className="p-3 rounded-xl border border-border bg-muted/20 hover:border-border transition-all space-y-2"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-mono font-bold text-foreground tabular-nums">
-                                {session.start_time || "Sessão"} - {session.end_time || ""}
-                              </span>
-                              <span className="text-[11px] font-mono text-muted-foreground tabular-nums">
-                                ({formatDurationHuman(session.duration_seconds)})
-                              </span>
-                            </div>
-
-                            {session.intention && (
-                              <p className="text-xs text-foreground mt-1 truncate italic">
-                                &quot;{session.intention}&quot;
-                              </p>
-                            )}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteSession(session.id)}
-                            className="p-1 rounded text-muted-foreground hover:text-rose-500 transition-colors shrink-0 cursor-pointer"
-                            title="Excluir sessão"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-
-                        {/* Editable Subject Inline Dropdown */}
-                        <div className="pt-1 flex items-center justify-between border-t border-border">
-                          {isEditing ? (
-                            <div className="flex items-center gap-2 w-full">
-                              <select
-                                value={session.subject_id ?? ""}
-                                onChange={(e) => {
-                                  const val = e.target.value === "" ? null : Number(e.target.value);
-                                  void handleReassignSessionSubject(session.id, val);
-                                }}
-                                className="w-full text-xs bg-card text-foreground border border-border rounded-lg px-2 py-1 focus:outline-none cursor-pointer"
-                              >
-                                <option value="">Sem matéria</option>
-                                {subjects.map((sub) => (
-                                  <option key={sub.id} value={sub.id}>
-                                    {sub.name}
-                                  </option>
-                                ))}
-                              </select>
-                              <button
-                                type="button"
-                                onClick={() => setEditingSessionSubjectId(null)}
-                                className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer"
-                              >
-                                Cancelar
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => setEditingSessionSubjectId(session.id)}
-                              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium border border-border hover:border-primary/50 bg-muted/40 text-foreground transition-colors cursor-pointer group"
-                              title="Clique para alterar a matéria desta sessão"
-                            >
-                              <div
-                                className="w-2 h-2 rounded-full shrink-0"
-                                style={{ backgroundColor: session.subject_color }}
-                              />
-                              <span className="truncate">{session.subject_name}</span>
-                              <ChevronDown className="w-3 h-3 text-muted-foreground group-hover:text-foreground" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+          {/* Right Button: Break/Focus toggle */}
+          {mode === "focus" ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleStartBreak}
+              className="flex-1 h-12 rounded-2xl border-border bg-card hover:bg-muted text-xs text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
+              title="Intervalo"
+            >
+              <Coffee className="w-4 h-4 text-muted-foreground shrink-0" />
+              <span>Intervalo</span>
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setMode("focus")}
+              className="flex-1 h-12 rounded-2xl border-border bg-card hover:bg-muted text-xs text-foreground gap-2 font-medium cursor-pointer transition-all active:scale-95"
+              title="Modo Foco"
+            >
+              <Play className="w-4 h-4 text-muted-foreground shrink-0" />
+              <span>Foco</span>
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-

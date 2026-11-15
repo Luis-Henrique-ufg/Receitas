@@ -52,15 +52,15 @@ export default function DashboardDeadlinesWidget() {
   }, [apiUrl]);
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg space-y-3">
+    <div className="w-full bg-card rounded-3xl p-6 sm:p-7 border border-border shadow-sm space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-blue-400" />
-          <h2 className="text-sm font-semibold text-white tracking-tight">
+        <div className="flex items-center gap-2.5">
+          <Calendar className="w-5 h-5 text-primary" />
+          <h2 className="text-base font-semibold text-foreground tracking-tight">
             Próximos prazos
           </h2>
           {upcomingEvents.length > 0 && (
-            <span className="text-[11px] font-mono tabular-nums px-2 py-0.5 rounded-full bg-white/10 text-zinc-300">
+            <span className="text-[11px] font-mono tabular-nums px-2.5 py-0.5 rounded-full bg-muted border border-border text-foreground font-medium">
               {upcomingEvents.length}
             </span>
           )}
@@ -70,39 +70,39 @@ export default function DashboardDeadlinesWidget() {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/agenda")}
-          className="h-8 px-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 gap-1 font-medium"
+          className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted gap-1 font-medium rounded-full"
         >
           <span>Ver agenda completa</span>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+          <ChevronRight className="w-3.5 h-3.5" />
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-16 rounded-xl bg-white/5 animate-pulse border border-white/5"
+              className="h-20 rounded-2xl bg-muted/40 animate-pulse border border-border"
             />
           ))}
         </div>
       ) : upcomingEvents.length === 0 ? (
-        <div className="flex flex-col sm:flex-row items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 gap-3">
-          <p className="text-xs text-zinc-400">
+        <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border gap-3">
+          <p className="text-xs text-muted-foreground">
             Nenhum prazo agendado para os próximos dias.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate("/agenda")}
-            className="h-8 text-xs bg-white/5 border-white/10 hover:bg-white/10 text-zinc-300 gap-1.5"
+            className="h-8 text-xs bg-card border-border hover:bg-muted text-foreground gap-1.5 rounded-full"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5 text-primary" />
             <span>Adicionar evento</span>
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           {upcomingEvents.map((ev) => {
             const conf = CATEGORY_CONFIGS[ev.category] || CATEGORY_CONFIGS.lembrete;
             const diffDays = getDaysDiff(ev.date);
@@ -112,12 +112,12 @@ export default function DashboardDeadlinesWidget() {
               <div
                 key={ev.id}
                 onClick={() => navigate("/agenda")}
-                className="p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.07] transition-all cursor-pointer space-y-1.5 group"
+                className="p-4 rounded-2xl border border-border bg-muted/20 hover:bg-muted/40 hover:border-primary/40 transition-all cursor-pointer space-y-2 group"
               >
                 <div className="flex items-center justify-between gap-1.5">
                   <span
                     className={cn(
-                      "px-2 py-0.5 rounded-full text-[10px] font-medium border inline-flex items-center gap-1",
+                      "px-2.5 py-0.5 rounded-full text-[10px] font-medium border inline-flex items-center gap-1.5",
                       conf.bgClass,
                       conf.borderClass,
                       conf.textClass
@@ -127,41 +127,41 @@ export default function DashboardDeadlinesWidget() {
                     {conf.label}
                   </span>
 
-                  <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-white/5 border-white/10 text-zinc-300 inline-flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-card border-border text-foreground inline-flex items-center gap-1.5">
                     {countdown.urgent && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
                     )}
                     {countdown.text}
                   </span>
                 </div>
 
                 <h3
-                  className="text-xs font-semibold text-white truncate group-hover:text-blue-300 transition-colors"
+                  className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors"
                   title={ev.title}
                 >
                   {ev.title}
                 </h3>
 
-                <div className="flex items-center justify-between text-[11px] text-zinc-400 gap-1">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground gap-1 pt-1 border-t border-border/50">
                   {ev.subject_name || ev.course_name ? (
-                    <span className="flex items-center gap-1.5 truncate text-zinc-400">
+                    <span className="flex items-center gap-1.5 truncate text-muted-foreground">
                       {ev.subject_color ? (
                         <span
                           className="w-2 h-2 rounded-full shrink-0"
                           style={{ backgroundColor: ev.subject_color }}
                         />
                       ) : (
-                        <BookOpen className="w-3 h-3 text-zinc-500 shrink-0" />
+                        <BookOpen className="w-3 h-3 text-muted-foreground shrink-0" />
                       )}
                       <span className="truncate">{ev.subject_name || ev.course_name}</span>
                     </span>
                   ) : (
-                    <span className="text-zinc-500 text-[10px]">Evento avulso</span>
+                    <span className="text-muted-foreground text-[10px]">Evento avulso</span>
                   )}
 
                   {ev.time && (
-                    <span className="text-[10px] font-mono shrink-0 flex items-center gap-0.5 text-zinc-400">
-                      <Clock className="w-2.5 h-2.5" />
+                    <span className="text-[10px] font-mono shrink-0 flex items-center gap-1 text-muted-foreground">
+                      <Clock className="w-2.5 h-2.5 text-primary" />
                       {ev.time}
                     </span>
                   )}

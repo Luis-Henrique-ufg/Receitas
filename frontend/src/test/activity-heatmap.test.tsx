@@ -14,11 +14,14 @@ vi.mock("@/hooks/useApiUrl", () => ({
 }));
 
 describe("ActivityHeatmap", () => {
+  const today = new Date();
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders metrics, streak and course dropdown after loading stats", async () => {
+  it("renders metrics, streak and expandable 365-day matrix after loading stats", async () => {
     vi.mocked(statsApi.getHeatmap).mockResolvedValueOnce({
       current_streak: 5,
       max_streak: 12,
@@ -33,29 +36,32 @@ describe("ActivityHeatmap", () => {
       available_subjects: [{ id: 1, name: "Estatística", color: "#f59e0b" }],
       days: [
         {
-          date: "2026-10-20",
+          date: todayIso,
           study_seconds: 1800,
           pomodoros: 1,
           lessons: 1,
           level: 2,
           courses: [{ id: 1, name: "Estatística", seconds: 1800, pomodoros: 0 }],
         },
-        { date: "2026-10-21", study_seconds: 1800, pomodoros: 1, lessons: 1, level: 2 },
       ],
     });
 
     render(<ActivityHeatmap />);
 
     await waitFor(() => {
+      expect(screen.getByText(/5 Dias Seguidos de Foco/i)).toBeInTheDocument();
+      expect(screen.getByText(/Recorde: 12 dias/i)).toBeInTheDocument();
+      expect(screen.getByText(/1h 0m de estudo acumulados nesta semana/i)).toBeInTheDocument();
       expect(screen.getByText("Hoje")).toBeInTheDocument();
-      expect(screen.getByText("30 min")).toBeInTheDocument();
-      expect(screen.getByText("Esta semana")).toBeInTheDocument();
-      expect(screen.getByText("1h 0m")).toBeInTheDocument();
-      expect(screen.getByText("+30 min")).toBeInTheDocument();
-      expect(screen.getByText("5 dias")).toBeInTheDocument();
-      expect(screen.getByText("(recorde: 12)")).toBeInTheDocument();
+      expect(screen.getByText(/Ver matriz de 365 dias/i)).toBeInTheDocument();
+    });
+
+    // Expand matrix
+    fireEvent.click(screen.getByText(/Ver matriz de 365 dias/i));
+
+    await waitFor(() => {
       expect(screen.getByText("Todas as matérias")).toBeInTheDocument();
-      expect(screen.getByText("Estatística")).toBeInTheDocument();
+      expect(screen.getByText("Ocultar matriz anual")).toBeInTheDocument();
     });
   });
 
@@ -83,14 +89,14 @@ describe("ActivityHeatmap", () => {
       week_active_days: 1,
       delta_week_seconds: 600,
       available_courses: [],
-      days: [{ date: "2026-10-25", study_seconds: 600, pomodoros: 0, lessons: 1, level: 1 }],
+      days: [{ date: todayIso, study_seconds: 600, pomodoros: 0, lessons: 1, level: 1 }],
     });
 
     fireEvent.click(screen.getByRole("button", { name: /Tentar novamente/i }));
 
     await waitFor(() => {
+      expect(screen.getByText(/1 Dia Seguido de Foco/i)).toBeInTheDocument();
       expect(screen.getByText("Hoje")).toBeInTheDocument();
-      expect(screen.getAllByText("10 min").length).toBeGreaterThanOrEqual(1);
     });
   });
 });
