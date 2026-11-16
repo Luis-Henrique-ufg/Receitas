@@ -152,7 +152,7 @@ export default function LessonListItem({
             <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
           </div>
         ) : isCompleted ? (
-          <span className="w-7 h-7 flex items-center justify-center rounded-full bg-accent/15 border border-accent/35 text-accent text-[11px] font-display font-semibold shrink-0">
+          <span className="w-7 h-7 flex items-center justify-center rounded-full bg-secondary border border-border text-muted-foreground/80 text-[11px] font-display font-semibold shrink-0">
             {index.toString().padStart(2, "0")}
           </span>
         ) : (
@@ -202,12 +202,7 @@ export default function LessonListItem({
             <Checkbox
               checked={isCompleted}
               onCheckedChange={toggleIsCompleted}
-              className={cn(
-                "w-4 h-4 transition-all duration-200",
-                isCompleted
-                  ? "border-accent data-[state=checked]:bg-accent data-[state=checked]:border-accent data-[state=checked]:text-white"
-                  : "border-muted-foreground/40 hover:border-primary"
-              )}
+              className="w-4 h-4 transition-all duration-200 border-muted-foreground/40 hover:border-primary"
             />
           )}
         </div>

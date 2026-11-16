@@ -37,8 +37,8 @@ export default function ProgressCard({
     }
     if (roundedValue === 100) {
       return (
-        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium text-accent border border-accent/30 bg-accent/10 inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium text-primary border border-primary/30 bg-primary/10 inline-flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
           Concluído
         </span>
       );
@@ -53,7 +53,7 @@ export default function ProgressCard({
   const renderSecondaryInfo = () => {
     if (roundedValue === 100) {
       return (
-        <span className="text-xs text-accent tracking-tight font-medium">
+        <span className="text-xs text-muted-foreground tracking-tight font-medium">
           Todas as {totalLessons} aulas concluídas!
         </span>
       );

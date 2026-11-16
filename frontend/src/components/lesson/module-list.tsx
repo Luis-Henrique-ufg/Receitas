@@ -200,7 +200,7 @@ export default function ModuleList({
                             ) : (
                               <Checkbox 
                                 checked={stats.percentage === 100}
-                                className="border-muted-foreground/40 data-[state=checked]:bg-accent data-[state=checked]:border-accent data-[state=checked]:text-white w-4 h-4 pointer-events-none transition-all duration-300"
+                                className="border-muted-foreground/40 w-4 h-4 pointer-events-none transition-all duration-300"
                               />
                             )}
                           </div>

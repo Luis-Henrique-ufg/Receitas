@@ -129,7 +129,7 @@ export default function CourseItem({
               {categoryTag.label}
             </span>
             {isCompleted && (
-              <span className="bg-accent text-white text-[10.5px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em] shadow-sm">
+              <span className="bg-primary text-[#030607] text-[10.5px] font-bold px-2.5 py-1 rounded-full uppercase tracking-[0.06em] shadow-sm">
                 Concluído
               </span>
             )}
