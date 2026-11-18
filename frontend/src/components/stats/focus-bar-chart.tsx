@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import SessionsDialog from "./sessions-dialog";
 
 export type PeriodType = "day" | "week" | "month" | "year";
 
@@ -182,6 +183,18 @@ export default function FocusBarChart() {
       // ignore
     }
   }, [showAverageLine]);
+
+  // Session Manager Dialog State
+  const [sessionsDialogOpen, setSessionsDialogOpen] = useState(false);
+  const [selectedDateForSessions, setSelectedDateForSessions] = useState<string | null>(null);
+  const [selectedDateLabel, setSelectedDateLabel] = useState<string>("");
+
+  const handleOpenSessionsForBar = useCallback((bar: FocusBar) => {
+    if (!bar.start_date) return;
+    setSelectedDateForSessions(bar.start_date);
+    setSelectedDateLabel(`${bar.label} ${bar.sublabel ? `(${bar.sublabel})` : ""}`);
+    setSessionsDialogOpen(true);
+  }, []);
 
   const currentGoalSeconds = goals[period] || DEFAULT_GOALS[period];
 
@@ -684,6 +697,7 @@ export default function FocusBarChart() {
                     key={bar.key}
                     onMouseEnter={() => setHoveredBar(bar)}
                     onMouseLeave={() => setHoveredBar(null)}
+                    onClick={() => handleOpenSessionsForBar(bar)}
                     className="cursor-pointer group"
                   >
                     {/* Background hit area */}
@@ -839,6 +853,18 @@ export default function FocusBarChart() {
                   ))
                 ) : (
                   <span className="text-muted-foreground italic">Sem registros neste intervalo</span>
+                )}
+
+                {hoveredBar.start_date && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenSessionsForBar(hoveredBar)}
+                    className="ml-auto px-2.5 py-1 rounded-xl bg-secondary/80 hover:bg-secondary text-[11px] font-medium border border-border text-foreground hover:text-primary transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
+                    title="Ver ou excluir sessões registradas nesta data"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-primary" />
+                    <span>Gerenciar sessões</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -1083,6 +1109,15 @@ export default function FocusBarChart() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Session Management Dialog */}
+      <SessionsDialog
+        open={sessionsDialogOpen}
+        onOpenChange={setSessionsDialogOpen}
+        dateStr={selectedDateForSessions}
+        dateLabel={selectedDateLabel}
+        onSessionDeleted={() => void fetchData(false)}
+      />
     </div>
   );
 }
