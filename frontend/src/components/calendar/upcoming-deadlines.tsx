@@ -136,8 +136,9 @@ export default function UpcomingDeadlines({
               <div
                 key={event.id}
                 className={cn(
-                  "p-3.5 rounded-2xl border transition-all duration-200 group relative",
-                  "bg-secondary/35 hover:bg-secondary/75 border-border"
+                  "p-3.5 pl-4 rounded-2xl border transition-all duration-200 group relative overflow-hidden",
+                  "bg-card/75 hover:bg-card border-border hover:border-border/90 shadow-sm",
+                  conf.cardStripeClass
                 )}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -153,32 +154,27 @@ export default function UpcomingDeadlines({
                     </button>
 
                     <div
-                      className="space-y-1 min-w-0 flex-1 cursor-pointer"
+                      className="space-y-1.5 min-w-0 flex-1 cursor-pointer"
                       onClick={() => onEdit(event)}
                     >
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span
-                          className={cn(
-                            "px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border inline-flex items-center gap-1.5",
-                            conf.bgClass,
-                            conf.borderClass,
-                            conf.textClass
-                          )}
-                        >
-                          <CategoryIcon category={event.category} className="w-3 h-3" />
-                          {conf.label}
-                        </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-foreground tracking-tight">
+                          <CategoryIcon category={event.category} className={cn("w-3.5 h-3.5", conf.iconColorClass)} />
+                          <span>{conf.label}</span>
+                        </div>
 
-                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-card border-border text-foreground/85 inline-flex items-center gap-1.5">
+                        <span className="text-muted-foreground/30">•</span>
+
+                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-md border border-border/80 bg-secondary/60 text-foreground/80 inline-flex items-center gap-1.5">
                           {countdown.urgent && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
                           )}
                           {countdown.text}
                         </span>
 
                         {event.time && (
                           <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
-                            <Clock className="w-2.5 h-2.5" />
+                            <Clock className="w-3 h-3 text-muted-foreground/70" />
                             {event.time}
                           </span>
                         )}

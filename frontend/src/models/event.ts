@@ -35,44 +35,64 @@ export type UpdateEventInput = Partial<CreateEventInput>;
 
 export interface CategoryConfig {
   label: string;
+  color: string;
+  dotClass: string;
+  iconColorClass: string;
+  borderAccentClass: string;
+  cardStripeClass: string;
+  activeBorderClass: string;
   bgClass: string;
   borderClass: string;
   textClass: string;
-  dotClass: string;
-  iconColorClass: string;
 }
 
 export const CATEGORY_CONFIGS: Record<EventCategory, CategoryConfig> = {
   prova: {
     label: "Prova",
-    bgClass: "bg-[#E33D6C]/14 dark:bg-[#E33D6C]/20",
-    borderClass: "border-[#E33D6C]/35 dark:border-[#E33D6C]/45",
-    textClass: "text-[#B81D48] dark:text-[#FF8DA9]",
+    color: "#E33D6C",
     dotClass: "bg-[#E33D6C]",
-    iconColorClass: "text-[#E33D6C] dark:text-[#FF7096]",
+    iconColorClass: "text-[#E33D6C]",
+    borderAccentClass: "border-l-[#E33D6C]",
+    cardStripeClass: "before:bg-[#E33D6C]",
+    activeBorderClass: "border-[#E33D6C]",
+    bgClass: "bg-secondary/80",
+    borderClass: "border-border",
+    textClass: "text-foreground",
   },
   entrega: {
     label: "Entrega",
-    bgClass: "bg-primary/14 dark:bg-primary/20",
-    borderClass: "border-primary/35 dark:border-primary/45",
-    textClass: "text-[#C84B00] dark:text-[#FF9E66]",
+    color: "#FF7020",
     dotClass: "bg-primary",
     iconColorClass: "text-primary",
+    borderAccentClass: "border-l-primary",
+    cardStripeClass: "before:bg-primary",
+    activeBorderClass: "border-primary",
+    bgClass: "bg-secondary/80",
+    borderClass: "border-border",
+    textClass: "text-foreground",
   },
   revisao: {
     label: "Revisão",
-    bgClass: "bg-accent/14 dark:bg-accent/20",
-    borderClass: "border-accent/35 dark:border-accent/45",
-    textClass: "text-[#00756D] dark:text-[#47E0D4]",
+    color: "#00A196",
     dotClass: "bg-accent",
-    iconColorClass: "text-[#00A196] dark:text-[#33C7BC]",
+    iconColorClass: "text-accent",
+    borderAccentClass: "border-l-accent",
+    cardStripeClass: "before:bg-accent",
+    activeBorderClass: "border-accent",
+    bgClass: "bg-secondary/80",
+    borderClass: "border-border",
+    textClass: "text-foreground",
   },
   lembrete: {
     label: "Lembrete",
-    bgClass: "bg-[#8B5CF6]/14 dark:bg-[#8B5CF6]/20",
-    borderClass: "border-[#8B5CF6]/35 dark:border-[#A78BFA]/45",
-    textClass: "text-[#5B2C86] dark:text-[#D8B4FE]",
+    color: "#8B5CF6",
     dotClass: "bg-[#8B5CF6]",
-    iconColorClass: "text-[#7C3AED] dark:text-[#C084FC]",
+    iconColorClass: "text-[#8B5CF6]",
+    borderAccentClass: "border-l-[#8B5CF6]",
+    cardStripeClass: "before:bg-[#8B5CF6]",
+    activeBorderClass: "border-[#8B5CF6]",
+    bgClass: "bg-secondary/80",
+    borderClass: "border-border",
+    textClass: "text-foreground",
   },
 };

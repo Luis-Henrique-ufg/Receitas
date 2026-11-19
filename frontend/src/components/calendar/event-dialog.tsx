@@ -154,17 +154,24 @@ export default function EventDialog({
                     type="button"
                     onClick={() => setCategory(cat)}
                     className={cn(
-                      "px-3 py-2 rounded-xl text-xs font-medium border flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                      "px-3 py-2.5 rounded-xl text-xs font-medium border flex items-center justify-center gap-2 transition-all cursor-pointer relative select-none",
                       isSelected
-                        ? cn(conf.bgClass, conf.borderClass, conf.textClass, "font-semibold shadow-sm ring-1 ring-current/20")
-                        : "bg-secondary/50 border-border text-foreground/85 hover:text-foreground hover:bg-secondary"
+                        ? "bg-card border-2 font-semibold text-foreground shadow-sm ring-2 ring-primary/15"
+                        : "bg-secondary/40 border-border/70 text-muted-foreground hover:text-foreground hover:bg-secondary/70 hover:border-border"
                     )}
+                    style={isSelected ? { borderColor: conf.color } : undefined}
                   >
                     <CategoryIcon
                       category={cat}
-                      className={cn("w-3.5 h-3.5", isSelected ? conf.textClass : conf.iconColorClass)}
+                      className={cn("w-3.5 h-3.5", isSelected ? conf.iconColorClass : "text-muted-foreground")}
                     />
-                    {conf.label}
+                    <span>{conf.label}</span>
+                    {isSelected && (
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: conf.color }}
+                      />
+                    )}
                   </button>
                 );
               })}

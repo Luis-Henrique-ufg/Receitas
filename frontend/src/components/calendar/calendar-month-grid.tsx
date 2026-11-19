@@ -187,16 +187,16 @@ export default function CalendarMonthGrid({
           </div>
         </div>
 
-        {/* Category filters */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* Modern Segmented Category Filter Toolbar */}
+        <div className="p-1 bg-secondary/50 border border-border/80 rounded-2xl flex items-center gap-1 overflow-x-auto shadow-inner">
           <button
             type="button"
             onClick={() => onChangeCategoryFilter("all")}
             className={cn(
-              "px-3 py-1.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer",
+              "px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0",
               categoryFilter === "all"
-                ? "bg-primary text-[#030607] border-primary font-semibold shadow-sm"
-                : "bg-secondary/60 border-border text-foreground/85 hover:text-foreground hover:bg-secondary"
+                ? "bg-card text-foreground font-semibold shadow-sm border border-border/80 ring-1 ring-black/5 dark:ring-white/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
             )}
           >
             <Layers className="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
@@ -212,17 +212,23 @@ export default function CalendarMonthGrid({
                 type="button"
                 onClick={() => onChangeCategoryFilter(cat)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer",
+                  "px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0",
                   isSelected
-                    ? cn(conf.bgClass, conf.borderClass, conf.textClass, "font-semibold shadow-sm ring-1 ring-current/20")
-                    : "bg-secondary/60 border-border text-foreground/85 hover:text-foreground hover:bg-secondary"
+                    ? "bg-card text-foreground font-semibold shadow-sm border border-border/80 ring-1 ring-black/5 dark:ring-white/5"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                 )}
               >
                 <CategoryIcon
                   category={cat}
-                  className={cn("w-3.5 h-3.5", isSelected ? conf.textClass : conf.iconColorClass)}
+                  className={cn("w-3.5 h-3.5", conf.iconColorClass)}
                 />
                 <span>{conf.label}</span>
+                {isSelected && (
+                  <span
+                    className="w-1.5 h-1.5 rounded-full ml-0.5 shrink-0"
+                    style={{ backgroundColor: conf.color }}
+                  />
+                )}
               </button>
             );
           })}
@@ -271,7 +277,7 @@ export default function CalendarMonthGrid({
                 </span>
               </div>
 
-              {/* Event Chips List */}
+              {/* Event Chips List (Modern Left-Accent Stripe Chips) */}
               <div className="space-y-1 w-full mt-1.5 flex-1 overflow-hidden">
                 {dayEvents.slice(0, 3).map((event) => {
                   const conf =
@@ -284,17 +290,15 @@ export default function CalendarMonthGrid({
                         onEditEvent(event);
                       }}
                       className={cn(
-                        "px-1.5 py-0.5 rounded-md text-[10px] font-medium border truncate transition-all block text-left cursor-pointer",
-                        conf.bgClass,
-                        conf.borderClass,
-                        conf.textClass,
-                        event.done && "line-through opacity-50 text-muted-foreground"
+                        "px-2 py-1 rounded-md text-[10.5px] font-medium border border-border/70 bg-card/90 hover:bg-card text-foreground truncate transition-all block text-left cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-sm border-l-[3px]",
+                        conf.borderAccentClass,
+                        event.done && "line-through opacity-45 text-muted-foreground border-l-muted-foreground/60"
                       )}
                       title={`${event.title}${event.time ? ` às ${event.time}` : ""}`}
                     >
                       <CategoryIcon
                         category={event.category}
-                        className="w-2.5 h-2.5 inline-block mr-1 shrink-0 align-[-1.5px]"
+                        className={cn("w-2.5 h-2.5 inline-block mr-1 shrink-0 align-[-1.5px]", conf.iconColorClass)}
                       />
                       {event.subject_color && (
                         <span
@@ -303,9 +307,9 @@ export default function CalendarMonthGrid({
                         />
                       )}
                       {event.time && (
-                        <span className="font-mono mr-1 opacity-80">{event.time}</span>
+                        <span className="font-mono mr-1 text-[10px] text-muted-foreground font-normal">{event.time}</span>
                       )}
-                      {event.title}
+                      <span>{event.title}</span>
                     </div>
                   );
                 })}

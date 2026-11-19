@@ -113,24 +113,20 @@ export default function DashboardDeadlinesWidget() {
               <div
                 key={ev.id}
                 onClick={() => navigate("/agenda")}
-                className="p-4 rounded-2xl border border-border bg-secondary/35 hover:bg-secondary/75 hover:border-primary/40 transition-all cursor-pointer space-y-2 group"
+                className={cn(
+                  "p-4 pl-4.5 rounded-2xl border border-border bg-card/75 hover:bg-card hover:border-primary/40 transition-all cursor-pointer space-y-2 group shadow-sm relative overflow-hidden",
+                  conf.cardStripeClass
+                )}
               >
                 <div className="flex items-center justify-between gap-1.5">
-                  <span
-                    className={cn(
-                      "px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold border inline-flex items-center gap-1.5",
-                      conf.bgClass,
-                      conf.borderClass,
-                      conf.textClass
-                    )}
-                  >
-                    <CategoryIcon category={ev.category} className="w-3 h-3" />
-                    {conf.label}
-                  </span>
+                  <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-foreground tracking-tight">
+                    <CategoryIcon category={ev.category} className={cn("w-3.5 h-3.5", conf.iconColorClass)} />
+                    <span>{conf.label}</span>
+                  </div>
 
-                  <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-full border bg-card border-border text-foreground inline-flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-md border border-border/80 bg-secondary/60 text-foreground/80 inline-flex items-center gap-1.5">
                     {countdown.urgent && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
                     )}
                     {countdown.text}
                   </span>
