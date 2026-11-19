@@ -10,7 +10,6 @@ import {
   Download,
   BookOpen,
 } from "lucide-react";
-import CategoryIcon from "./category-icon";
 
 interface UpcomingDeadlinesProps {
   events: StudyEvent[];
@@ -137,17 +136,21 @@ export default function UpcomingDeadlines({
                 key={event.id}
                 className={cn(
                   "p-3.5 pl-4 rounded-2xl border transition-all duration-200 group relative overflow-hidden",
-                  "bg-card/75 hover:bg-card border-border hover:border-border/90 shadow-sm",
-                  conf.cardStripeClass
+                  "bg-secondary/35 hover:bg-secondary/70 border-border shadow-xs"
                 )}
               >
+                <span
+                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full"
+                  style={{ backgroundColor: conf.color }}
+                />
+
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-2.5 min-w-0 flex-1">
                     {/* Botão de toggle done */}
                     <button
                       type="button"
                       onClick={() => onToggleDone(event.id)}
-                      className="mt-0.5 text-muted-foreground hover:text-accent transition-colors shrink-0 cursor-pointer"
+                      className="mt-0.5 text-muted-foreground hover:text-primary transition-colors shrink-0 cursor-pointer"
                       title="Marcar como concluído"
                     >
                       <CheckCircle2 className="w-4 h-4" />
@@ -157,15 +160,18 @@ export default function UpcomingDeadlines({
                       className="space-y-1.5 min-w-0 flex-1 cursor-pointer"
                       onClick={() => onEdit(event)}
                     >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-foreground tracking-tight">
-                          <CategoryIcon category={event.category} className={cn("w-3.5 h-3.5", conf.iconColorClass)} />
-                          <span>{conf.label}</span>
-                        </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span
+                          style={{
+                            backgroundColor: conf.solidBg,
+                            color: conf.solidText,
+                          }}
+                          className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-[0.05em] leading-tight"
+                        >
+                          {conf.label}
+                        </span>
 
-                        <span className="text-muted-foreground/30">•</span>
-
-                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-md border border-border/80 bg-secondary/60 text-foreground/80 inline-flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-md border border-border bg-card/80 text-foreground/85 inline-flex items-center gap-1.5">
                           {countdown.urgent && (
                             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
                           )}

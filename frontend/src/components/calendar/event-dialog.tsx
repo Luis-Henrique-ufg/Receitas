@@ -19,7 +19,6 @@ import {
 } from "@/models/event";
 import { cn } from "@/lib/utils";
 import { Trash2, CheckCircle2 } from "lucide-react";
-import CategoryIcon from "./category-icon";
 
 interface EventDialogProps {
   isOpen: boolean;
@@ -153,25 +152,29 @@ export default function EventDialog({
                     key={cat}
                     type="button"
                     onClick={() => setCategory(cat)}
+                    style={
+                      isSelected
+                        ? {
+                            backgroundColor: conf.solidBg,
+                            color: conf.solidText,
+                            borderColor: conf.solidBg,
+                          }
+                        : undefined
+                    }
                     className={cn(
                       "px-3 py-2.5 rounded-xl text-xs font-medium border flex items-center justify-center gap-2 transition-all cursor-pointer relative select-none",
                       isSelected
-                        ? "bg-card border-2 font-semibold text-foreground shadow-sm ring-2 ring-primary/15"
+                        ? "font-semibold shadow-sm"
                         : "bg-secondary/40 border-border/70 text-muted-foreground hover:text-foreground hover:bg-secondary/70 hover:border-border"
                     )}
-                    style={isSelected ? { borderColor: conf.color } : undefined}
                   >
-                    <CategoryIcon
-                      category={cat}
-                      className={cn("w-3.5 h-3.5", isSelected ? conf.iconColorClass : "text-muted-foreground")}
-                    />
-                    <span>{conf.label}</span>
-                    {isSelected && (
+                    {!isSelected && (
                       <span
-                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        className="w-2 h-2 rounded-full shrink-0"
                         style={{ backgroundColor: conf.color }}
                       />
                     )}
+                    <span>{conf.label}</span>
                   </button>
                 );
               })}

@@ -4,9 +4,7 @@ import useApiUrl from "@/hooks/useApiUrl";
 import { eventsApi } from "@/services/eventsApi";
 import { StudyEvent, CATEGORY_CONFIGS } from "@/models/event";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Calendar, ChevronRight, BookOpen, Clock, Plus } from "lucide-react";
-import CategoryIcon from "./category-icon";
 
 function getDaysDiff(targetDateStr: string): number {
   const [year, month, day] = targetDateStr.split("-").map(Number);
@@ -113,18 +111,25 @@ export default function DashboardDeadlinesWidget() {
               <div
                 key={ev.id}
                 onClick={() => navigate("/agenda")}
-                className={cn(
-                  "p-4 pl-4.5 rounded-2xl border border-border bg-card/75 hover:bg-card hover:border-primary/40 transition-all cursor-pointer space-y-2 group shadow-sm relative overflow-hidden",
-                  conf.cardStripeClass
-                )}
+                className="p-4 pl-4.5 rounded-2xl border border-border bg-secondary/35 hover:bg-secondary/70 hover:border-primary/40 transition-all cursor-pointer space-y-2 group shadow-xs relative overflow-hidden"
               >
-                <div className="flex items-center justify-between gap-1.5">
-                  <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-foreground tracking-tight">
-                    <CategoryIcon category={ev.category} className={cn("w-3.5 h-3.5", conf.iconColorClass)} />
-                    <span>{conf.label}</span>
-                  </div>
+                <span
+                  className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full"
+                  style={{ backgroundColor: conf.color }}
+                />
 
-                  <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-md border border-border/80 bg-secondary/60 text-foreground/80 inline-flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-1.5">
+                  <span
+                    style={{
+                      backgroundColor: conf.solidBg,
+                      color: conf.solidText,
+                    }}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-[0.05em] leading-tight"
+                  >
+                    {conf.label}
+                  </span>
+
+                  <span className="text-[10px] font-mono tabular-nums px-2 py-0.5 rounded-md border border-border bg-card/80 text-foreground/85 inline-flex items-center gap-1.5">
                     {countdown.urgent && (
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
                     )}

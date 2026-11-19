@@ -3,8 +3,7 @@ import { StudyEvent, EventCategory, CATEGORY_CONFIGS } from "@/models/event";
 import { HeatmapDay } from "@/services/statsApi";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Layers } from "lucide-react";
-import CategoryIcon from "./category-icon";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarMonthGridProps {
   currentDate: Date;
@@ -187,19 +186,18 @@ export default function CalendarMonthGrid({
           </div>
         </div>
 
-        {/* Modern Segmented Category Filter Toolbar */}
+        {/* Modern Segmented Category Filter Toolbar (Icon-free) */}
         <div className="p-1 bg-secondary/50 border border-border/80 rounded-2xl flex items-center gap-1 overflow-x-auto shadow-inner">
           <button
             type="button"
             onClick={() => onChangeCategoryFilter("all")}
             className={cn(
-              "px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0",
+              "px-3.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0",
               categoryFilter === "all"
                 ? "bg-card text-foreground font-semibold shadow-sm border border-border/80 ring-1 ring-black/5 dark:ring-white/5"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
             )}
           >
-            <Layers className="w-3.5 h-3.5 shrink-0 stroke-[2.2]" />
             <span>Todas</span>
           </button>
 
@@ -212,23 +210,17 @@ export default function CalendarMonthGrid({
                 type="button"
                 onClick={() => onChangeCategoryFilter(cat)}
                 className={cn(
-                  "px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0",
+                  "px-3.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-2 transition-all cursor-pointer select-none shrink-0",
                   isSelected
                     ? "bg-card text-foreground font-semibold shadow-sm border border-border/80 ring-1 ring-black/5 dark:ring-white/5"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                 )}
               >
-                <CategoryIcon
-                  category={cat}
-                  className={cn("w-3.5 h-3.5", conf.iconColorClass)}
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ backgroundColor: conf.color }}
                 />
                 <span>{conf.label}</span>
-                {isSelected && (
-                  <span
-                    className="w-1.5 h-1.5 rounded-full ml-0.5 shrink-0"
-                    style={{ backgroundColor: conf.color }}
-                  />
-                )}
               </button>
             );
           })}
@@ -277,7 +269,7 @@ export default function CalendarMonthGrid({
                 </span>
               </div>
 
-              {/* Event Chips List (Modern Left-Accent Stripe Chips) */}
+              {/* Event Chips List (Solid Tangerina Blocks for Active / Quiet Muted for Done) */}
               <div className="space-y-1 w-full mt-1.5 flex-1 overflow-hidden">
                 {dayEvents.slice(0, 3).map((event) => {
                   const conf =
@@ -289,27 +281,28 @@ export default function CalendarMonthGrid({
                         e.stopPropagation();
                         onEditEvent(event);
                       }}
+                      style={
+                        !event.done
+                          ? {
+                              backgroundColor: conf.solidBg,
+                              color: conf.solidText,
+                            }
+                          : undefined
+                      }
                       className={cn(
-                        "px-2 py-1 rounded-md text-[10.5px] font-medium border border-border/70 bg-card/90 hover:bg-card text-foreground truncate transition-all block text-left cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-sm border-l-[3px]",
-                        conf.borderAccentClass,
-                        event.done && "line-through opacity-45 text-muted-foreground border-l-muted-foreground/60"
+                        "px-2 py-0.5 rounded-lg text-[10.5px] flex items-center justify-between gap-1.5 transition-all cursor-pointer",
+                        event.done
+                          ? "bg-secondary/50 text-muted-foreground font-medium line-through opacity-55 hover:opacity-80"
+                          : "font-semibold shadow-xs hover:brightness-105 active:scale-[0.99]"
                       )}
                       title={`${event.title}${event.time ? ` às ${event.time}` : ""}`}
                     >
-                      <CategoryIcon
-                        category={event.category}
-                        className={cn("w-2.5 h-2.5 inline-block mr-1 shrink-0 align-[-1.5px]", conf.iconColorClass)}
-                      />
-                      {event.subject_color && (
-                        <span
-                          className="inline-block w-1.5 h-1.5 rounded-full mr-1 shrink-0 align-middle"
-                          style={{ backgroundColor: event.subject_color }}
-                        />
-                      )}
+                      <span className="truncate leading-snug">{event.title}</span>
                       {event.time && (
-                        <span className="font-mono mr-1 text-[10px] text-muted-foreground font-normal">{event.time}</span>
+                        <span className="font-mono text-[9.5px] opacity-85 shrink-0 tabular-nums">
+                          {event.time}
+                        </span>
                       )}
-                      <span>{event.title}</span>
                     </div>
                   );
                 })}
